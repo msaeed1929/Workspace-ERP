@@ -1,0 +1,569 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 415_NotificationClient.html
+Layer       : Client Controller
+Component   : Notification Client
+Version     : 1.0.0
+Description : Client-side notification controller for Workspace ERP.
+==============================================================================
+
+Responsibilities
+------------------------------------------------------------------------------
+• Toast Notifications
+• Success Messages
+• Warning Messages
+• Error Messages
+• Information Messages
+• Notification Queue
+• Auto Dismiss
+• Manual Dismiss
+
+This controller contains NO business logic.
+
+All notification data originates from server modules or
+other client controllers.
+==============================================================================-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Notification Client
+==============================================================================*/
+
+const NotificationClient = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let queue = [];
+
+    let active = [];
+
+    const MAX_VISIBLE = 5;
+
+    const DEFAULT_TIMEOUT = 4000;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        createContainer();
+
+        initialized = true;
+
+        console.log(
+
+            "Workspace ERP Notification Client Loaded"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Notification Container
+    ==========================================================================*/
+
+    function createContainer(){
+
+        container =
+
+            document.getElementById(
+
+                "notificationContainer"
+
+            );
+
+        if(container){
+
+            return;
+
+        }
+
+        container =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        container.id =
+
+            "notificationContainer";
+
+        container.className =
+
+            "notification-container";
+
+        document.body.appendChild(
+
+            container
+
+        );
+
+    }
+
+    /*==========================================================================
+        Generic Notification
+    ==========================================================================*/
+
+    function notify(
+
+        message,
+
+        type,
+
+        timeout
+
+    ){
+
+        if(!initialized){
+
+            initialize();
+
+        }
+
+        queue.push({
+
+            id :
+
+                Date.now() +
+
+                "_" +
+
+                Math.random(),
+
+            message :
+
+                message ||
+
+                "",
+
+            type :
+
+                type ||
+
+                "info",
+
+            timeout :
+
+                timeout ||
+
+                DEFAULT_TIMEOUT
+
+        });
+
+        processQueue();
+
+    }
+
+    /*==========================================================================
+        Queue Processor
+    ==========================================================================*/
+
+    function processQueue(){
+
+        while(
+
+            queue.length > 0 &&
+
+            active.length < MAX_VISIBLE
+
+        ){
+
+            show(
+
+                queue.shift()
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Render Notification
+    ==========================================================================*/
+
+    function show(item){
+
+        const notification =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        notification.className =
+
+            "toast toast-" +
+
+            item.type;
+
+        notification.dataset.id =
+
+            item.id;
+
+        const icon =
+
+            getIcon(
+
+                item.type
+
+            );
+
+        notification.innerHTML =
+
+            '<div class="toast-icon">' +
+
+            icon +
+
+            '</div>' +
+
+            '<div class="toast-message">' +
+
+            escapeHTML(
+
+                item.message
+
+            ) +
+
+            '</div>' +
+
+            '<button class="toast-close">&times;</button>';
+
+        container.appendChild(
+
+            notification
+
+        );
+
+        active.push(item.id);
+
+        notification
+
+            .querySelector(
+
+                ".toast-close"
+
+            )
+
+            .addEventListener(
+
+                "click",
+
+                function(){
+
+                    dismiss(
+
+                        item.id
+
+                    );
+
+                }
+
+            );
+
+        setTimeout(
+
+            function(){
+
+                dismiss(
+
+                    item.id
+
+                );
+
+            },
+
+            item.timeout
+
+        );
+
+    }
+
+    /*==========================================================================
+        Dismiss Notification
+    ==========================================================================*/
+
+    function dismiss(id){
+
+        const element =
+
+            container.querySelector(
+
+                '[data-id="' +
+
+                id +
+
+                '"]'
+
+            );
+
+        if(!element){
+
+            return;
+
+        }
+
+        element.classList.add(
+
+            "toast-hide"
+
+        );
+
+        setTimeout(
+
+            function(){
+
+                if(
+
+                    element.parentNode
+
+                ){
+
+                    element.remove();
+
+                }
+
+                active =
+
+                    active.filter(
+
+                        function(item){
+
+                            return item !== id;
+
+                        }
+
+                    );
+
+                processQueue();
+
+            },
+
+            250
+
+        );
+
+    }
+
+    /*==========================================================================
+        Clear All Notifications
+    ==========================================================================*/
+
+    function clear(){
+
+        queue = [];
+
+        active = [];
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Notification Shortcuts
+    ==========================================================================*/
+
+    function success(
+
+        message,
+
+        timeout
+
+    ){
+
+        notify(
+
+            message,
+
+            "success",
+
+            timeout
+
+        );
+
+    }
+
+    function info(
+
+        message,
+
+        timeout
+
+    ){
+
+        notify(
+
+            message,
+
+            "info",
+
+            timeout
+
+        );
+
+    }
+
+    function warning(
+
+        message,
+
+        timeout
+
+    ){
+
+        notify(
+
+            message,
+
+            "warning",
+
+            timeout
+
+        );
+
+    }
+
+    function error(
+
+        message,
+
+        timeout
+
+    ){
+
+        notify(
+
+            message,
+
+            "error",
+
+            timeout
+
+        );
+
+    }
+
+    /*==========================================================================
+        Notification Icons
+    ==========================================================================*/
+
+    function getIcon(type){
+
+        switch(type){
+
+            case "success":
+
+                return "✅";
+
+            case "warning":
+
+                return "⚠️";
+
+            case "error":
+
+                return "❌";
+
+            default:
+
+                return "ℹ️";
+
+        }
+
+    }
+
+    /*==========================================================================
+        HTML Escape
+    ==========================================================================*/
+
+    function escapeHTML(text){
+
+        const div =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        div.textContent =
+
+            text;
+
+        return div.innerHTML;
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        notify : notify,
+
+        success : success,
+
+        info : info,
+
+        warning : warning,
+
+        error : error,
+
+        clear : clear
+
+    };
+
+})();
+
+/*==============================================================================
+    Global Helpers
+==============================================================================*/
+
+window.notify =
+
+    NotificationClient.notify;
+
+window.notifySuccess =
+
+    NotificationClient.success;
+
+window.notifyInfo =
+
+    NotificationClient.info;
+
+window.notifyWarning =
+
+    NotificationClient.warning;
+
+window.notifyError =
+
+    NotificationClient.error;
+
+window.clearNotifications =
+
+    NotificationClient.clear;
+
+</script>

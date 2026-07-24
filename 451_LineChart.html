@@ -1,0 +1,425 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 451_LineChart.html
+Layer       : Dashboard Widget
+Component   : Enterprise Line Chart
+Version     : 3.1.0
+Description : Reusable line chart widget for dashboards, reports,
+              analytics and KPI trends.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Line Chart
+==============================================================================*/
+
+const LineChart = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let chart = null;
+
+    let currentData = [];
+
+    let currentOptions = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "LineChart container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "LineChart Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        currentData =
+
+            data ||
+
+            [];
+
+        currentOptions =
+
+            options ||
+
+            {};
+
+        destroy();
+
+        chart = createChart(
+
+            currentData,
+
+            currentOptions
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Chart
+    ==========================================================================*/
+
+    function createChart(
+
+        data,
+
+        options
+
+    ){
+
+        if(
+
+            typeof Chart ===
+
+            "undefined"
+
+        ){
+
+            console.warn(
+
+                "Chart.js not loaded."
+
+            );
+
+            return null;
+
+        }
+
+        return new Chart(
+
+            container,
+
+            {
+
+                type :
+
+                    "line",
+
+                data :
+
+                    data,
+
+                options :
+
+                    options
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        currentData =
+
+            data ||
+
+            [];
+
+        if(chart){
+
+            chart.data =
+
+                currentData;
+
+            chart.update();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        if(chart){
+
+            chart.destroy();
+
+            chart = null;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        destroy();
+
+        currentData = [];
+
+        currentOptions = {};
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(chart){
+
+            chart.update();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Resize
+    ==========================================================================*/
+
+    function resize(){
+
+        if(
+
+            chart &&
+
+            typeof chart.resize ===
+
+            "function"
+
+        ){
+
+            chart.resize();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            rendered :
+
+                chart !== null,
+
+            dataPoints :
+
+                Array.isArray(
+
+                    currentData.datasets
+
+                )
+
+                ? currentData.datasets.length
+
+                : 0
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        destroy : destroy,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        resize : resize,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.LineChart = LineChart;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderLineChart = function(
+
+    data,
+
+    options
+
+){
+
+    LineChart.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.updateLineChart = function(data){
+
+    LineChart.update(
+
+        data
+
+    );
+
+};
+
+window.lineChartStatus = function(){
+
+    return LineChart.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • ChartClient
+
+    • ReportClient
+
+    • KPICard
+
+    • Executive Dashboard
+
+    ERP Modules
+
+    ✓ CRM Analytics
+
+    ✓ Sales Trends
+
+    ✓ Purchase Trends
+
+    ✓ Inventory Trends
+
+    ✓ Production Trends
+
+    ✓ HR Analytics
+
+    ✓ Financial Dashboard
+
+    ✓ Cash Flow
+
+    ✓ Profit Analysis
+
+    ✓ Forecasting
+
+    Future Enhancements
+
+    ✓ Zoom
+
+    ✓ Pan
+
+    ✓ Export PNG
+
+    ✓ Export PDF
+
+    ✓ CSV Export
+
+    ✓ Multiple Axes
+
+    ✓ Live Updates
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Line Chart Loaded"
+
+);
+
+</script>

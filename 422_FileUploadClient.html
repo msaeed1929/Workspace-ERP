@@ -1,0 +1,506 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 422_FileUploadClient.html
+Layer       : Client Controller
+Component   : File Upload Client
+Version     : 3.1.0
+Description : Centralized client-side file upload manager for Workspace ERP.
+               Handles file selection, validation, upload lifecycle and events.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    File Upload Client
+==============================================================================*/
+
+const FileUploadClient = (function(){
+
+    let initialized = false;
+
+    const uploaders = {};
+
+    let activeUploader = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "FileUploadClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Uploader
+    ==========================================================================*/
+
+    function register(id, options){
+
+        uploaders[id] = Object.assign(
+
+            {
+
+                element : null,
+
+                maxSize : 10 * 1024 * 1024,
+
+                allowedTypes : [],
+
+                multiple : false,
+
+                autoUpload : false,
+
+                uploadFunction : "uploadFile"
+
+            },
+
+            options || {}
+
+        );
+
+        const uploader =
+
+            uploaders[id];
+
+        uploader.element =
+
+            document.getElementById(id);
+
+        if(uploader.element){
+
+            bindEvents(
+
+                id
+
+            );
+
+        }
+
+        return uploader;
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(id){
+
+        const uploader =
+
+            uploaders[id];
+
+        if(
+
+            !uploader ||
+
+            !uploader.element
+
+        ){
+
+            return;
+
+        }
+
+        uploader.element.addEventListener(
+
+            "change",
+
+            function(event){
+
+                handleSelection(
+
+                    id,
+
+                    event.target.files
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Handle Selection
+    ==========================================================================*/
+
+    function handleSelection(id, files){
+
+        if(
+
+            !files ||
+
+            files.length === 0
+
+        ){
+
+            return;
+
+        }
+
+        activeUploader = id;
+
+        if(
+
+            validate(
+
+                id,
+
+                files
+
+            ) === false
+
+        ){
+
+            return;
+
+        }
+
+        console.log(
+
+            "Selected",
+
+            files.length,
+
+            "file(s)"
+
+        );
+
+        if(
+
+            uploaders[id].autoUpload
+
+        ){
+
+            upload(
+
+                id,
+
+                files
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Validate Files
+    ==========================================================================*/
+
+    function validate(id, files){
+
+        const uploader =
+
+            uploaders[id];
+
+        for(
+
+            let i = 0;
+
+            i < files.length;
+
+            i++
+
+        ){
+
+            const file = files[i];
+
+            if(
+
+                file.size >
+
+                uploader.maxSize
+
+            ){
+
+                alert(
+
+                    "File exceeds maximum size."
+
+                );
+
+                return false;
+
+            }
+
+            if(
+
+                uploader.allowedTypes.length > 0 &&
+
+                !uploader.allowedTypes.includes(
+
+                    file.type
+
+                )
+
+            ){
+
+                alert(
+
+                    "Unsupported file type."
+
+                );
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
+    /*==========================================================================
+        Upload Files
+    ==========================================================================*/
+
+    function upload(id, files){
+
+        const uploader =
+
+            uploaders[id];
+
+        if(
+
+            !uploader
+
+        ){
+
+            return;
+
+        }
+
+        ERP.showLoader(
+
+            "Uploading..."
+
+        );
+
+        const payload = [];
+
+        for(
+
+            let i = 0;
+
+            i < files.length;
+
+            i++
+
+        ){
+
+            payload.push(
+
+                {
+
+                    name :
+
+                        files[i].name,
+
+                    size :
+
+                        files[i].size,
+
+                    type :
+
+                        files[i].type
+
+                }
+
+            );
+
+        }
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(result){
+
+                    onSuccess(
+
+                        result
+
+                    );
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    onFailure(
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            [
+
+                uploader.uploadFunction
+
+            ](
+
+                payload
+
+            );
+
+    }
+
+    /*==========================================================================
+        Upload Success
+    ==========================================================================*/
+
+    function onSuccess(result){
+
+        ERP.hideLoader();
+
+        console.log(
+
+            "Upload Completed",
+
+            result
+
+        );
+
+        document.dispatchEvent(
+
+            new CustomEvent(
+
+                "fileUploaded",
+
+                {
+
+                    detail : result
+
+                }
+
+            )
+
+        );
+
+    }
+
+    /*==========================================================================
+        Upload Failure
+    ==========================================================================*/
+
+    function onFailure(error){
+
+        ERP.hideLoader();
+
+        console.error(
+
+            "Upload Failed",
+
+            error
+
+        );
+
+        alert(
+
+            "File upload failed."
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset Uploader
+    ==========================================================================*/
+
+    function reset(id){
+
+        const uploader =
+
+            uploaders[id];
+
+        if(
+
+            uploader &&
+
+            uploader.element
+
+        ){
+
+            uploader.element.value = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Current Uploader
+    ==========================================================================*/
+
+    function current(){
+
+        return activeUploader;
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        register : register,
+
+        upload : upload,
+
+        reset : reset,
+
+        current : current
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.FileUploadClient = FileUploadClient;
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP File Upload Client Loaded"
+
+);
+
+</script>

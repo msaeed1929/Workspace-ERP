@@ -1,0 +1,425 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 453_PieChart.html
+Layer       : Dashboard Widget
+Component   : Enterprise Pie Chart
+Version     : 3.1.0
+Description : Reusable pie chart widget for dashboards, reports,
+              statistics and business analytics.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Pie Chart
+==============================================================================*/
+
+const PieChart = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let chart = null;
+
+    let currentData = [];
+
+    let currentOptions = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "PieChart container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "PieChart Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        currentData =
+
+            data ||
+
+            [];
+
+        currentOptions =
+
+            options ||
+
+            {};
+
+        destroy();
+
+        chart = createChart(
+
+            currentData,
+
+            currentOptions
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Chart
+    ==========================================================================*/
+
+    function createChart(
+
+        data,
+
+        options
+
+    ){
+
+        if(
+
+            typeof Chart ===
+
+            "undefined"
+
+        ){
+
+            console.warn(
+
+                "Chart.js not loaded."
+
+            );
+
+            return null;
+
+        }
+
+        return new Chart(
+
+            container,
+
+            {
+
+                type :
+
+                    "pie",
+
+                data :
+
+                    data,
+
+                options :
+
+                    options
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        currentData =
+
+            data ||
+
+            [];
+
+        if(chart){
+
+            chart.data =
+
+                currentData;
+
+            chart.update();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        if(chart){
+
+            chart.destroy();
+
+            chart = null;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        destroy();
+
+        currentData = [];
+
+        currentOptions = {};
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(chart){
+
+            chart.update();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Resize
+    ==========================================================================*/
+
+    function resize(){
+
+        if(
+
+            chart &&
+
+            typeof chart.resize ===
+
+            "function"
+
+        ){
+
+            chart.resize();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            rendered :
+
+                chart !== null,
+
+            dataSets :
+
+                Array.isArray(
+
+                    currentData.datasets
+
+                )
+
+                ? currentData.datasets.length
+
+                : 0
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        destroy : destroy,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        resize : resize,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.PieChart = PieChart;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderPieChart = function(
+
+    data,
+
+    options
+
+){
+
+    PieChart.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.updatePieChart = function(data){
+
+    PieChart.update(
+
+        data
+
+    );
+
+};
+
+window.pieChartStatus = function(){
+
+    return PieChart.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • ChartClient
+
+    • ReportClient
+
+    • KPICard
+
+    • Executive Dashboard
+
+    ERP Modules
+
+    ✓ CRM Analytics
+
+    ✓ Sales Distribution
+
+    ✓ Purchase Distribution
+
+    ✓ Inventory Distribution
+
+    ✓ Production Allocation
+
+    ✓ HR Statistics
+
+    ✓ Financial Dashboard
+
+    ✓ Revenue Composition
+
+    ✓ Expense Breakdown
+
+    ✓ Budget Allocation
+
+    Future Enhancements
+
+    ✓ Doughnut Mode
+
+    ✓ Exploded Slice
+
+    ✓ Drill-down Support
+
+    ✓ Legend Positioning
+
+    ✓ Export PNG
+
+    ✓ Export PDF
+
+    ✓ CSV Export
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Pie Chart Loaded"
+
+);
+
+</script>

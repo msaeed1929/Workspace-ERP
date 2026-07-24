@@ -1,0 +1,390 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 431_AuthenticationClient.html
+Layer       : Client Controller
+Component   : Authentication Client
+Version     : 3.1.0
+Description : Manages client-side authentication state and server
+              authentication requests.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Authentication Client
+==============================================================================*/
+
+const AuthenticationClient = (function(){
+
+    let initialized = false;
+
+    let authenticated = false;
+
+    let user = null;
+
+    let token = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "AuthenticationClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Authenticate
+    ==========================================================================*/
+
+    function authenticate(credentials){
+
+        ERP.showLoader(
+
+            "Authenticating..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                authenticationSuccess
+
+            )
+
+            .withFailureHandler(
+
+                authenticationFailure
+
+            )
+
+            .authenticate(
+
+                credentials
+
+            );
+
+    }
+
+    /*==========================================================================
+        Authentication Success
+    ==========================================================================*/
+
+    function authenticationSuccess(response){
+
+        ERP.hideLoader();
+
+        if(
+
+            response &&
+
+            response.success
+
+        ){
+
+            authenticated = true;
+
+            user =
+
+                response.user ||
+
+                null;
+
+            token =
+
+                response.token ||
+
+                null;
+
+            console.log(
+
+                "Authentication Successful"
+
+            );
+
+        }
+
+        else{
+
+            authenticated = false;
+
+            token = null;
+
+            user = null;
+
+            DialogClient.alert(
+
+                response.message ||
+
+                "Authentication failed."
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Authentication Failure
+    ==========================================================================*/
+
+    function authenticationFailure(error){
+
+        ERP.hideLoader();
+
+        authenticated = false;
+
+        token = null;
+
+        user = null;
+
+        console.error(
+
+            error
+
+        );
+
+        DialogClient.alert(
+
+            "Unable to authenticate."
+
+        );
+
+    }
+
+    /*==========================================================================
+        Verify Session
+    ==========================================================================*/
+
+    function verify(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                verifySuccess
+
+            )
+
+            .withFailureHandler(
+
+                verifyFailure
+
+            )
+
+            .verifySession();
+
+    }
+
+    /*==========================================================================
+        Verify Success
+    ==========================================================================*/
+
+    function verifySuccess(response){
+
+        authenticated =
+
+            response.authenticated || false;
+
+        user =
+
+            response.user || null;
+
+        token =
+
+            response.token || null;
+
+    }
+
+    /*==========================================================================
+        Verify Failure
+    ==========================================================================*/
+
+    function verifyFailure(error){
+
+        authenticated = false;
+
+        user = null;
+
+        token = null;
+
+        console.error(
+
+            error
+
+        );
+
+    }
+
+    /*==========================================================================
+        Is Authenticated
+    ==========================================================================*/
+
+    function isAuthenticated(){
+
+        return authenticated;
+
+    }
+
+    /*==========================================================================
+        Current User
+    ==========================================================================*/
+
+    function currentUser(){
+
+        return user;
+
+    }
+
+    /*==========================================================================
+        Token
+    ==========================================================================*/
+
+    function sessionToken(){
+
+        return token;
+
+    }
+
+    /*==========================================================================
+        Clear Authentication
+    ==========================================================================*/
+
+    function clear(){
+
+        authenticated = false;
+
+        user = null;
+
+        token = null;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            authenticated :
+
+                authenticated,
+
+            user :
+
+                user,
+
+            token :
+
+                token
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        authenticate : authenticate,
+
+        verify : verify,
+
+        isAuthenticated : isAuthenticated,
+
+        currentUser : currentUser,
+
+        token : sessionToken,
+
+        clear : clear,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.AuthenticationClient = AuthenticationClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.authenticate = function(credentials){
+
+    AuthenticationClient.authenticate(
+
+        credentials
+
+    );
+
+};
+
+window.verifyAuthentication = function(){
+
+    AuthenticationClient.verify();
+
+};
+
+window.authenticationStatus = function(){
+
+    return AuthenticationClient.status();
+
+};
+
+window.currentUser = function(){
+
+    return AuthenticationClient.currentUser();
+
+};
+
+window.isAuthenticated = function(){
+
+    return AuthenticationClient.isAuthenticated();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Authentication Client Loaded"
+
+);
+
+</script>

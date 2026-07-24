@@ -1,0 +1,576 @@
+Response 1 of 3
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 409_ClientApp.html
+Layer       : Client Controller
+Component   : Application Bootstrap
+Version     : 3.1.0
+Description : Main Workspace ERP client application controller.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    ERP Client Application
+==============================================================================*/
+
+const ERP = {
+
+    /*==========================================================================
+        Runtime
+    ==========================================================================*/
+
+    bootstrap : null,
+
+    initialized : false,
+
+    loading : false,
+
+    currentModule : "Dashboard",
+
+    /*==========================================================================
+        Initialize Application
+    ==========================================================================*/
+
+    initialize : function(){
+
+        if(this.initialized || this.loading){
+
+            return;
+
+        }
+
+        this.loading = true;
+
+        console.log(
+
+            "Initializing Workspace ERP..."
+
+        );
+
+        this.showLoader(
+
+            "Starting Workspace ERP..."
+
+        );
+
+        this.loadBootstrap();
+
+    },
+
+    /*==========================================================================
+        Load Bootstrap
+    ==========================================================================*/
+
+    loadBootstrap : function(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(data){
+
+                    ERP.onBootstrapLoaded(
+
+                        data
+
+                    );
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    ERP.onBootstrapFailed(
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .webAppBootstrap();
+
+    },
+
+    /*==========================================================================
+        Bootstrap Success
+    ==========================================================================*/
+
+    onBootstrapLoaded : function(data){
+
+        if(
+
+            !data ||
+
+            data.success !== true
+
+        ){
+
+            console.error(
+
+                "Invalid bootstrap response.",
+
+                data
+
+            );
+
+            return;
+
+        }
+
+        this.bootstrap = data;
+
+        this.initialized = true;
+
+        this.loading = false;
+
+        this.hideLoader();
+
+        console.log(
+
+            "Workspace ERP Ready"
+
+        );
+
+        document.dispatchEvent(
+
+            new CustomEvent(
+
+                "erpReady",
+
+                {
+
+                    detail : data
+
+                }
+
+            )
+
+        );
+
+        this.initializeClients();
+
+    },
+
+    /*==========================================================================
+        Bootstrap Failure
+    ==========================================================================*/
+
+    onBootstrapFailed : function(error){
+
+        console.error(
+
+            "Bootstrap failed.",
+
+            error
+
+        );
+
+        this.loading = false;
+
+        this.hideLoader();
+
+        alert(
+
+            "Unable to start Workspace ERP."
+
+        );
+
+    },
+
+    /*==========================================================================
+        Initialize Client Controllers
+    ==========================================================================*/
+
+    initializeClients : function(){
+
+        ThemeClient.initialize();
+        HeaderClient.initialize();
+        SidebarClient.initialize();
+        Navigation.initialize();
+        DashboardClient.initialize();
+        NotificationClient.initialize();
+        DialogClient.initialize();
+        SearchClient.initialize();
+        FormClient.initialize();
+        TableClient.initialize();
+        ChartClient.initialize();
+        ReportClient.initialize();
+        FileUploadClient.initialize();
+        WorkspaceClient.initialize();
+        ProfileClient.initialize();
+        SettingsClient.initialize();
+        ShortcutClient.initialize();
+        HelpClient.initialize();
+        AboutClient.initialize();
+        LoginClient.initialize();
+        AuthenticationClient.initialize();
+        AuthorizationClient.initialize();
+        SessionClient.initialize();
+        PermissionClient.initialize();
+        DataTable.initialize("dataTable");
+        FilterBar.initialize("filterBar");
+        Toolbar.initialize("toolbar");
+        Breadcrumb.initialize("breadcrumb");
+        Pagination.initialize("pagination");
+        Modal.initialize("modal");
+        Toast.initialize("toast");
+        ConfirmDialog.initialize();
+        SidePanel.initialize("sidePanel");
+        LoadingSpinner.initialize("loadingSpinner");
+          ERP.showLoader = LoadingSpinner.show;
+          ERP.hideLoader = LoadingSpinner.hide;
+        KPICard.initialize("kpiContainer");
+        LineChart.initialize("lineChart");
+        BarChart.initialize("barChart");
+        PieChart.initialize("pieChart");
+        ActivityFeed.initialize("activityFeed");
+        TaskWidget.initialize("taskWidget");
+        CalendarWidget.initialize("calendarWidget");
+        NotificationWidget.initialize("notificationWidget");
+
+
+
+
+        /*----------------------------------------------------------
+            Client Registry
+        ----------------------------------------------------------*/
+
+        ClientManager.initialize();
+        ClientManager.register("Theme",ThemeClient);
+        ClientManager.register("Header",HeaderClient);
+        ClientManager.register("Sidebar",SidebarClient);
+        ClientManager.register("Navigation",Navigation);
+        ClientManager.register("Dashboard",DashboardClient);
+        ClientManager.register("Notification",NotificationClient);
+        ClientManager.register("Dialog",DialogClient);
+        ClientManager.register("Search",SearchClient);
+        ClientManager.register("Form",FormClient);
+        ClientManager.register("Table",TableClient);
+        ClientManager.register("Chart",ChartClient);
+        ClientManager.register("Report",ReportClient);
+        ClientManager.register("FileUpload",FileUploadClient);
+        ClientManager.register("Workspace",WorkspaceClient);
+        ClientManager.register("Profile",ProfileClient);
+        ClientManager.register("Settings",SettingsClient);
+        ClientManager.register("Shortcut",ShortcutClient);
+        ClientManager.register("Help",HelpClient);
+        ClientManager.register("About",AboutClient);
+        ClientManager.register("Login",LoginClient);
+        ClientManager.register("Authentication",AuthenticationClient);
+        ClientManager.register("Authorization",AuthorizationClient);
+        ClientManager.register("Session",SessionClient);
+        ClientManager.register("Permission",PermissionClient);
+        
+    /*----------------------------------------------------------
+        Diagnostics
+    ----------------------------------------------------------*/
+
+    console.group(
+
+        "Workspace ERP Client Registry"
+
+    );
+
+    console.log(
+
+        "Registered Clients:",
+
+        ClientManager.count()
+
+    );
+
+    console.table(
+
+        ClientManager.all()
+
+    );
+
+    console.groupEnd();
+
+    this.loadDefaultModule();
+
+    },
+
+    /*==========================================================================
+        Load Default Module
+    ==========================================================================*/
+
+    loadDefaultModule : function(){
+
+        const module =
+
+            this.bootstrap.configuration.defaultModule ||
+
+            "Dashboard";
+
+        this.currentModule = module;
+
+        if(
+
+            typeof Navigation !== "undefined"
+
+        ){
+
+            Navigation.navigate(
+
+                module
+
+            );
+
+        }
+
+    },
+
+    /*==========================================================================
+        Loading Overlay
+    ==========================================================================*/
+
+    showLoader : function(message){
+
+        const overlay =
+
+            document.getElementById(
+
+                "loadingOverlay"
+
+            );
+
+        if(!overlay){
+
+            return;
+
+        }
+
+        overlay.style.display = "flex";
+
+        const box =
+
+            overlay.querySelector(
+
+                ".loading-box"
+
+            );
+
+        if(
+
+            box &&
+
+            message
+
+        ){
+
+            box.textContent = message;
+
+        }
+
+        this.loading = true;
+
+    },
+
+    hideLoader : function(){
+
+        const overlay =
+
+            document.getElementById(
+
+                "loadingOverlay"
+
+            );
+
+        if(overlay){
+
+            overlay.style.display = "none";
+
+        }
+
+        this.loading = false;
+
+    },
+
+    /*==========================================================================
+        Refresh Current Module
+    ==========================================================================*/
+
+    refresh : function(){
+
+        if(
+
+            typeof Navigation !== "undefined"
+
+        ){
+
+            Navigation.navigate(
+
+                this.currentModule
+
+            );
+
+        }
+
+    },
+
+    /*==========================================================================
+        Application Information
+    ==========================================================================*/
+
+    info : function(){
+
+        return {
+
+            initialized :
+
+                this.initialized,
+
+            loading :
+
+                this.loading,
+
+            currentModule :
+
+                this.currentModule,
+
+            version :
+
+                this.bootstrap
+
+                    ?.framework
+
+                    ?.version ||
+
+                "Unknown"
+
+        };
+
+    },
+
+    destroy : function(){
+
+        this.bootstrap = null;
+
+        this.initialized = false;
+
+        this.loading = false;
+
+    },
+
+    /*==========================================================================
+        Shutdown
+    ==========================================================================*/
+
+    shutdown : function(){
+
+        this.destroy();
+
+        console.log(
+
+            "Workspace ERP Shutdown"
+
+        );
+
+    }
+
+};
+
+/*==============================================================================
+    Public ERP API
+==============================================================================*/
+
+/**
+ * Returns ERP runtime information.
+ */
+window.erpInfo = function(){
+
+    return ERP.info();
+
+};
+
+/**
+ * Refresh current module.
+ */
+window.refreshApplication = function(){
+
+    ERP.refresh();
+
+};
+
+/**
+ * Show Loader.
+ */
+window.showLoader = function(message){
+
+    ERP.showLoader(
+
+        message
+
+    );
+
+};
+
+/**
+ * Hide Loader.
+ */
+window.hideLoader = function(){
+
+    ERP.hideLoader();
+
+};
+
+/*==============================================================================
+    Startup
+==============================================================================*/
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        ERP.initialize();
+
+    }
+
+);
+
+/*==============================================================================
+    Shutdown
+==============================================================================*/
+
+window.onbeforeunload = function(){
+
+    ERP.shutdown();
+
+};
+
+/*==============================================================================
+    Console Banner
+==============================================================================*/
+
+console.log(
+
+    "%cWorkspace ERP Framework v3.1.0",
+
+    "color:#2563eb;font-size:14px;font-weight:bold;"
+
+);
+
+console.log(
+
+    "%cApplication Bootstrap Loaded",
+
+    "color:#16a34a;font-size:12px;"
+
+);
+
+</script>

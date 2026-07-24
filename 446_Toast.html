@@ -1,0 +1,515 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 446_Toast.html
+Layer       : UI Component
+Component   : Enterprise Toast Notification
+Version     : 3.1.0
+Description : Displays lightweight notification messages for success,
+              information, warnings and errors throughout the ERP.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Toast
+==============================================================================*/
+
+const Toast = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let timeoutId = null;
+
+    let defaultDuration = 3000;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "Toast container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "Toast Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Show
+    ==========================================================================*/
+
+    function show(
+
+        message,
+
+        type,
+
+        duration
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        clearTimeout(
+
+            timeoutId
+
+        );
+
+        type =
+
+            type ||
+
+            "info";
+
+        duration =
+
+            duration ||
+
+            defaultDuration;
+
+        container.className =
+
+            "erp-toast erp-toast-" +
+
+            type;
+
+        container.textContent =
+
+            message;
+
+        container.style.display =
+
+            "block";
+
+        timeoutId =
+
+            setTimeout(
+
+                hide,
+
+                duration
+
+            );
+
+    }
+
+    /*==========================================================================
+        Success
+    ==========================================================================*/
+
+    function success(
+
+        message,
+
+        duration
+
+    ){
+
+        show(
+
+            message,
+
+            "success",
+
+            duration
+
+        );
+
+    }
+
+    /*==========================================================================
+        Information
+    ==========================================================================*/
+
+    function info(
+
+        message,
+
+        duration
+
+    ){
+
+        show(
+
+            message,
+
+            "info",
+
+            duration
+
+        );
+
+    }
+
+    /*==========================================================================
+        Warning
+    ==========================================================================*/
+
+    function warning(
+
+        message,
+
+        duration
+
+    ){
+
+        show(
+
+            message,
+
+            "warning",
+
+            duration
+
+        );
+
+    }
+
+    /*==========================================================================
+        Error
+    ==========================================================================*/
+
+    function error(
+
+        message,
+
+        duration
+
+    ){
+
+        show(
+
+            message,
+
+            "error",
+
+            duration
+
+        );
+
+    }
+
+    /*==========================================================================
+        Hide
+    ==========================================================================*/
+
+    function hide(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.style.display =
+
+            "none";
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        clearTimeout(
+
+            timeoutId
+
+        );
+
+        hide();
+
+    }
+
+    /*==========================================================================
+        Set Default Duration
+    ==========================================================================*/
+
+    function setDuration(milliseconds){
+
+        milliseconds =
+
+            Number(milliseconds);
+
+        if(
+
+            !isNaN(milliseconds) &&
+
+            milliseconds > 0
+
+        ){
+
+            defaultDuration =
+
+                milliseconds;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(
+
+            container &&
+
+            container.style.display === "block"
+
+        ){
+
+            container.offsetHeight;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                container ?
+
+                container.style.display === "block"
+
+                : false,
+
+            duration :
+
+                defaultDuration
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        show : show,
+
+        success : success,
+
+        info : info,
+
+        warning : warning,
+
+        error : error,
+
+        hide : hide,
+
+        clear : clear,
+
+        setDuration : setDuration,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.Toast = Toast;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.showToast = function(
+
+    message,
+
+    type,
+
+    duration
+
+){
+
+    Toast.show(
+
+        message,
+
+        type,
+
+        duration
+
+    );
+
+};
+
+window.toastSuccess = function(message){
+
+    Toast.success(
+
+        message
+
+    );
+
+};
+
+window.toastError = function(message){
+
+    Toast.error(
+
+        message
+
+    );
+
+};
+
+window.toastWarning = function(message){
+
+    Toast.warning(
+
+        message
+
+    );
+
+};
+
+window.toastInfo = function(message){
+
+    Toast.info(
+
+        message
+
+    );
+
+};
+
+window.toastStatus = function(){
+
+    return Toast.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • NotificationClient
+
+    • DialogClient
+
+    • FormClient
+
+    • FileUploadClient
+
+    • ReportClient
+
+    • SettingsClient
+
+    • ProfileClient
+
+    • AuthenticationClient
+
+    • SessionClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Reports
+
+    Future Enhancements
+
+    ✓ Queue Multiple Toasts
+
+    ✓ Progress Toast
+
+    ✓ Persistent Toast
+
+    ✓ Action Buttons
+
+    ✓ Stack Notifications
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Toast Loaded"
+
+);
+
+</script>

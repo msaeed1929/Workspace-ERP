@@ -1,0 +1,486 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 434_PermissionClient.html
+Layer       : Client Controller
+Component   : Permission Client
+Version     : 3.1.0
+Description : Controls UI permissions, feature visibility and action security.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Permission Client
+==============================================================================*/
+
+const PermissionClient = (function(){
+
+    let initialized = false;
+
+    let permissions = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "PermissionClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Permissions
+    ==========================================================================*/
+
+    function load(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                loadSuccess
+
+            )
+
+            .withFailureHandler(
+
+                loadFailure
+
+            )
+
+            .getPermissions();
+
+    }
+
+    /*==========================================================================
+        Load Success
+    ==========================================================================*/
+
+    function loadSuccess(result){
+
+        permissions =
+
+            result ||
+
+            {};
+
+        console.log(
+
+            "Permissions Loaded"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Failure
+    ==========================================================================*/
+
+    function loadFailure(error){
+
+        console.error(
+
+            error
+
+        );
+
+        permissions = {};
+
+    }
+
+    /*==========================================================================
+        Has Permission
+    ==========================================================================*/
+
+    function has(permission){
+
+        return permissions[permission] === true;
+
+    }
+
+    /*==========================================================================
+        Can Read
+    ==========================================================================*/
+
+    function canRead(module){
+
+        return has(
+
+            module +
+
+            ".read"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Can Create
+    ==========================================================================*/
+
+    function canCreate(module){
+
+        return has(
+
+            module +
+
+            ".create"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Can Update
+    ==========================================================================*/
+
+    function canUpdate(module){
+
+        return has(
+
+            module +
+
+            ".update"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Can Delete
+    ==========================================================================*/
+
+    function canDelete(module){
+
+        return has(
+
+            module +
+
+            ".delete"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Can Approve
+    ==========================================================================*/
+
+    function canApprove(module){
+
+        return has(
+
+            module +
+
+            ".approve"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Show Element
+    ==========================================================================*/
+
+    function show(elementId){
+
+        const element =
+
+            document.getElementById(
+
+                elementId
+
+            );
+
+        if(element){
+
+            element.style.display = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Hide Element
+    ==========================================================================*/
+
+    function hide(elementId){
+
+        const element =
+
+            document.getElementById(
+
+                elementId
+
+            );
+
+        if(element){
+
+            element.style.display = "none";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Enable Element
+    ==========================================================================*/
+
+    function enable(elementId){
+
+        const element =
+
+            document.getElementById(
+
+                elementId
+
+            );
+
+        if(element){
+
+            element.disabled = false;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Disable Element
+    ==========================================================================*/
+
+    function disable(elementId){
+
+        const element =
+
+            document.getElementById(
+
+                elementId
+
+            );
+
+        if(element){
+
+            element.disabled = true;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Apply Permissions
+    ==========================================================================*/
+
+    function apply(){
+
+        document
+
+            .querySelectorAll(
+
+                "[data-permission]"
+
+            )
+
+            .forEach(
+
+                function(element){
+
+                    const permission =
+
+                        element.dataset.permission;
+
+                    if(
+
+                        has(
+
+                            permission
+
+                        )
+
+                    ){
+
+                        element.style.display = "";
+
+                        element.disabled = false;
+
+                    }
+
+                    else{
+
+                        element.style.display = "none";
+
+                        element.disabled = true;
+
+                    }
+
+                }
+
+            );
+
+    }
+
+    /*==========================================================================
+        Clear Permissions
+    ==========================================================================*/
+
+    function clear(){
+
+        permissions = {};
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            permissions :
+
+                permissions
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        load : load,
+
+        has : has,
+
+        canRead : canRead,
+
+        canCreate : canCreate,
+
+        canUpdate : canUpdate,
+
+        canDelete : canDelete,
+
+        canApprove : canApprove,
+
+        show : show,
+
+        hide : hide,
+
+        enable : enable,
+
+        disable : disable,
+
+        apply : apply,
+
+        clear : clear,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.PermissionClient = PermissionClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.hasPermission = function(permission){
+
+    return PermissionClient.has(
+
+        permission
+
+    );
+
+};
+
+window.applyPermissions = function(){
+
+    PermissionClient.apply();
+
+};
+
+window.permissionStatus = function(){
+
+    return PermissionClient.status();
+
+};
+
+/*==============================================================================
+    Permission Naming Convention
+
+    sales.read
+    sales.create
+    sales.update
+    sales.delete
+    sales.approve
+
+    purchase.read
+    purchase.create
+    purchase.update
+    purchase.delete
+    purchase.approve
+
+    inventory.read
+    inventory.create
+    inventory.update
+    inventory.delete
+
+    accounting.read
+    accounting.post
+    accounting.close
+
+    crm.read
+    crm.create
+
+    hr.read
+    hr.create
+
+    admin.system
+    admin.users
+    admin.security
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Permission Client Loaded"
+
+);
+
+</script>

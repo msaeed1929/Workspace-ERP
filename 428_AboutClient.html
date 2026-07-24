@@ -1,0 +1,347 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 428_AboutClient.html
+Layer       : Client Controller
+Component   : About Client
+Version     : 3.1.0
+Description : Displays Workspace ERP framework information.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    About Client
+==============================================================================*/
+
+const AboutClient = (function(){
+
+    let initialized = false;
+
+    let visible = false;
+
+    let frameworkInfo = {
+
+        framework : "Workspace ERP Framework",
+
+        version : "3.1.0",
+
+        build : "Development",
+
+        company : "Workspace ERP",
+
+        copyright :
+
+            "© Workspace ERP Framework"
+
+    };
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "AboutClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Open About Dialog
+    ==========================================================================*/
+
+    function open(){
+
+        visible = true;
+
+        const message =
+
+            frameworkInfo.framework +
+
+            "\n\nVersion : " +
+
+            frameworkInfo.version +
+
+            "\nBuild : " +
+
+            frameworkInfo.build +
+
+            "\n\n" +
+
+            frameworkInfo.company;
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                message
+
+            );
+
+        }
+
+        else{
+
+            alert(
+
+                message
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Close
+    ==========================================================================*/
+
+    function close(){
+
+        visible = false;
+
+    }
+
+    /*==========================================================================
+        Toggle
+    ==========================================================================*/
+
+    function toggle(){
+
+        if(visible){
+
+            close();
+
+        }
+
+        else{
+
+            open();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Framework Name
+    ==========================================================================*/
+
+    function framework(){
+
+        return frameworkInfo.framework;
+
+    }
+
+    /*==========================================================================
+        Version
+    ==========================================================================*/
+
+    function version(){
+
+        if(
+
+            typeof ERP !== "undefined"
+
+        ){
+
+            return ERP.info().version;
+
+        }
+
+        return frameworkInfo.version;
+
+    }
+
+    /*==========================================================================
+        Build
+    ==========================================================================*/
+
+    function build(){
+
+        return frameworkInfo.build;
+
+    }
+
+    /*==========================================================================
+        Company
+    ==========================================================================*/
+
+    function company(){
+
+        return frameworkInfo.company;
+
+    }
+
+    /*==========================================================================
+        Copyright
+    ==========================================================================*/
+
+    function copyright(){
+
+        return frameworkInfo.copyright;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                visible,
+
+            version :
+
+                version(),
+
+            build :
+
+                build()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Information
+    ==========================================================================*/
+
+    function information(){
+
+        return {
+
+            framework :
+
+                framework(),
+
+            version :
+
+                version(),
+
+            build :
+
+                build(),
+
+            company :
+
+                company(),
+
+            copyright :
+
+                copyright()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        open : open,
+
+        close : close,
+
+        toggle : toggle,
+
+        framework : framework,
+
+        version : version,
+
+        build : build,
+
+        company : company,
+
+        copyright : copyright,
+
+        status : status,
+
+        information : information
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.AboutClient = AboutClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.showAbout = function(){
+
+    AboutClient.open();
+
+};
+
+window.hideAbout = function(){
+
+    AboutClient.close();
+
+};
+
+window.toggleAbout = function(){
+
+    AboutClient.toggle();
+
+};
+
+window.aboutStatus = function(){
+
+    return AboutClient.status();
+
+};
+
+window.aboutInformation = function(){
+
+    return AboutClient.information();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP About Client Loaded"
+
+);
+
+</script>

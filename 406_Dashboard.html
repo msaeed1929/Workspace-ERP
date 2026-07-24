@@ -1,0 +1,563 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 406_Dashboard.html
+Layer       : Web Application
+Component   : Executive Dashboard
+Version     : 3.1.0
+Description : Workspace ERP Home Dashboard
+==============================================================================
+-->
+
+<div id="dashboard"
+     class="dashboard">
+
+    <!--==============================================================
+        Welcome Banner
+    ==============================================================-->
+
+    <section class="dashboard-banner">
+
+        <div class="banner-content">
+
+            <h1 id="dashboardWelcome">
+
+                Welcome to Workspace ERP
+
+            </h1>
+
+            <p>
+
+                Enterprise Resource Planning Dashboard
+
+            </p>
+
+        </div>
+
+        <div class="banner-date">
+
+            <span id="dashboardDate">
+
+                Loading...
+
+            </span>
+
+        </div>
+
+    </section>
+
+    <!--==============================================================
+        KPI Cards
+    ==============================================================-->
+
+    <section class="kpi-grid">
+
+        <div class="kpi-card">
+
+            <div class="kpi-icon">
+
+                💰
+
+            </div>
+
+            <div class="kpi-content">
+
+                <div class="kpi-title">
+
+                    Today's Sales
+
+                </div>
+
+                <div id="salesToday"
+                     class="kpi-value">
+
+                    PKR 0
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-icon">
+
+                👥
+
+            </div>
+
+            <div class="kpi-content">
+
+                <div class="kpi-title">
+
+                    Customers
+
+                </div>
+
+                <div id="customerCount"
+                     class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-icon">
+
+                📦
+
+            </div>
+
+            <div class="kpi-content">
+
+                <div class="kpi-title">
+
+                    Inventory Items
+
+                </div>
+
+                <div id="inventoryCount"
+                     class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-icon">
+
+                📒
+
+            </div>
+
+            <div class="kpi-content">
+
+                <div class="kpi-title">
+
+                    Receivables
+
+                </div>
+
+                <div id="receivableAmount"
+                     class="kpi-value">
+
+                    PKR 0
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!--==============================================================
+        Dashboard Panels
+    ==============================================================-->
+
+    <section class="dashboard-grid">
+
+        <!--======================================================
+            Sales Overview
+        =======================================================-->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                📈 Sales Overview
+
+            </div>
+
+            <div class="card-body">
+
+                <div id="salesChart"
+                     class="chart-placeholder">
+
+                    Sales Chart
+                    <br><br>
+
+                    (Coming in Sales Module)
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!--======================================================
+            Inventory Status
+        =======================================================-->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                📦 Inventory Alerts
+
+            </div>
+
+            <div class="card-body">
+
+                <ul id="inventoryAlerts"
+                    class="dashboard-list">
+
+                    <li>
+
+                        No inventory alerts available.
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!--======================================================
+            Pending Tasks
+        =======================================================-->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                ⏰ Pending Tasks
+
+            </div>
+
+            <div class="card-body">
+
+                <ul id="pendingTasks"
+                    class="dashboard-list">
+
+                    <li>
+
+                        No pending tasks.
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!--======================================================
+            Recent Activities
+        =======================================================-->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                📝 Recent Activities
+
+            </div>
+
+            <div class="card-body">
+
+                <ul id="recentActivities"
+                    class="dashboard-list">
+
+                    <li>
+
+                        Workspace ERP initialized successfully.
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </section>
+
+<script>
+
+  (function(){
+
+    "use strict";
+
+    /*==========================================================================
+        Dashboard Initialization
+    ==========================================================================*/
+
+    function initializeDashboard(){
+
+        updateDate();
+
+        updateWelcome();
+
+        loadKPIs();
+
+        loadRecentActivities();
+
+        loadInventoryAlerts();
+
+        loadPendingTasks();
+
+    }
+
+    /*==========================================================================
+        Current Date
+    ==========================================================================*/
+
+    function updateDate(){
+
+        const today = new Date();
+
+        document.getElementById(
+
+            "dashboardDate"
+
+        ).textContent =
+
+            today.toLocaleDateString(
+
+              ERP.bootstrap?.metadata?.locale ||
+
+
+              undefined,
+
+              {
+
+                  weekday : "long",
+
+                  year    : "numeric",
+
+                  month   : "long",
+
+                  day     : "numeric"
+
+              }
+
+            );
+
+    }
+
+    /*==========================================================================
+        Welcome Message
+    ==========================================================================*/
+
+    function updateWelcome(){
+
+        let user = "User";
+
+        if(
+
+            typeof ERP !== "undefined" &&
+
+            ERP.bootstrap &&
+
+            ERP.bootstrap.metadata
+
+        ){
+
+            user =
+
+              ERP.bootstrap.metadata.userName ||
+
+              ERP.bootstrap.metadata.user ||
+
+              "User";
+
+        }
+
+        document.getElementById(
+
+            "dashboardWelcome"
+
+        ).textContent =
+
+            "Welcome, " + user;
+
+    }
+
+    /*==========================================================================
+        Load KPI Values
+    ==========================================================================*/
+
+    function loadKPIs(){
+
+        /*----------------------------------------------------------
+            Placeholder Values
+
+            Future Version:
+            ERP.API.dashboardKPIs()
+        ----------------------------------------------------------*/
+
+        document.getElementById(
+
+            "salesToday"
+
+        ).textContent =
+
+            "—";
+
+        document.getElementById(
+
+            "customerCount"
+
+        ).textContent =
+
+            "—";
+
+        document.getElementById(
+
+            "inventoryCount"
+
+        ).textContent =
+
+            "—";
+
+        document.getElementById(
+
+            "receivableAmount"
+
+        ).textContent =
+
+            "—";
+
+    }
+
+    /*==========================================================================
+        Recent Activities
+    ==========================================================================*/
+
+    function loadRecentActivities(){
+
+        const list =
+
+            document.getElementById(
+
+                "recentActivities"
+
+            );
+
+        list.innerHTML = "";
+
+        [
+
+            "Workspace ERP started successfully.",
+
+            "Dashboard initialized.",
+
+            "Framework Version " +
+
+            (
+
+                ERP.bootstrap?.framework?.version ||
+
+                "3.1.0"
+
+            ) +
+
+            " loaded."
+
+        ]
+
+        .forEach(function(item){
+
+            const li =
+
+                document.createElement("li");
+
+            li.textContent = item;
+
+            list.appendChild(li);
+
+        });
+
+    }
+
+    /*==========================================================================
+        Inventory Alerts
+    ==========================================================================*/
+
+    function loadInventoryAlerts(){
+
+        const list =
+
+            document.getElementById(
+
+                "inventoryAlerts"
+
+            );
+
+        list.innerHTML = "";
+
+        const li =
+
+            document.createElement("li");
+
+        li.textContent =
+
+            "No inventory alerts.";
+
+        list.appendChild(li);
+
+    }
+
+    /*==========================================================================
+        Pending Tasks
+    ==========================================================================*/
+
+    function loadPendingTasks(){
+
+        const list =
+
+            document.getElementById(
+
+                "pendingTasks"
+
+            );
+
+        list.innerHTML = "";
+
+        const li =
+
+            document.createElement("li");
+
+        li.textContent =
+
+            "No pending tasks available.";
+
+        list.appendChild(li);
+
+    }
+
+    /*==========================================================================
+        Public Refresh API
+    ==========================================================================*/
+
+    window.Dashboard = {
+
+        refresh : initializeDashboard
+
+    };
+
+    document.addEventListener(
+
+        "erpReady",
+
+        initializeDashboard
+
+    );
+
+  })();
+
+</script>

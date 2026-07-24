@@ -1,0 +1,474 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 454_ActivityFeed.html
+Layer       : Dashboard Widget
+Component   : Enterprise Activity Feed
+Version     : 3.1.0
+Description : Displays chronological activities throughout the ERP,
+              including user actions, workflow events, approvals,
+              document history and system notifications.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Activity Feed
+==============================================================================*/
+
+const ActivityFeed = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let activities = [];
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "ActivityFeed container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "ActivityFeed Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        activities =
+
+            Array.isArray(data)
+
+            ? data
+
+            : [];
+
+        container.innerHTML = "";
+
+        activities.forEach(
+
+            function(item){
+
+                container.appendChild(
+
+                    createItem(
+
+                        item,
+
+                        options
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Activity Item
+    ==========================================================================*/
+
+    function createItem(
+
+        item,
+
+        options
+
+    ){
+
+        const row =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        row.className =
+
+            "erp-activity-item";
+
+        row.innerHTML =
+
+            '<div class="erp-activity-icon">' +
+
+            (item.icon || "📝") +
+
+            '</div>' +
+
+            '<div class="erp-activity-content">' +
+
+            '<div class="erp-activity-title">' +
+
+            (item.title || "") +
+
+            '</div>' +
+
+            '<div class="erp-activity-message">' +
+
+            (item.message || "") +
+
+            '</div>' +
+
+            '<div class="erp-activity-time">' +
+
+            (item.time || "") +
+
+            '</div>' +
+
+            '</div>';
+
+        return row;
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        render(
+
+            data
+
+        );
+
+    }
+
+    /*==========================================================================
+        Add Activity
+    ==========================================================================*/
+
+    function add(item){
+
+        activities.unshift(
+
+            item
+
+        );
+
+        render(
+
+            activities
+
+        );
+
+    }
+
+    /*==========================================================================
+        Remove Activity
+    ==========================================================================*/
+
+    function remove(index){
+
+        if(
+
+            index >= 0 &&
+
+            index < activities.length
+
+        ){
+
+            activities.splice(
+
+                index,
+
+                1
+
+            );
+
+        }
+
+        render(
+
+            activities
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        activities = [];
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render(
+
+            activities
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        reset();
+
+        container = null;
+
+        initialized = false;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            records :
+
+                activities.length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        add : add,
+
+        remove : remove,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        destroy : destroy,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ActivityFeed = ActivityFeed;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderActivityFeed = function(
+
+    data,
+
+    options
+
+){
+
+    ActivityFeed.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.addActivity = function(item){
+
+    ActivityFeed.add(
+
+        item
+
+    );
+
+};
+
+window.refreshActivityFeed = function(){
+
+    ActivityFeed.refresh();
+
+};
+
+window.activityFeedStatus = function(){
+
+    return ActivityFeed.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • NotificationClient
+
+    • Workflow
+
+    • AuthenticationClient
+
+    • SessionClient
+
+    • ReportClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Audit Log
+
+    ✓ System Monitor
+
+    Activity Types
+
+    ✓ User Login
+
+    ✓ User Logout
+
+    ✓ Record Created
+
+    ✓ Record Updated
+
+    ✓ Record Deleted
+
+    ✓ Approval
+
+    ✓ Workflow Step
+
+    ✓ File Uploaded
+
+    ✓ Report Generated
+
+    ✓ Email Sent
+
+    ✓ Notification
+
+    Future Enhancements
+
+    ✓ Infinite Scroll
+
+    ✓ Group By Date
+
+    ✓ Search
+
+    ✓ Filter
+
+    ✓ Export Timeline
+
+    ✓ Live Updates
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Activity Feed Loaded"
+
+);
+
+</script>

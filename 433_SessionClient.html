@@ -1,0 +1,457 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 433_SessionClient.html
+Layer       : Client Controller
+Component   : Session Client
+Version     : 3.1.0
+Description : Manages user session, timeout, heartbeat and renewal.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Session Client
+==============================================================================*/
+
+const SessionClient = (function(){
+
+    let initialized = false;
+
+    let sessionId = null;
+
+    let timeout = 1800;
+
+    let heartbeat = null;
+
+    let expiresAt = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "SessionClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Start Session
+    ==========================================================================*/
+
+    function start(session){
+
+        sessionId =
+
+            session.sessionId ||
+
+            null;
+
+        timeout =
+
+            session.timeout ||
+
+            1800;
+
+        expiresAt =
+
+            Date.now() +
+
+            (timeout * 1000);
+
+        startHeartbeat();
+
+    }
+
+    /*==========================================================================
+        End Session
+    ==========================================================================*/
+
+    function end(){
+
+        stopHeartbeat();
+
+        sessionId = null;
+
+        expiresAt = null;
+
+    }
+
+    /*==========================================================================
+        Heartbeat
+    ==========================================================================*/
+
+    function startHeartbeat(){
+
+        stopHeartbeat();
+
+        heartbeat = setInterval(
+
+            heartbeatRequest,
+
+            60000
+
+        );
+
+    }
+
+    /*==========================================================================
+        Stop Heartbeat
+    ==========================================================================*/
+
+    function stopHeartbeat(){
+
+        if(heartbeat){
+
+            clearInterval(
+
+                heartbeat
+
+            );
+
+            heartbeat = null;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Heartbeat Request
+    ==========================================================================*/
+
+    function heartbeatRequest(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                heartbeatSuccess
+
+            )
+
+            .withFailureHandler(
+
+                heartbeatFailure
+
+            )
+
+            .heartbeat();
+
+    }
+
+    /*==========================================================================
+        Heartbeat Success
+    ==========================================================================*/
+
+    function heartbeatSuccess(result){
+
+        if(
+
+            result &&
+
+            result.active
+
+        ){
+
+            expiresAt =
+
+                Date.now() +
+
+                (timeout * 1000);
+
+        }
+
+        else{
+
+            expire();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Heartbeat Failure
+    ==========================================================================*/
+
+    function heartbeatFailure(error){
+
+        console.error(
+
+            error
+
+        );
+
+    }
+
+    /*==========================================================================
+        Renew Session
+    ==========================================================================*/
+
+    function renew(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                renewSuccess
+
+            )
+
+            .withFailureHandler(
+
+                renewFailure
+
+            )
+
+            .renewSession();
+
+    }
+
+    /*==========================================================================
+        Renew Success
+    ==========================================================================*/
+
+    function renewSuccess(result){
+
+        timeout =
+
+            result.timeout ||
+
+            timeout;
+
+        expiresAt =
+
+            Date.now() +
+
+            (timeout * 1000);
+
+    }
+
+    /*==========================================================================
+        Renew Failure
+    ==========================================================================*/
+
+    function renewFailure(error){
+
+        console.error(
+
+            error
+
+        );
+
+    }
+
+    /*==========================================================================
+        Expire Session
+    ==========================================================================*/
+
+    function expire(){
+
+        stopHeartbeat();
+
+        sessionId = null;
+
+        expiresAt = null;
+
+        DialogClient.alert(
+
+            "Your session has expired."
+
+        );
+
+        LoginClient.logout();
+
+    }
+
+    /*==========================================================================
+        Remaining Time
+    ==========================================================================*/
+
+    function remainingTime(){
+
+        if(!expiresAt){
+
+            return 0;
+
+        }
+
+        return Math.max(
+
+            0,
+
+            Math.floor(
+
+                (expiresAt - Date.now()) / 1000
+
+            )
+
+        );
+
+    }
+
+    /*==========================================================================
+        Session ID
+    ==========================================================================*/
+
+    function currentSessionId(){
+
+        return sessionId;
+
+    }
+
+    /*==========================================================================
+        Active
+    ==========================================================================*/
+
+    function isActive(){
+
+        return sessionId !== null;
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        stopHeartbeat();
+
+        sessionId = null;
+
+        expiresAt = null;
+
+        timeout = 1800;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            active :
+
+                isActive(),
+
+            sessionId :
+
+                sessionId,
+
+            timeout :
+
+                timeout,
+
+            remaining :
+
+                remainingTime()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        start : start,
+
+        end : end,
+
+        renew : renew,
+
+        expire : expire,
+
+        remainingTime : remainingTime,
+
+        sessionId : currentSessionId,
+
+        isActive : isActive,
+
+        clear : clear,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.SessionClient = SessionClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.sessionStatus = function(){
+
+    return SessionClient.status();
+
+};
+
+window.sessionRemaining = function(){
+
+    return SessionClient.remainingTime();
+
+};
+
+window.sessionRenew = function(){
+
+    SessionClient.renew();
+
+};
+
+window.sessionExpire = function(){
+
+    SessionClient.expire();
+
+};
+
+window.sessionEnd = function(){
+
+    SessionClient.end();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Session Client Loaded"
+
+);
+
+</script>

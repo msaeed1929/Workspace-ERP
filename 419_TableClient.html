@@ -1,0 +1,525 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 419_TableClient.html
+Layer       : Client Controller
+Component   : Table Client
+Version     : 3.1.0
+
+Description
+------------------------------------------------------------------------------
+Centralized client-side table controller.
+
+Responsibilities
+
+• Table initialization
+• Rendering rows
+• Clearing tables
+• Row selection
+• Sorting
+• Refreshing
+
+Contains NO business logic.
+
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Table Client
+==============================================================================*/
+
+const TableClient = (function(){
+
+    let initialized = false;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "TableClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Initialize Table
+    ==========================================================================*/
+
+    function initializeTable(tableId){
+
+        const table =
+
+            document.getElementById(
+
+                tableId
+
+            );
+
+        if(!table){
+
+            return false;
+
+        }
+
+        table.classList.add(
+
+            "erp-table"
+
+        );
+
+        return true;
+
+    }
+
+    /*==========================================================================
+        Clear Table
+    ==========================================================================*/
+
+    function clear(tableId){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(!body){
+
+            return;
+
+        }
+
+        body.innerHTML = "";
+
+    }
+
+    /*==========================================================================
+        Render Rows
+    ==========================================================================*/
+
+    function render(
+
+        tableId,
+
+        rows,
+
+        renderer
+
+    ){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(
+
+            !body ||
+
+            !Array.isArray(rows)
+
+        ){
+
+            return;
+
+        }
+
+        body.innerHTML = "";
+
+        rows.forEach(function(item,index){
+
+            const tr =
+
+                document.createElement(
+
+                    "tr"
+
+                );
+
+            if(
+
+                typeof renderer ===
+
+                "function"
+
+            ){
+
+                tr.innerHTML =
+
+                    renderer(
+
+                        item,
+
+                        index
+
+                    );
+
+            }
+
+            body.appendChild(
+
+                tr
+
+            );
+
+        });
+
+    }
+
+    /*==========================================================================
+        Append Row
+    ==========================================================================*/
+
+    function append(
+
+        tableId,
+
+        html
+
+    ){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(!body){
+
+            return;
+
+        }
+
+        const tr =
+
+            document.createElement(
+
+                "tr"
+
+            );
+
+        tr.innerHTML = html;
+
+        body.appendChild(
+
+            tr
+
+        );
+
+    }
+
+    /*==========================================================================
+        Row Count
+    ==========================================================================*/
+
+    function count(tableId){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(!body){
+
+            return 0;
+
+        }
+
+        return body.rows.length;
+
+    }
+
+    /*==========================================================================
+        Select Row
+    ==========================================================================*/
+
+    function selectRow(
+
+        tableId,
+
+        index
+
+    ){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(!body){
+
+            return;
+
+        }
+
+        Array.from(
+
+            body.rows
+
+        ).forEach(function(row){
+
+            row.classList.remove(
+
+                "selected"
+
+            );
+
+        });
+
+        if(
+
+            body.rows[index]
+
+        ){
+
+            body.rows[index]
+
+                .classList.add(
+
+                    "selected"
+
+                );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+
+        Placeholder
+
+        Future versions will integrate with
+        Repository + Query Builder.
+    ==========================================================================*/
+
+    function refresh(tableId){
+
+        console.log(
+
+            "Refreshing table:",
+
+            tableId
+
+        );
+
+    }
+
+    /*==========================================================================
+        Sort Table
+    ==========================================================================*/
+
+    function sort(
+
+        tableId,
+
+        columnIndex,
+
+        ascending
+
+    ){
+
+        const body =
+
+            document.querySelector(
+
+                "#" +
+
+                tableId +
+
+                " tbody"
+
+            );
+
+        if(!body){
+
+            return;
+
+        }
+
+        const rows =
+
+            Array.from(
+
+                body.rows
+
+            );
+
+        rows.sort(function(a,b){
+
+            const aValue =
+
+                a.cells[columnIndex]
+
+                ?.textContent
+
+                .trim()
+
+                .toLowerCase() || "";
+
+            const bValue =
+
+                b.cells[columnIndex]
+
+                ?.textContent
+
+                .trim()
+
+                .toLowerCase() || "";
+
+            if(ascending){
+
+                return aValue.localeCompare(
+
+                    bValue,
+
+                    undefined,
+
+                    {
+
+                        numeric : true
+
+                    }
+
+                );
+
+            }
+
+            return bValue.localeCompare(
+
+                aValue,
+
+                undefined,
+
+                {
+
+                    numeric : true
+
+                }
+
+            );
+
+        });
+
+        body.innerHTML = "";
+
+        rows.forEach(function(row){
+
+            body.appendChild(
+
+                row
+
+            );
+
+        });
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(tableId){
+
+        clear(tableId);
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize,
+
+        initializeTable,
+
+        clear,
+
+        render,
+
+        append,
+
+        count,
+
+        selectRow,
+
+        refresh,
+
+        sort,
+
+        destroy
+
+    };
+
+})();
+
+/*==============================================================================
+    Global Registration
+==============================================================================*/
+
+window.TableClient = TableClient;
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Table Client Loaded"
+
+);
+
+</script>

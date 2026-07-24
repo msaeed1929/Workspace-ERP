@@ -1,0 +1,324 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 423_WorkspaceClient.html
+Layer       : Client Controller
+Component   : Workspace Client
+Version     : 3.1.0
+Description : Controls the main Workspace area where ERP modules are rendered.
+              Responsible for loading, refreshing and clearing workspace content.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Workspace Client
+==============================================================================*/
+
+const WorkspaceClient = (function(){
+
+    let initialized = false;
+
+    let workspace = null;
+
+    let currentModule = "Dashboard";
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        workspace = document.getElementById(
+
+            "workspace"
+
+        );
+
+        initialized = true;
+
+        console.log(
+
+            "WorkspaceClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Module
+    ==========================================================================*/
+
+    function load(moduleName){
+
+        if(!workspace){
+
+            initialize();
+
+        }
+
+        if(!moduleName){
+
+            moduleName = "Dashboard";
+
+        }
+
+        currentModule = moduleName;
+
+        ERP.showLoader(
+
+            "Loading " +
+
+            moduleName +
+
+            "..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                onLoadSuccess
+
+            )
+
+            .withFailureHandler(
+
+                onLoadFailure
+
+            )
+
+            .loadModule(
+
+                moduleName
+
+            );
+
+    }
+
+    /*==========================================================================
+        Module Loaded
+    ==========================================================================*/
+
+    function onLoadSuccess(html){
+
+        ERP.hideLoader();
+
+        if(!workspace){
+
+            return;
+
+        }
+
+        workspace.innerHTML = html;
+
+        document.dispatchEvent(
+
+            new CustomEvent(
+
+                "moduleChanged",
+
+                {
+
+                    detail : {
+
+                        module : currentModule
+
+                    }
+
+                }
+
+            )
+
+        );
+
+        console.log(
+
+            "Workspace Loaded:",
+
+            currentModule
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Failure
+    ==========================================================================*/
+
+    function onLoadFailure(error){
+
+        ERP.hideLoader();
+
+        console.error(
+
+            "Workspace Load Failed",
+
+            error
+
+        );
+
+        if(workspace){
+
+            workspace.innerHTML =
+
+                "<div class='error-panel'>" +
+
+                "<h3>Unable to load module.</h3>" +
+
+                "</div>";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh Current Module
+    ==========================================================================*/
+
+    function refresh(){
+
+        load(
+
+            currentModule
+
+        );
+
+    }
+
+    /*==========================================================================
+        Clear Workspace
+    ==========================================================================*/
+
+    function clear(){
+
+        if(workspace){
+
+            workspace.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Current Module
+    ==========================================================================*/
+
+    function module(){
+
+        return currentModule;
+
+    }
+
+    /*==========================================================================
+        Workspace Element
+    ==========================================================================*/
+
+    function element(){
+
+        return workspace;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            currentModule :
+
+                currentModule,
+
+            hasWorkspace :
+
+                workspace !== null
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        load : load,
+
+        refresh : refresh,
+
+        clear : clear,
+
+        module : module,
+
+        element : element,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.WorkspaceClient = WorkspaceClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.loadWorkspaceModule = function(module){
+
+    WorkspaceClient.load(
+
+        module
+
+    );
+
+};
+
+window.refreshWorkspace = function(){
+
+    WorkspaceClient.refresh();
+
+};
+
+window.clearWorkspace = function(){
+
+    WorkspaceClient.clear();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Workspace Client Loaded"
+
+);
+
+</script>

@@ -1,0 +1,517 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 448_SidePanel.html
+Layer       : UI Component
+Component   : Enterprise Side Panel
+Version     : 3.1.0
+Description : Sliding side panel used for record editing, previews,
+              filters, settings and workspace tools.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Side Panel
+==============================================================================*/
+
+const SidePanel = (function(){
+
+    let initialized = false;
+
+    let panel = null;
+
+    let header = null;
+
+    let body = null;
+
+    let footer = null;
+
+    let closeHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        panel =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!panel){
+
+            console.warn(
+
+                "SidePanel container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        header =
+
+            panel.querySelector(
+
+                ".erp-sidepanel-header"
+
+            );
+
+        body =
+
+            panel.querySelector(
+
+                ".erp-sidepanel-body"
+
+            );
+
+        footer =
+
+            panel.querySelector(
+
+                ".erp-sidepanel-footer"
+
+            );
+
+        bindEvents();
+
+        initialized = true;
+
+        console.log(
+
+            "SidePanel Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        document.addEventListener(
+
+            "keydown",
+
+            function(event){
+
+                if(
+
+                    event.key === "Escape"
+
+                ){
+
+                    close();
+
+                }
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Open
+    ==========================================================================*/
+
+    function open(options){
+
+        if(!panel){
+
+            return;
+
+        }
+
+        options =
+
+            options || {};
+
+        setTitle(
+
+            options.title ||
+
+            ""
+
+        );
+
+        setBody(
+
+            options.body ||
+
+            ""
+
+        );
+
+        setFooter(
+
+            options.footer ||
+
+            ""
+
+        );
+
+        panel.classList.add(
+
+            "erp-sidepanel-open"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Close
+    ==========================================================================*/
+
+    function close(){
+
+        if(!panel){
+
+            return;
+
+        }
+
+        panel.classList.remove(
+
+            "erp-sidepanel-open"
+
+        );
+
+        if(
+
+            typeof closeHandler ===
+
+            "function"
+
+        ){
+
+            closeHandler();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Title
+    ==========================================================================*/
+
+    function setTitle(title){
+
+        if(header){
+
+            header.innerHTML =
+
+                title;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Body
+    ==========================================================================*/
+
+    function setBody(content){
+
+        if(body){
+
+            body.innerHTML =
+
+                content;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Footer
+    ==========================================================================*/
+
+    function setFooter(content){
+
+        if(footer){
+
+            footer.innerHTML =
+
+                content;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        setTitle("");
+
+        setBody("");
+
+        setFooter("");
+
+    }
+
+    /*==========================================================================
+        Show Loader
+    ==========================================================================*/
+
+    function showLoader(message){
+
+        if(!body){
+
+            return;
+
+        }
+
+        body.innerHTML =
+
+            '<div class="erp-sidepanel-loader">' +
+
+            (message || "Loading...") +
+
+            '</div>';
+
+    }
+
+    /*==========================================================================
+        Hide Loader
+    ==========================================================================*/
+
+    function hideLoader(){
+
+        if(!body){
+
+            return;
+
+        }
+
+        body.innerHTML = "";
+
+    }
+
+    /*==========================================================================
+        Close Event
+    ==========================================================================*/
+
+    function onClose(handler){
+
+        closeHandler = handler;
+
+    }
+
+    /*==========================================================================
+        Is Open
+    ==========================================================================*/
+
+    function isOpen(){
+
+        if(!panel){
+
+            return false;
+
+        }
+
+        return panel.classList.contains(
+
+            "erp-sidepanel-open"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(
+
+            isOpen()
+
+        ){
+
+            panel.offsetHeight;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                isOpen()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        open : open,
+
+        close : close,
+
+        clear : clear,
+
+        setTitle : setTitle,
+
+        setBody : setBody,
+
+        setFooter : setFooter,
+
+        showLoader : showLoader,
+
+        hideLoader : hideLoader,
+
+        onClose : onClose,
+
+        isOpen : isOpen,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.SidePanel = SidePanel;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.openSidePanel = function(options){
+
+    SidePanel.open(
+
+        options
+
+    );
+
+};
+
+window.closeSidePanel = function(){
+
+    SidePanel.close();
+
+};
+
+window.sidePanelStatus = function(){
+
+    return SidePanel.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • WorkspaceClient
+
+    • ProfileClient
+
+    • SettingsClient
+
+    • HelpClient
+
+    • ReportClient
+
+    • FormClient
+
+    • DataTable
+
+    • FileUploadClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Reports
+
+    Planned Uses
+
+    ✓ Record Editor
+
+    ✓ Customer Details
+
+    ✓ Product Details
+
+    ✓ Activity Timeline
+
+    ✓ Settings Panel
+
+    ✓ Filter Panel
+
+    ✓ Report Parameters
+
+    ✓ File Preview
+
+    ✓ PDF Preview
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP SidePanel Loaded"
+
+);
+
+</script>

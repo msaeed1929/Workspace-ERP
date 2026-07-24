@@ -1,0 +1,441 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 405_Header.html
+Layer       : Web Application
+Component   : Application Header
+Version     : 3.1.0
+Description : Global application header.
+==============================================================================
+-->
+
+<header id="erpHeader"
+        class="erp-header">
+
+    <!--==============================================================
+        Left Section
+    ==============================================================-->
+
+    <div class="header-left">
+
+        <button id="menuToggle"
+                class="icon-button"
+                title="Toggle Sidebar"
+                onclick="toggleSidebar()">
+
+            ☰
+
+        </button>
+
+        <div class="company-logo">
+
+            🏢
+
+        </div>
+
+        <div class="company-information">
+
+            <div id="headerApplicationName"
+                class="company-name">
+
+                Workspace ERP
+
+            </div>
+
+            <div id="headerApplicationTitle" 
+                class="company-tagline">
+
+                Enterprise Resource Planning
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--==============================================================
+        Center Section
+    ==============================================================-->
+
+    <div class="header-center">
+
+        <div class="search-container">
+
+            <input id="globalSearch"
+                   type="text"
+                   placeholder="Search anything..."
+
+                   onkeydown="globalSearch(event)">
+
+            <button class="search-button"
+                    title="Search"
+                    onclick="performSearch()">
+
+                🔍
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!--==============================================================
+        Right Section
+    ==============================================================-->
+
+    <div class="header-right">
+
+        <!-- Notifications -->
+
+        <button class="icon-button"
+                title="Notifications"
+                onclick="showNotifications()">
+
+            🔔
+
+        </button>
+
+        <!-- Theme -->
+
+        <button class="icon-button"
+                id="themeButton"
+                title="Dark / Light Theme"
+                onclick="toggleTheme()">
+
+            🌙
+
+        </button>
+
+        <div class="header-divider"></div>
+
+        <!-- Clock -->
+
+        <div id="currentDateTime"
+             class="header-datetime">
+
+            --:--
+
+        </div>
+
+        <!-- User -->
+
+        <div id="userProfile"
+             class="user-profile">
+
+            <div class="user-avatar">
+
+                👤
+
+            </div>
+
+            <div class="user-information">
+
+                <div id="headerUserName"
+                     class="user-name">
+
+                    Loading...
+
+                </div>
+
+                <div id="headerUserRole"
+                     class="user-role">
+
+                    User
+
+                </div>
+
+            </div>
+
+            <div class="profile-arrow">
+
+                ▼
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!--==============================================================
+    Profile Menu
+===============================================================-->
+
+<div id="profileMenu"
+     class="profile-menu hidden">
+
+    <div class="profile-menu-item"
+         onclick="openProfile()">
+
+        👤
+        My Profile
+
+    </div>
+
+    <div class="profile-menu-item"
+         onclick="openSettings()">
+
+        ⚙️
+        Settings
+
+    </div>
+
+    <div class="profile-menu-item"
+         onclick="alert('Coming soon.')">
+
+        🔑
+        Change Password
+
+    </div>
+
+    <div class="profile-menu-divider"></div>
+
+    <div class="profile-menu-item logout"
+         onclick="logout()">
+
+        🚪
+        Logout
+
+    </div>
+
+</div>
+
+<script>
+
+/*==============================================================================
+    Header Controller
+==============================================================================*/
+
+(function(){
+
+"use strict";
+
+const profile =
+    document.getElementById(
+
+        "userProfile"
+
+    );
+
+const menu =
+    document.getElementById(
+
+        "profileMenu"
+
+    );
+
+if(!profile || !menu){
+
+    return;
+
+}
+
+/*==========================================================================
+    Toggle Profile Menu
+==========================================================================*/
+
+profile.addEventListener(
+
+    "click",
+
+    function(event){
+
+        event.stopPropagation();
+
+        menu.classList.toggle("hidden");
+
+    }
+
+);
+
+document.addEventListener(
+
+    "click",
+
+    function(){
+
+        menu.classList.add("hidden");
+
+    }
+
+);
+
+/*==========================================================================
+    Live Clock
+==========================================================================*/
+
+function updateClock(){
+
+    const now = new Date();
+
+    document.getElementById(
+
+        "currentDateTime"
+
+    ).textContent = now.toLocaleString();
+
+}
+
+updateClock();
+
+  setInterval(
+
+      updateClock,
+
+      1000
+
+  );
+
+})();
+
+/*==========================================================================
+    Initialize User Information
+==========================================================================*/
+
+function initializeHeader(){
+
+    if(typeof ERP === "undefined"){
+
+        console.warn(
+
+            "ERP client is not ready."
+
+        );
+
+        return;
+
+    }
+
+    if(!ERP.bootstrap){
+
+        console.warn(
+
+            "Bootstrap data not available."
+
+        );
+
+        return;
+
+    }
+
+    const metadata =
+
+        ERP.bootstrap.metadata || {};
+
+    const configuration =
+
+        ERP.bootstrap.configuration || {};
+
+    document.getElementById(
+
+        "headerApplicationName"
+
+    ).textContent =
+
+        configuration.application ||
+
+        "Workspace ERP";
+
+    document.getElementById(
+
+        "headerApplicationTitle"
+
+    ).textContent =
+
+        configuration.title ||
+
+        "Enterprise Resource Planning";
+
+    document.getElementById(
+
+        "headerUserName"
+
+    ).textContent =
+
+        metadata.user || "Guest";
+
+    document.getElementById(
+
+        "headerUserRole"
+
+    ).textContent =
+
+        metadata.role || "User";
+
+}
+
+/*==========================================================================
+    Theme Synchronization
+==========================================================================*/
+
+function refreshThemeIcon(){
+
+    const theme =
+
+        document.body.getAttribute(
+
+            "data-theme"
+
+        ) || "light";
+
+    const button =
+
+        document.getElementById(
+
+            "themeButton"
+
+        );
+
+    if(!button){
+
+        return;
+
+    }
+
+    button.textContent =
+
+        theme === "dark"
+
+        ? "☀️"
+
+        : "🌙";
+
+}
+
+refreshThemeIcon();
+
+document.addEventListener(
+
+    "themeChanged",
+
+    refreshThemeIcon
+
+);
+
+/*==========================================================================
+    Wait for ERP Bootstrap
+==========================================================================*/
+
+document.addEventListener(
+
+    "erpReady",
+
+    function(){
+
+        initializeHeader();
+
+        refreshThemeIcon();
+
+        console.log(
+
+            "Workspace ERP Header Loaded"
+
+        );
+
+    }
+
+);
+
+</script>

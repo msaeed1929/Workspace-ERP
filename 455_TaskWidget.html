@@ -1,0 +1,579 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 455_TaskWidget.html
+Layer       : Dashboard Widget
+Component   : Enterprise Task Widget
+Version     : 3.1.0
+Description : Displays pending tasks, approvals, reminders,
+              assigned work items and workflow activities.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Task Widget
+==============================================================================*/
+
+const TaskWidget = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let tasks = [];
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "TaskWidget container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "TaskWidget Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        tasks =
+
+            Array.isArray(data)
+
+            ? data
+
+            : [];
+
+        container.innerHTML = "";
+
+        tasks.forEach(
+
+            function(task){
+
+                container.appendChild(
+
+                    createTask(
+
+                        task,
+
+                        options
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Task
+    ==========================================================================*/
+
+    function createTask(
+
+        task,
+
+        options
+
+    ){
+
+        const row =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        row.className =
+
+            "erp-task-item";
+
+        row.dataset.id =
+
+            task.id || "";
+
+        row.innerHTML =
+
+            '<div class="erp-task-left">' +
+
+                '<input type="checkbox" class="erp-task-check"' +
+
+                (task.completed ? " checked" : "") +
+
+                '>' +
+
+            '</div>' +
+
+            '<div class="erp-task-content">' +
+
+                '<div class="erp-task-title">' +
+
+                    (task.title || "") +
+
+                '</div>' +
+
+                '<div class="erp-task-meta">' +
+
+                    (task.owner || "") +
+
+                    " • " +
+
+                    (task.due || "") +
+
+                '</div>' +
+
+            '</div>' +
+
+            '<div class="erp-task-priority">' +
+
+                (task.priority || "") +
+
+            '</div>';
+
+        return row;
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        render(
+
+            data
+
+        );
+
+    }
+
+    /*==========================================================================
+        Add Task
+    ==========================================================================*/
+
+    function add(task){
+
+        tasks.unshift(
+
+            task
+
+        );
+
+        render(
+
+            tasks
+
+        );
+
+    }
+
+    /*==========================================================================
+        Remove Task
+    ==========================================================================*/
+
+    function remove(taskId){
+
+        tasks =
+
+            tasks.filter(
+
+                function(task){
+
+                    return task.id !== taskId;
+
+                }
+
+            );
+
+        render(
+
+            tasks
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        tasks = [];
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Complete Task
+    ==========================================================================*/
+
+    function completeTask(taskId){
+
+        tasks.forEach(
+
+            function(task){
+
+                if(
+
+                    task.id === taskId
+
+                ){
+
+                    task.completed = true;
+
+                }
+
+            }
+
+        );
+
+        refresh();
+
+    }
+
+    /*==========================================================================
+        Assign Task
+    ==========================================================================*/
+
+    function assignTask(
+
+        taskId,
+
+        owner
+
+    ){
+
+        tasks.forEach(
+
+            function(task){
+
+                if(
+
+                    task.id === taskId
+
+                ){
+
+                    task.owner = owner;
+
+                }
+
+            }
+
+        );
+
+        refresh();
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render(
+
+            tasks
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        reset();
+
+        container = null;
+
+        initialized = false;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            records :
+
+                tasks.length,
+
+            completed :
+
+                tasks.filter(
+
+                    function(task){
+
+                        return task.completed;
+
+                    }
+
+                ).length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        add : add,
+
+        remove : remove,
+
+        completeTask : completeTask,
+
+        assignTask : assignTask,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        destroy : destroy,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.TaskWidget = TaskWidget;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderTaskWidget = function(
+
+    data,
+
+    options
+
+){
+
+    TaskWidget.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.addTask = function(task){
+
+    TaskWidget.add(
+
+        task
+
+    );
+
+};
+
+window.completeTask = function(taskId){
+
+    TaskWidget.completeTask(
+
+        taskId
+
+    );
+
+};
+
+window.assignTask = function(
+
+    taskId,
+
+    owner
+
+){
+
+    TaskWidget.assignTask(
+
+        taskId,
+
+        owner
+
+    );
+
+};
+
+window.taskWidgetStatus = function(){
+
+    return TaskWidget.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • Workflow
+
+    • ActivityFeed
+
+    • NotificationClient
+
+    • ReportClient
+
+    • AuthenticationClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Quality Control
+
+    ✓ Approvals
+
+    ✓ Executive Dashboard
+
+    Task Types
+
+    ✓ Pending Approval
+
+    ✓ Follow-up
+
+    ✓ Customer Call
+
+    ✓ Purchase Approval
+
+    ✓ Inventory Review
+
+    ✓ Production Order
+
+    ✓ HR Request
+
+    ✓ Maintenance
+
+    ✓ Reminder
+
+    ✓ Personal Task
+
+    Future Enhancements
+
+    ✓ Drag & Drop
+
+    ✓ Priority Sorting
+
+    ✓ Due Date Alerts
+
+    ✓ Recurring Tasks
+
+    ✓ Task Categories
+
+    ✓ Progress Tracking
+
+    ✓ Team Assignment
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Task Widget Loaded"
+
+);
+
+</script>

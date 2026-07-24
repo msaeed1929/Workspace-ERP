@@ -1,0 +1,395 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 429_ClientManager.html
+Layer       : Client Controller
+Component   : Client Manager
+Version     : 3.1.0
+Description : Central manager responsible for all client-side controllers.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Client Manager
+==============================================================================*/
+
+const ClientManager = (function(){
+
+    let initialized = false;
+
+    const clients = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "ClientManager Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Client
+    ==========================================================================*/
+
+    function register(
+
+        name,
+
+        instance
+
+    ){
+
+        if(
+
+            !name ||
+
+            !instance
+
+        ){
+
+            return;
+
+        }
+
+        clients[name] = instance;
+
+    }
+
+    /*==========================================================================
+        Unregister Client
+    ==========================================================================*/
+
+    function unregister(name){
+
+        if(
+
+            clients[name]
+
+        ){
+
+            delete clients[name];
+
+        }
+
+    }
+
+    /*==========================================================================
+        Exists
+    ==========================================================================*/
+
+    function exists(name){
+
+        return clients.hasOwnProperty(
+
+            name
+
+        );
+
+    }
+
+    /*==========================================================================
+        Get Client
+    ==========================================================================*/
+
+    function get(name){
+
+        return clients[name] || null;
+
+    }
+
+    /*==========================================================================
+        All Clients
+    ==========================================================================*/
+
+    function all(){
+
+        return Object.keys(
+
+            clients
+
+        );
+
+    }
+
+    /*==========================================================================
+        Count
+    ==========================================================================*/
+
+    function count(){
+
+        return Object.keys(
+
+            clients
+
+        ).length;
+
+    }
+
+    /*==========================================================================
+        Initialize Registered Clients
+    ==========================================================================*/
+
+    function boot(){
+
+        Object.keys(
+
+            clients
+
+        ).forEach(
+
+            function(name){
+
+                const client =
+
+                    clients[name];
+
+                if(
+
+                    client &&
+
+                    typeof client.initialize ===
+
+                    "function"
+
+                ){
+
+                    client.initialize();
+
+                }
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy Registered Clients
+    ==========================================================================*/
+
+    function shutdown(){
+
+        Object.keys(
+
+            clients
+
+        ).forEach(
+
+            function(name){
+
+                const client =
+
+                    clients[name];
+
+                if(
+
+                    client &&
+
+                    typeof client.destroy ===
+
+                    "function"
+
+                ){
+
+                    client.destroy();
+
+                }
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        Object.keys(
+
+            clients
+
+        ).forEach(
+
+            function(name){
+
+                delete clients[name];
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            registered :
+
+                count(),
+
+            clients :
+
+                all()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Information
+    ==========================================================================*/
+
+    function information(){
+
+        return {
+
+            framework :
+
+                "Workspace ERP Framework",
+
+            component :
+
+                "ClientManager",
+
+            version :
+
+                typeof ERP !== "undefined"
+
+                    ? ERP.info().version
+
+                    : "3.1.0",
+
+            clients :
+
+                all()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        register : register,
+
+        unregister : unregister,
+
+        exists : exists,
+
+        get : get,
+
+        all : all,
+
+        count : count,
+
+        boot : boot,
+
+        shutdown : shutdown,
+
+        reset : reset,
+
+        status : status,
+
+        information : information
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ClientManager = ClientManager;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.registerClient = function(
+
+    name,
+
+    instance
+
+){
+
+    ClientManager.register(
+
+        name,
+
+        instance
+
+    );
+
+};
+
+window.getClient = function(name){
+
+    return ClientManager.get(
+
+        name
+
+    );
+
+};
+
+window.clientStatus = function(){
+
+    return ClientManager.status();
+
+};
+
+window.clientInformation = function(){
+
+    return ClientManager.information();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Client Manager Loaded"
+
+);
+
+</script>

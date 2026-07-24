@@ -1,0 +1,489 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 447_ConfirmDialog.html
+Layer       : UI Component
+Component   : Enterprise Confirmation Dialog
+Version     : 3.1.0
+Description : Standard Yes/No confirmation dialog used before executing
+              destructive or important actions.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Confirm Dialog
+==============================================================================*/
+
+const ConfirmDialog = (function(){
+
+    let initialized = false;
+
+    let onConfirm = null;
+
+    let onCancel = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        initialized = true;
+
+        console.log(
+
+            "ConfirmDialog Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Show
+    ==========================================================================*/
+
+    function show(options){
+
+        options =
+
+            options || {};
+
+        onConfirm =
+
+            options.onConfirm ||
+
+            null;
+
+        onCancel =
+
+            options.onCancel ||
+
+            null;
+
+        Modal.open({
+
+            title :
+
+                options.title ||
+
+                "Confirmation",
+
+            body :
+
+                buildBody(
+
+                    options.message ||
+
+                    "Are you sure?"
+
+                ),
+
+            footer :
+
+                buildFooter()
+
+        });
+
+        bindButtons();
+
+    }
+
+    /*==========================================================================
+        Build Body
+    ==========================================================================*/
+
+    function buildBody(message){
+
+        return (
+
+            '<div class="erp-confirm-body">' +
+
+            message +
+
+            '</div>'
+
+        );
+
+    }
+
+    /*==========================================================================
+        Build Footer
+    ==========================================================================*/
+
+    function buildFooter(){
+
+        return (
+
+            '<button id="erpConfirmYes" ' +
+
+            'class="erp-button erp-button-primary">' +
+
+            'Yes' +
+
+            '</button>' +
+
+            '<button id="erpConfirmNo" ' +
+
+            'class="erp-button">' +
+
+            'Cancel' +
+
+            '</button>'
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Buttons
+    ==========================================================================*/
+
+    function bindButtons(){
+
+        const yes =
+
+            document.getElementById(
+
+                "erpConfirmYes"
+
+            );
+
+        const no =
+
+            document.getElementById(
+
+                "erpConfirmNo"
+
+            );
+
+        if(yes){
+
+            yes.addEventListener(
+
+                "click",
+
+                confirm
+
+            );
+
+        }
+
+        if(no){
+
+            no.addEventListener(
+
+                "click",
+
+                cancel
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Confirm
+    ==========================================================================*/
+
+    function confirm(){
+
+        Modal.close();
+
+        if(
+
+            typeof onConfirm ===
+
+            "function"
+
+        ){
+
+            onConfirm();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Cancel
+    ==========================================================================*/
+
+    function cancel(){
+
+        Modal.close();
+
+        if(
+
+            typeof onCancel ===
+
+            "function"
+
+        ){
+
+            onCancel();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Delete Confirmation
+    ==========================================================================*/
+
+    function deleteConfirm(callback){
+
+        show({
+
+            title :
+
+                "Delete Record",
+
+            message :
+
+                "Are you sure you want to delete this record?<br><br>This action cannot be undone.",
+
+            onConfirm :
+
+                callback
+
+        });
+
+    }
+
+    /*==========================================================================
+        Save Confirmation
+    ==========================================================================*/
+
+    function saveConfirm(callback){
+
+        show({
+
+            title :
+
+                "Save Changes",
+
+            message :
+
+                "Do you want to save the current changes?",
+
+            onConfirm :
+
+                callback
+
+        });
+
+    }
+
+    /*==========================================================================
+        Logout Confirmation
+    ==========================================================================*/
+
+    function logoutConfirm(callback){
+
+        show({
+
+            title :
+
+                "Logout",
+
+            message :
+
+                "Are you sure you want to sign out of Workspace ERP?",
+
+            onConfirm :
+
+                callback
+
+        });
+
+    }
+
+    /*==========================================================================
+        Close
+    ==========================================================================*/
+
+    function close(){
+
+        Modal.close();
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                Modal.isOpen()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        show : show,
+
+        confirm : confirm,
+
+        cancel : cancel,
+
+        deleteConfirm : deleteConfirm,
+
+        saveConfirm : saveConfirm,
+
+        logoutConfirm : logoutConfirm,
+
+        close : close,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ConfirmDialog = ConfirmDialog;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.showConfirm = function(options){
+
+    ConfirmDialog.show(
+
+        options
+
+    );
+
+};
+
+window.confirmDelete = function(callback){
+
+    ConfirmDialog.deleteConfirm(
+
+        callback
+
+    );
+
+};
+
+window.confirmSave = function(callback){
+
+    ConfirmDialog.saveConfirm(
+
+        callback
+
+    );
+
+};
+
+window.confirmLogout = function(callback){
+
+    ConfirmDialog.logoutConfirm(
+
+        callback
+
+    );
+
+};
+
+window.confirmStatus = function(){
+
+    return ConfirmDialog.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DialogClient
+
+    • Toolbar
+
+    • DataTable
+
+    • FormClient
+
+    • FileUploadClient
+
+    • ReportClient
+
+    • ProfileClient
+
+    • SettingsClient
+
+    • AuthenticationClient
+
+    • SessionClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Reports
+
+    Future Enhancements
+
+    ✓ Custom Button Labels
+
+    ✓ Three-button Dialogs
+
+    ✓ Icon Support
+
+    ✓ Keyboard Navigation
+
+    ✓ Promise-based API
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Confirm Dialog Loaded"
+
+);
+
+</script>

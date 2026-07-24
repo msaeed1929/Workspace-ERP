@@ -1,0 +1,225 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 412_ThemeClient.html
+Layer       : Client Controller
+Component   : Theme Client
+Version     : 3.1.0
+Description : Client-side Theme Manager.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Theme Client
+==============================================================================*/
+
+window.ThemeClient = {
+
+    initialized : false,
+
+    currentTheme : "light",
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    initialize : function(){
+
+        if(this.initialized){
+
+            return;
+
+        }
+
+        this.initialized = true;
+
+        this.loadTheme();
+
+        console.log(
+
+            "ThemeClient Initialized"
+
+        );
+
+    },
+
+    /*==========================================================================
+        Load Theme
+    ==========================================================================*/
+
+    loadTheme : function(){
+
+        const saved =
+
+            localStorage.getItem(
+
+                "WEF_THEME"
+
+            );
+
+        if(saved){
+
+            this.currentTheme = saved;
+
+        }
+
+        this.applyTheme(
+
+            this.currentTheme
+
+        );
+
+    },
+
+    /*==========================================================================
+        Apply Theme
+    ==========================================================================*/
+
+    applyTheme : function(theme){
+
+        this.currentTheme = theme;
+
+        document.body.setAttribute(
+
+            "data-theme",
+
+            theme
+
+        );
+
+        localStorage.setItem(
+
+            "WEF_THEME",
+
+            theme
+
+        );
+
+        this.refreshIcon();
+
+    },
+
+    /*==========================================================================
+        Toggle Theme
+    ==========================================================================*/
+
+    toggle : function(){
+
+        this.applyTheme(
+
+            this.currentTheme === "light"
+
+            ? "dark"
+
+            : "light"
+
+        );
+
+    },
+
+    /*==========================================================================
+        Theme Icon
+    ==========================================================================*/
+
+    refreshIcon : function(){
+
+        const button =
+
+            document.getElementById(
+
+                "themeButton"
+
+            );
+
+        if(!button){
+
+            return;
+
+        }
+
+        button.textContent =
+
+            this.currentTheme === "dark"
+
+            ? "☀️"
+
+            : "🌙";
+
+    },
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    refresh : function(){
+
+        this.loadTheme();
+
+    },
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    reset : function(){
+
+        this.initialized = false;
+
+        this.currentTheme = "light";
+
+        document.body.setAttribute(
+
+            "data-theme",
+
+            "light"
+
+        );
+
+        localStorage.removeItem(
+
+            "WEF_THEME"
+
+        );
+
+        this.refreshIcon();
+
+        console.log(
+
+            "ThemeClient Reset"
+
+        );
+
+    }
+
+};
+
+/*==============================================================================
+    Public API
+==============================================================================*/
+
+window.toggleTheme = function(){
+
+    if(window.ThemeClient){
+
+        ThemeClient.toggle();
+
+    }
+
+};
+
+window.refreshTheme = function(){
+
+    if(window.ThemeClient){
+
+        ThemeClient.refresh();
+
+    }
+
+};
+
+</script>

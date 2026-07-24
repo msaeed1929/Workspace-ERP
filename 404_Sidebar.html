@@ -1,0 +1,389 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 404_Sidebar.html
+Layer       : Web Application
+Component   : Sidebar Navigation
+Version     : 3.1.0
+
+Description
+------------------------------------------------------------------------------
+Reusable Sidebar Navigation.
+
+Responsibilities
+
+• Main ERP Navigation
+• Module Selection
+• Active Menu Highlight
+• Utility Menu
+• Logout
+
+This component contains NO business logic.
+All actions are delegated to ERP (409_ClientApp.html).
+
+==============================================================================
+-->
+
+<aside id="erpSidebar"
+       class="sidebar">
+
+<!--==========================================================================
+    Main Navigation
+==========================================================================-->
+
+<div class="sidebar-section">
+
+    MAIN MENU
+
+</div>
+
+<ul id="sidebarMenu"
+    class="sidebar-menu">
+
+    <!--==============================================================
+        Dashboard
+    ==============================================================-->
+
+    <li class="active"
+
+        data-module="Dashboard"
+
+        onclick="loadModule('Dashboard')">
+
+        <span class="icon">🏠</span>
+
+        <span class="caption">
+
+            Dashboard
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Customer Relationship Management
+    ==============================================================-->
+
+    <li
+
+        data-module="CRM"
+
+        onclick="loadModule('CRM')">
+
+        <span class="icon">👥</span>
+
+        <span class="caption">
+
+            CRM
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Sales
+    ==============================================================-->
+
+    <li
+
+        data-module="Sales"
+
+        onclick="loadModule('Sales')">
+
+        <span class="icon">💰</span>
+
+        <span class="caption">
+
+            Sales
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Purchase
+    ==============================================================-->
+
+    <li
+
+        data-module="Purchase"
+
+        onclick="loadModule('Purchase')">
+
+        <span class="icon">🛒</span>
+
+        <span class="caption">
+
+            Purchase
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Inventory
+    ==============================================================-->
+
+    <li
+
+        data-module="Inventory"
+
+        onclick="loadModule('Inventory')">
+
+        <span class="icon">📦</span>
+
+        <span class="caption">
+
+            Inventory
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Accounting
+    ==============================================================-->
+
+    <li
+
+        data-module="Accounting"
+
+        onclick="loadModule('Accounting')">
+
+        <span class="icon">📒</span>
+
+        <span class="caption">
+
+            Accounting
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Human Resources
+    ==============================================================-->
+
+    <li
+
+        data-module="HR"
+
+        onclick="loadModule('HR')">
+
+        <span class="icon">👨‍💼</span>
+
+        <span class="caption">
+
+            Human Resources
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Manufacturing
+    ==============================================================-->
+
+    <li
+
+        data-module="Manufacturing"
+
+        onclick="loadModule('Manufacturing')">
+
+        <span class="icon">🏭</span>
+
+        <span class="caption">
+
+            Manufacturing
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Projects
+    ==============================================================-->
+
+    <li
+
+        data-module="Projects"
+
+        onclick="loadModule('Projects')">
+
+        <span class="icon">📁</span>
+
+        <span class="caption">
+
+            Projects
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Fixed Assets
+    ==============================================================-->
+
+    <li
+
+        data-module="FixedAssets"
+
+        onclick="loadModule('FixedAssets')">
+
+        <span class="icon">🏢</span>
+
+        <span class="caption">
+
+            Fixed Assets
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Business Intelligence
+    ==============================================================-->
+
+    <li
+
+        data-module="BI"
+
+        onclick="loadModule('BI')">
+
+        <span class="icon">📊</span>
+
+        <span class="caption">
+
+            Business Intelligence
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        System Administration
+    ==============================================================-->
+
+    <li
+
+        data-module="System"
+
+        onclick="loadModule('System')">
+
+        <span class="icon">⚙️</span>
+
+        <span class="caption">
+
+            System
+
+        </span>
+
+    </li>
+
+</ul>
+
+<!--==========================================================================
+    Utility Menu
+==========================================================================-->
+
+<div class="sidebar-section">
+
+    TOOLS
+
+</div>
+
+<ul class="sidebar-menu">
+
+    <!--==============================================================
+        Settings
+    ==============================================================-->
+
+    <li onclick="openSettings()">
+
+        <span class="icon">🔧</span>
+
+        <span class="caption">
+
+            Settings
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        User Profile
+    ==============================================================-->
+
+    <li onclick="openProfile()">
+
+        <span class="icon">👤</span>
+
+        <span class="caption">
+
+            My Profile
+
+        </span>
+
+    </li>
+
+    <!--==============================================================
+        Help Center
+    ==============================================================-->
+
+    <li onclick="openHelp()">
+
+        <span class="icon">❓</span>
+
+        <span class="caption">
+
+            Help Center
+
+        </span>
+
+    </li>
+
+</ul>
+
+
+<!--==========================================================================
+    Sidebar Footer
+==========================================================================-->
+
+<div class="sidebar-footer">
+
+    <div class="workspace-info">
+
+        <div class="workspace-name">
+
+          <div id="sidebarApplication">
+
+            Workspace ERP
+
+          </div>
+
+        </div>
+
+        <div class="workspace-version">
+
+          <span id="sidebarVersion">
+
+            Version
+
+          </span>
+
+        </div>
+
+    </div>
+
+    <button id="logoutButton"
+            class="sidebar-logout"
+            onclick="logout()">
+
+        🚪 Logout
+
+    </button>
+
+</div>
+
+</aside>

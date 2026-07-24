@@ -1,0 +1,520 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 441_FilterBar.html
+Layer       : UI Component
+Component   : Enterprise Filter Bar
+Version     : 3.1.0
+Description : Reusable filtering component for tables, dashboards and reports.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Filter Bar
+==============================================================================*/
+
+const FilterBar = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let filters = {};
+
+    let changeHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "FilterBar container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "FilterBar Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Configure
+    ==========================================================================*/
+
+    function configure(configuration){
+
+        filters =
+
+            configuration ||
+
+            {};
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        Object.keys(
+
+            filters
+
+        ).forEach(
+
+            function(name){
+
+                container.appendChild(
+
+                    createFilter(
+
+                        name,
+
+                        filters[name]
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Filter
+    ==========================================================================*/
+
+    function createFilter(name,config){
+
+        const wrapper =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        wrapper.className =
+
+            "filter-item";
+
+        const label =
+
+            document.createElement(
+
+                "label"
+
+            );
+
+        label.textContent =
+
+            config.label ||
+
+            name;
+
+        wrapper.appendChild(
+
+            label
+
+        );
+
+        const input =
+
+            document.createElement(
+
+                "select"
+
+            );
+
+        input.dataset.filter =
+
+            name;
+
+        (config.options || []).forEach(
+
+            function(option){
+
+                const item =
+
+                    document.createElement(
+
+                        "option"
+
+                    );
+
+                item.value =
+
+                    option.value;
+
+                item.textContent =
+
+                    option.text;
+
+                input.appendChild(
+
+                    item
+
+                );
+
+            }
+
+        );
+
+        input.addEventListener(
+
+            "change",
+
+            onFilterChanged
+
+        );
+
+        wrapper.appendChild(
+
+            input
+
+        );
+
+        return wrapper;
+
+    }
+
+    /*==========================================================================
+        Filter Changed
+    ==========================================================================*/
+
+    function onFilterChanged(){
+
+        if(
+
+            typeof changeHandler === "function"
+
+        ){
+
+            changeHandler(
+
+                values()
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Change Handler
+    ==========================================================================*/
+
+    function onChange(handler){
+
+        changeHandler =
+
+            handler;
+
+    }
+
+    /*==========================================================================
+        Get Filter Values
+    ==========================================================================*/
+
+    function values(){
+
+        const result = {};
+
+        if(!container){
+
+            return result;
+
+        }
+
+        container
+
+            .querySelectorAll(
+
+                "select[data-filter]"
+
+            )
+
+            .forEach(
+
+                function(control){
+
+                    result[
+
+                        control.dataset.filter
+
+                    ] =
+
+                        control.value;
+
+                }
+
+            );
+
+        return result;
+
+    }
+
+    /*==========================================================================
+        Set Filter Value
+    ==========================================================================*/
+
+    function setValue(name,value){
+
+        if(!container){
+
+            return;
+
+        }
+
+        const control =
+
+            container.querySelector(
+
+                '[data-filter="' +
+
+                name +
+
+                '"]'
+
+            );
+
+        if(control){
+
+            control.value = value;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Reset Filters
+    ==========================================================================*/
+
+    function reset(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container
+
+            .querySelectorAll(
+
+                "select[data-filter]"
+
+            )
+
+            .forEach(
+
+                function(control){
+
+                    control.selectedIndex = 0;
+
+                }
+
+            );
+
+        if(
+
+            typeof changeHandler === "function"
+
+        ){
+
+            changeHandler(
+
+                values()
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            filters :
+
+                Object.keys(
+
+                    filters
+
+                ).length,
+
+            values :
+
+                values()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        configure : configure,
+
+        onChange : onChange,
+
+        values : values,
+
+        setValue : setValue,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.FilterBar = FilterBar;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.configureFilters = function(configuration){
+
+    FilterBar.configure(
+
+        configuration
+
+    );
+
+};
+
+window.resetFilters = function(){
+
+    FilterBar.reset();
+
+};
+
+window.getFilterValues = function(){
+
+    return FilterBar.values();
+
+};
+
+window.filterStatus = function(){
+
+    return FilterBar.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • CRM Lists
+    • Sales Orders
+    • Purchase Orders
+    • Inventory
+    • Accounting
+    • Reports
+    • Dashboards
+
+    Integrates With
+
+    • DataTable
+    • TableClient
+    • SearchClient
+    • ReportClient
+
+    Planned Features
+
+    ✓ Multi-select Filters
+    ✓ Date Range Picker
+    ✓ Numeric Range
+    ✓ Saved Views
+    ✓ Dynamic Lookup Filters
+    ✓ Server-side Filtering
+    ✓ Filter Presets
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP FilterBar Loaded"
+
+);
+
+</script>

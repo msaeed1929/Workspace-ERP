@@ -1,0 +1,259 @@
+/**
+ * =============================================================================
+ * Workspace ERP Framework (WEF)
+ * =============================================================================
+ * File        : 01_Core_Kernel.gs
+ * Version     : 1.0.0
+ * Description : Application Kernel
+ * Author      : OpenAI + Muhammad Saeed Anser
+ * =============================================================================
+ */
+
+'use strict';
+
+/**
+ * =============================================================================
+ * WEF Kernel
+ * =============================================================================
+ */
+WEF.Kernel = class {
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Boot Framework
+   * ---------------------------------------------------------------------------
+   */
+  static boot() {
+
+    if (WEF.Initialized) {
+      return;
+    }
+
+    Logger.log("========== WEF Boot Started ==========");
+
+    this.loadRuntime();
+
+    this.loadConfiguration();
+
+    this.loadEnvironment();
+
+    this.registerCoreServices();
+
+    WEF.Initialized = true;
+
+    Logger.log("========== WEF Ready ==========");
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Load Runtime
+   * ---------------------------------------------------------------------------
+   */
+  static loadRuntime() {
+
+    WEF.Runtime.StartTime = new Date();
+
+    WEF.Runtime.TimeZone = Session.getScriptTimeZone();
+
+    WEF.Runtime.User = Session.getActiveUser().getEmail();
+
+    WEF.Runtime.Locale = Session.getActiveUserLocale();
+
+    WEF.Runtime.Spreadsheet =
+      SpreadsheetApp.getActiveSpreadsheet();
+
+    WEF.Runtime.SpreadsheetId =
+      WEF.Runtime.Spreadsheet.getId();
+
+    WEF.Runtime.Name =
+      WEF.Runtime.Spreadsheet.getName();
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Load Configuration
+   * ---------------------------------------------------------------------------
+   */
+  static loadConfiguration(){
+
+    if(typeof ERPConfig==="undefined")
+      throw new Error("ERPConfig not found.");
+
+    WEF.Config.get=function(key){
+      return ERPConfig[key];
+    };
+
+    WEF.Config.has=function(key){
+      return Object.prototype.hasOwnProperty.call(ERPConfig,key);
+    };
+
+    WEF.Config.all=function(){
+      return Object.assign({},ERPConfig);
+    };
+
+    WEF.Config.keys=function(){
+      return Object.keys(ERPConfig);
+    };
+
+    WEF.Config.values=function(){
+      return Object.values(ERPConfig);
+    };
+
+    WEF.Config.count=function(){
+      return Object.keys(ERPConfig).length;
+    };
+
+    WEF.Config.environment=function(){
+      return ERPConfig.ENVIRONMENT;
+    };
+
+    WEF.Config.version=function(){
+      return ERPConfig.VERSION;
+    };
+
+    WEF.Config.build=function(){
+      return ERPConfig.BUILD;
+    };
+
+    WEF.Config.appName=function(){
+      return ERPConfig.APP_NAME;
+    };
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Load Environment
+   * ---------------------------------------------------------------------------
+   */
+  static loadEnvironment() {
+
+    WEF.Runtime.version = WEF.Info.version;
+
+    WEF.Runtime.build = WEF.Info.build;
+
+    WEF.Runtime.environment = ERPConfig.ENVIRONMENT;
+
+    WEF.Runtime.spreadsheetId = WEF.Runtime.SpreadsheetId;
+
+    WEF.Runtime.spreadsheetName = WEF.Runtime.Name;
+
+    WEF.Runtime.user = WEF.Runtime.User;
+
+    WEF.Runtime.timezone = WEF.Runtime.TimeZone;
+
+    WEF.Runtime.locale = WEF.Runtime.Locale;
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Register Core Services
+   * ---------------------------------------------------------------------------
+   */
+  static registerCoreServices() {
+
+    if (!WEF.ServiceRegistry.has("Kernel")) {
+
+      WEF.ServiceRegistry.register("Kernel", WEF.Kernel);
+
+    }
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Shutdown Framework
+   * ---------------------------------------------------------------------------
+   */
+  static shutdown() {
+
+    Logger.log("========== WEF Shutdown ==========");
+
+    WEF.Initialized = false;
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Framework Status
+   * ---------------------------------------------------------------------------
+   */
+  static status() {
+
+    return {
+
+      initialized : WEF.Initialized,
+
+      version : WEF.Info.version,
+
+      build : WEF.Info.build,
+
+      spreadsheet : WEF.Runtime.Name,
+
+      user : WEF.Runtime.User,
+
+      startTime : WEF.Runtime.StartTime
+
+    };
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Health Check
+   * ---------------------------------------------------------------------------
+   */
+  static health() {
+
+    return {
+
+      Namespace : typeof WEF !== "undefined",
+
+      Config : typeof ERPConfig !== "undefined",
+
+      Runtime : !!WEF.Runtime,
+
+      Spreadsheet : !!WEF.Runtime.Spreadsheet,
+
+      Initialized : WEF.Initialized
+
+    };
+
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Version
+   * ---------------------------------------------------------------------------
+   */
+  static version() {
+
+    return WEF.Info.version;
+
+  }
+
+};
+
+/**
+ * =============================================================================
+ * TEST
+ * =============================================================================
+ */
+
+function test_ConfigAPI(){
+
+  WEF.Kernel.boot();
+
+  Logger.log(WEF.Config.get("APP_NAME"));
+  Logger.log(WEF.Config.version());
+  Logger.log(WEF.Config.build());
+  Logger.log(WEF.Config.environment());
+  Logger.log(WEF.Config.has("LOCK_TIMEOUT"));
+  Logger.log(WEF.Config.count());
+  Logger.log(WEF.Config.keys());
+  Logger.log(WEF.Config.all());
+
+}

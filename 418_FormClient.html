@@ -1,0 +1,554 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 418_FormClient.html
+Layer       : Client Controller
+Component   : Form Client
+Version     : 3.1.0
+
+Description
+------------------------------------------------------------------------------
+Centralized client-side form controller.
+
+Responsibilities
+
+• Form initialization
+• Validation
+• Form serialization
+• Form reset
+• Enable / Disable controls
+• Submit helper
+
+Contains NO business logic.
+
+Business processing is delegated to server-side services.
+
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Form Client
+==============================================================================*/
+
+const FormClient = (function(){
+
+    let initialized = false;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "FormClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Initialize Form
+    ==========================================================================*/
+
+    function initializeForm(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return false;
+
+        }
+
+        form.setAttribute(
+
+            "autocomplete",
+
+            "off"
+
+        );
+
+        return true;
+
+    }
+
+    /*==========================================================================
+        Serialize Form
+    ==========================================================================*/
+
+    function serialize(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return {};
+
+        }
+
+        const data = {};
+
+        const elements =
+
+            form.querySelectorAll(
+
+                "input,select,textarea"
+
+            );
+
+        elements.forEach(function(element){
+
+            if(!element.name){
+
+                return;
+
+            }
+
+            if(
+
+                element.type === "checkbox"
+
+            ){
+
+                data[element.name] =
+
+                    element.checked;
+
+                return;
+
+            }
+
+            if(
+
+                element.type === "radio"
+
+            ){
+
+                if(element.checked){
+
+                    data[element.name] =
+
+                        element.value;
+
+                }
+
+                return;
+
+            }
+
+            data[element.name] =
+
+                element.value;
+
+        });
+
+        return data;
+
+    }
+
+    /*==========================================================================
+        Validate Form
+
+        Placeholder validation.
+
+        Future versions will integrate with
+
+        WEF.Validator
+    ==========================================================================*/
+
+    function validate(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return false;
+
+        }
+
+        let valid = true;
+
+        const required =
+
+            form.querySelectorAll(
+
+                "[required]"
+
+            );
+
+        required.forEach(function(field){
+
+            if(
+
+                field.value.trim() === ""
+
+            ){
+
+                valid = false;
+
+                field.classList.add(
+
+                    "field-error"
+
+                );
+
+            }else{
+
+                field.classList.remove(
+
+                    "field-error"
+
+                );
+
+            }
+
+        });
+
+        return valid;
+
+    }
+
+    /*==========================================================================
+        Submit Form
+    ==========================================================================*/
+
+    function submit(
+
+        formId,
+
+        serverFunction,
+
+        successCallback,
+
+        failureCallback
+
+    ){
+
+        if(
+
+            !validate(formId)
+
+        ){
+
+            if(
+
+                typeof DialogClient !== "undefined"
+
+            ){
+
+                DialogClient.alert(
+
+                    "Please complete all required fields."
+
+                );
+
+            }
+
+            return;
+
+        }
+
+        const payload =
+
+            serialize(
+
+                formId
+
+            );
+
+        ERP.showLoader(
+
+            "Saving..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(function(result){
+
+                ERP.hideLoader();
+
+                if(
+
+                    typeof successCallback === "function"
+
+                ){
+
+                    successCallback(
+
+                        result
+
+                    );
+
+                }
+
+            })
+
+            .withFailureHandler(function(error){
+
+                ERP.hideLoader();
+
+                console.error(
+
+                    error
+
+                );
+
+                if(
+
+                    typeof failureCallback === "function"
+
+                ){
+
+                    failureCallback(
+
+                        error
+
+                    );
+
+                }else if(
+
+                    typeof DialogClient !== "undefined"
+
+                ){
+
+                    DialogClient.alert(
+
+                        "Unable to save the form."
+
+                    );
+
+                }
+
+            })[serverFunction](
+
+                payload
+
+            );
+
+    }
+
+    /*==========================================================================
+        Reset Form
+    ==========================================================================*/
+
+    function reset(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return;
+
+        }
+
+        form.reset();
+
+        const fields =
+
+            form.querySelectorAll(
+
+                ".field-error"
+
+            );
+
+        fields.forEach(function(field){
+
+            field.classList.remove(
+
+                "field-error"
+
+            );
+
+        });
+
+    }
+
+    /*==========================================================================
+        Enable Form
+    ==========================================================================*/
+
+    function enable(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return;
+
+        }
+
+        form.querySelectorAll(
+
+            "input,select,textarea,button"
+
+        ).forEach(function(control){
+
+            control.disabled = false;
+
+        });
+
+    }
+
+    /*==========================================================================
+        Disable Form
+    ==========================================================================*/
+
+    function disable(formId){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return;
+
+        }
+
+        form.querySelectorAll(
+
+            "input,select,textarea,button"
+
+        ).forEach(function(control){
+
+            control.disabled = true;
+
+        });
+
+    }
+
+    /*==========================================================================
+        Read Only
+    ==========================================================================*/
+
+    function setReadOnly(
+
+        formId,
+
+        state
+
+    ){
+
+        const form =
+
+            document.getElementById(
+
+                formId
+
+            );
+
+        if(!form){
+
+            return;
+
+        }
+
+        form.querySelectorAll(
+
+            "input,textarea"
+
+        ).forEach(function(control){
+
+            control.readOnly =
+
+                state === true;
+
+        });
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize,
+
+        initializeForm,
+
+        serialize,
+
+        validate,
+
+        submit,
+
+        reset,
+
+        enable,
+
+        disable,
+
+        setReadOnly
+
+    };
+
+})();
+
+/*==============================================================================
+    Global Registration
+==============================================================================*/
+
+window.FormClient = FormClient;
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Form Client Loaded"
+
+);
+
+</script>

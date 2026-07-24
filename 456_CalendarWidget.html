@@ -1,0 +1,545 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 456_CalendarWidget.html
+Layer       : Dashboard Widget
+Component   : Enterprise Calendar Widget
+Version     : 3.1.0
+Description : Displays calendar events, meetings, reminders,
+              holidays, schedules and workflow deadlines.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Calendar Widget
+==============================================================================*/
+
+const CalendarWidget = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let events = [];
+
+    let currentDate = new Date();
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "CalendarWidget container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "CalendarWidget Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        events =
+
+            Array.isArray(data)
+
+            ? data
+
+            : [];
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Draw Calendar
+    ==========================================================================*/
+
+    function drawCalendar(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML =
+
+            '<div class="erp-calendar-header">' +
+
+            formatMonth(
+
+                currentDate
+
+            ) +
+
+            '</div>' +
+
+            '<div class="erp-calendar-body">' +
+
+            buildEventList() +
+
+            '</div>';
+
+    }
+
+    /*==========================================================================
+        Build Event List
+    ==========================================================================*/
+
+    function buildEventList(){
+
+        if(
+
+            events.length === 0
+
+        ){
+
+            return
+
+                '<div class="erp-calendar-empty">' +
+
+                'No scheduled events.' +
+
+                '</div>';
+
+        }
+
+        return events.map(
+
+            function(event){
+
+                return (
+
+                    '<div class="erp-calendar-event">' +
+
+                    '<div class="erp-calendar-date">' +
+
+                    (event.date || "") +
+
+                    '</div>' +
+
+                    '<div class="erp-calendar-title">' +
+
+                    (event.title || "") +
+
+                    '</div>' +
+
+                    '</div>'
+
+                );
+
+            }
+
+        ).join("");
+
+    }
+
+    /*==========================================================================
+        Format Month
+    ==========================================================================*/
+
+    function formatMonth(date){
+
+        return date.toLocaleDateString(
+
+            undefined,
+
+            {
+
+                month : "long",
+
+                year : "numeric"
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        render(
+
+            data
+
+        );
+
+    }
+
+    /*==========================================================================
+        Add Event
+    ==========================================================================*/
+
+    function add(event){
+
+        events.push(
+
+            event
+
+        );
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        events = [];
+
+        currentDate =
+
+            new Date();
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Next Month
+    ==========================================================================*/
+
+    function nextMonth(){
+
+        currentDate.setMonth(
+
+            currentDate.getMonth() + 1
+
+        );
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Previous Month
+    ==========================================================================*/
+
+    function previousMonth(){
+
+        currentDate.setMonth(
+
+            currentDate.getMonth() - 1
+
+        );
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Go To Month
+    ==========================================================================*/
+
+    function gotoMonth(
+
+        year,
+
+        month
+
+    ){
+
+        currentDate =
+
+            new Date(
+
+                year,
+
+                month,
+
+                1
+
+            );
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        drawCalendar();
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        reset();
+
+        container = null;
+
+        initialized = false;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            records :
+
+                events.length,
+
+            month :
+
+                currentDate.getMonth() + 1,
+
+            year :
+
+                currentDate.getFullYear()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        add : add,
+
+        nextMonth : nextMonth,
+
+        previousMonth : previousMonth,
+
+        gotoMonth : gotoMonth,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        destroy : destroy,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.CalendarWidget = CalendarWidget;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderCalendarWidget = function(
+
+    data,
+
+    options
+
+){
+
+    CalendarWidget.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.addCalendarEvent = function(event){
+
+    CalendarWidget.add(
+
+        event
+
+    );
+
+};
+
+window.nextCalendarMonth = function(){
+
+    CalendarWidget.nextMonth();
+
+};
+
+window.previousCalendarMonth = function(){
+
+    CalendarWidget.previousMonth();
+
+};
+
+window.calendarWidgetStatus = function(){
+
+    return CalendarWidget.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • Workflow
+
+    • TaskWidget
+
+    • ActivityFeed
+
+    • ReportClient
+
+    • NotificationClient
+
+    ERP Modules
+
+    ✓ CRM Follow-ups
+
+    ✓ Sales Meetings
+
+    ✓ Purchase Schedule
+
+    ✓ Inventory Planning
+
+    ✓ Production Schedule
+
+    ✓ HR Leave Calendar
+
+    ✓ Attendance
+
+    ✓ Holidays
+
+    ✓ Executive Calendar
+
+    ✓ Project Timeline
+
+    Calendar Events
+
+    ✓ Meeting
+
+    ✓ Appointment
+
+    ✓ Deadline
+
+    ✓ Reminder
+
+    ✓ Holiday
+
+    ✓ Leave
+
+    ✓ Production
+
+    ✓ Delivery
+
+    ✓ Follow-up
+
+    ✓ Task Due Date
+
+    Future Enhancements
+
+    ✓ Month Grid View
+
+    ✓ Week View
+
+    ✓ Day View
+
+    ✓ Drag & Drop
+
+    ✓ Google Calendar Sync
+
+    ✓ Outlook Sync
+
+    ✓ Recurring Events
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Calendar Widget Loaded"
+
+);
+
+</script>

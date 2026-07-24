@@ -1,0 +1,493 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 430_LoginClient.html
+Layer       : Client Controller
+Component   : Login Client
+Version     : 3.1.0
+Description : Handles login screen interactions and authentication requests.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Login Client
+==============================================================================*/
+
+const LoginClient = (function(){
+
+    let initialized = false;
+
+    let usernameBox = null;
+
+    let passwordBox = null;
+
+    let loginButton = null;
+
+    let rememberBox = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        usernameBox =
+
+            document.getElementById(
+
+                "username"
+
+            );
+
+        passwordBox =
+
+            document.getElementById(
+
+                "password"
+
+            );
+
+        loginButton =
+
+            document.getElementById(
+
+                "btnLogin"
+
+            );
+
+        rememberBox =
+
+            document.getElementById(
+
+                "rememberMe"
+
+            );
+
+        bindEvents();
+
+        initialized = true;
+
+        console.log(
+
+            "LoginClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        if(loginButton){
+
+            loginButton.addEventListener(
+
+                "click",
+
+                login
+
+            );
+
+        }
+
+        if(usernameBox){
+
+            usernameBox.addEventListener(
+
+                "keydown",
+
+                keyHandler
+
+            );
+
+        }
+
+        if(passwordBox){
+
+            passwordBox.addEventListener(
+
+                "keydown",
+
+                keyHandler
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Key Handler
+    ==========================================================================*/
+
+    function keyHandler(event){
+
+        if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            login();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Login
+    ==========================================================================*/
+
+    function login(){
+
+        const credentials = {
+
+            username :
+
+                username(),
+
+            password :
+
+                password(),
+
+            remember :
+
+                remember()
+
+        };
+
+        if(
+
+            credentials.username === "" ||
+
+            credentials.password === ""
+
+        ){
+
+            DialogClient.alert(
+
+                "Please enter username and password."
+
+            );
+
+            return;
+
+        }
+
+        ERP.showLoader(
+
+            "Signing in..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                loginSuccess
+
+            )
+
+            .withFailureHandler(
+
+                loginFailure
+
+            )
+
+            .login(
+
+                credentials
+
+            );
+
+    }
+
+    /*==========================================================================
+        Login Success
+    ==========================================================================*/
+
+    function loginSuccess(response){
+
+        ERP.hideLoader();
+
+        console.log(
+
+            "Login Successful",
+
+            response
+
+        );
+
+        if(
+
+            response &&
+
+            response.success
+
+        ){
+
+            Navigation.navigate(
+
+                "Dashboard"
+
+            );
+
+        }
+
+        else{
+
+            DialogClient.alert(
+
+                response.message ||
+
+                "Login failed."
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Login Failure
+    ==========================================================================*/
+
+    function loginFailure(error){
+
+        ERP.hideLoader();
+
+        console.error(
+
+            error
+
+        );
+
+        DialogClient.alert(
+
+            "Unable to contact server."
+
+        );
+
+    }
+
+    /*==========================================================================
+        Logout
+    ==========================================================================*/
+
+    function logout(){
+
+        ERP.showLoader(
+
+            "Signing out..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(){
+
+                    ERP.hideLoader();
+
+                    window.location.reload();
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    ERP.hideLoader();
+
+                    console.error(
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .logout();
+
+    }
+
+    /*==========================================================================
+        Username
+    ==========================================================================*/
+
+    function username(){
+
+        return usernameBox
+
+            ? usernameBox.value.trim()
+
+            : "";
+
+    }
+
+    /*==========================================================================
+        Password
+    ==========================================================================*/
+
+    function password(){
+
+        return passwordBox
+
+            ? passwordBox.value
+
+            : "";
+
+    }
+
+    /*==========================================================================
+        Remember Me
+    ==========================================================================*/
+
+    function remember(){
+
+        return rememberBox
+
+            ? rememberBox.checked
+
+            : false;
+
+    }
+
+    /*==========================================================================
+        Clear Form
+    ==========================================================================*/
+
+    function clear(){
+
+        if(usernameBox){
+
+            usernameBox.value = "";
+
+        }
+
+        if(passwordBox){
+
+            passwordBox.value = "";
+
+        }
+
+        if(rememberBox){
+
+            rememberBox.checked = false;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            username :
+
+                username(),
+
+            remember :
+
+                remember()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        login : login,
+
+        logout : logout,
+
+        username : username,
+
+        password : password,
+
+        remember : remember,
+
+        clear : clear,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.LoginClient = LoginClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.login = function(){
+
+    LoginClient.login();
+
+};
+
+window.logout = function(){
+
+    LoginClient.logout();
+
+};
+
+window.clearLogin = function(){
+
+    LoginClient.clear();
+
+};
+
+window.loginStatus = function(){
+
+    return LoginClient.status();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Login Client Loaded"
+
+);
+
+</script>

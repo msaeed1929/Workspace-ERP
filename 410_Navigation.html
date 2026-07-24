@@ -1,0 +1,350 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 410_Navigation.html
+Layer       : Client Controller
+Component   : Navigation Manager
+Version     : 3.1.0
+Description : Central navigation controller for Workspace ERP.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Navigation Manager
+==============================================================================*/
+
+const Navigation = {
+
+    /*==========================================================================
+        Runtime
+    ==========================================================================*/
+
+    initialized : false,
+
+    currentModule : "Dashboard",
+
+    history : [],
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    initialize : function(){
+
+        if(this.initialized){
+
+            return;
+
+        }
+
+        this.initialized = true;
+
+        console.log(
+
+            "Navigation Ready"
+
+        );
+
+    },
+
+    /*==========================================================================
+        Navigate
+    ==========================================================================*/
+
+    navigate : function(module){
+
+        if(!module){
+
+            return;
+
+        }
+
+        if(module === this.currentModule){
+
+            this.highlight(module);
+
+            return;
+
+        }
+
+        this.history.push(
+
+            this.currentModule
+
+        );
+
+        this.currentModule = module;
+
+        ERP.currentModule = module;
+
+        ERP.showLoader(
+
+            "Loading " +
+
+            module +
+
+            "..."
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(html){
+
+                    Navigation.render(
+
+                        module,
+
+                        html
+
+                    );
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    ERP.hideLoader();
+
+                    console.error(
+
+                        error
+
+                    );
+
+                    alert(
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .routeTo(
+
+                module
+
+            );
+
+    },
+
+    /*==========================================================================
+        Render Module
+    ==========================================================================*/
+
+    render : function(
+
+        module,
+
+        html
+
+    ){
+
+        const container =
+
+            document.getElementById(
+
+                "content"
+
+            );
+
+        if(container){
+
+            container.innerHTML = html;
+
+        }
+
+        const title =
+
+            document.getElementById(
+
+                "pageTitle"
+
+            );
+
+        if(title){
+
+            title.textContent = module;
+
+        }
+
+        this.highlight(
+
+            module
+
+        );
+
+        ERP.hideLoader();
+
+    },
+
+    /*==========================================================================
+        Highlight Active Menu
+    ==========================================================================*/
+
+    highlight : function(module){
+
+        document
+
+            .querySelectorAll(
+
+                "#sidebarMenu li"
+
+            )
+
+            .forEach(function(item){
+
+                item.classList.remove(
+
+                    "active"
+
+                );
+
+                if(
+
+                    item.dataset.module === module
+
+                ){
+
+                    item.classList.add(
+
+                        "active"
+
+                    );
+
+                }
+
+            });
+
+    },
+
+    /*==========================================================================
+        Refresh Current Module
+    ==========================================================================*/
+
+    refresh : function(){
+
+        this.navigate(
+
+            this.currentModule
+
+        );
+
+    },
+
+    /*==========================================================================
+        Previous Module
+    ==========================================================================*/
+
+    back : function(){
+
+        if(
+
+            this.history.length === 0
+
+        ){
+
+            return;
+
+        }
+
+        const previous =
+
+            this.history.pop();
+
+        this.navigate(
+
+            previous
+
+        );
+
+    },
+
+    /*==========================================================================
+        Current Module
+    ==========================================================================*/
+
+    current : function(){
+
+        return this.currentModule;
+
+    },
+
+    /*==========================================================================
+        Navigation History
+    ==========================================================================*/
+
+    getHistory : function(){
+
+        return this.history.slice();
+
+    }
+
+};
+
+/*==============================================================================
+    Public Navigation API
+==============================================================================*/
+
+/**
+ * Navigate to a module.
+ */
+window.navigate = function(module){
+
+    Navigation.navigate(
+
+        module
+
+    );
+
+};
+
+/**
+ * Refresh current module.
+ */
+window.refreshModule = function(){
+
+    Navigation.refresh();
+
+};
+
+/**
+ * Navigate back.
+ */
+window.goBack = function(){
+
+    Navigation.back();
+
+};
+
+/**
+ * Returns current module.
+ */
+window.currentModule = function(){
+
+    return Navigation.current();
+
+};
+
+/**
+ * Returns navigation history.
+ */
+window.navigationHistory = function(){
+
+    return Navigation.getHistory();
+
+};
+
+</script>

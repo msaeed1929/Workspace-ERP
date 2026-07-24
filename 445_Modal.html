@@ -1,0 +1,552 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 445_Modal.html
+Layer       : UI Component
+Component   : Enterprise Modal Window
+Version     : 3.1.0
+Description : Universal modal dialog used throughout the Workspace ERP
+              Framework for forms, confirmations, reports, previews and
+              custom dialogs.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Modal
+==============================================================================*/
+
+const Modal = (function(){
+
+    let initialized = false;
+
+    let overlay = null;
+
+    let dialog = null;
+
+    let header = null;
+
+    let body = null;
+
+    let footer = null;
+
+    let closeHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        overlay =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!overlay){
+
+            console.warn(
+
+                "Modal container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        dialog =
+
+            overlay.querySelector(
+
+                ".erp-modal"
+
+            );
+
+        header =
+
+            overlay.querySelector(
+
+                ".erp-modal-header"
+
+            );
+
+        body =
+
+            overlay.querySelector(
+
+                ".erp-modal-body"
+
+            );
+
+        footer =
+
+            overlay.querySelector(
+
+                ".erp-modal-footer"
+
+            );
+
+        bindEvents();
+
+        initialized = true;
+
+        console.log(
+
+            "Modal Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        overlay.addEventListener(
+
+            "click",
+
+            function(event){
+
+                if(
+
+                    event.target === overlay
+
+                ){
+
+                    close();
+
+                }
+
+            }
+
+        );
+
+        document.addEventListener(
+
+            "keydown",
+
+            function(event){
+
+                if(
+
+                    event.key === "Escape"
+
+                ){
+
+                    close();
+
+                }
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Open Modal
+    ==========================================================================*/
+
+    function open(options){
+
+        if(!overlay){
+
+            return;
+
+        }
+
+        options =
+
+            options || {};
+
+        setTitle(
+
+            options.title ||
+
+            ""
+
+        );
+
+        setBody(
+
+            options.body ||
+
+            ""
+
+        );
+
+        setFooter(
+
+            options.footer ||
+
+            ""
+
+        );
+
+        overlay.style.display =
+
+            "flex";
+
+        document.body.classList.add(
+
+            "erp-modal-open"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Close Modal
+    ==========================================================================*/
+
+    function close(){
+
+        if(!overlay){
+
+            return;
+
+        }
+
+        overlay.style.display =
+
+            "none";
+
+        document.body.classList.remove(
+
+            "erp-modal-open"
+
+        );
+
+        if(
+
+            typeof closeHandler ===
+
+            "function"
+
+        ){
+
+            closeHandler();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Title
+    ==========================================================================*/
+
+    function setTitle(title){
+
+        if(header){
+
+            header.innerHTML =
+
+                title;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Body
+    ==========================================================================*/
+
+    function setBody(content){
+
+        if(body){
+
+            body.innerHTML =
+
+                content;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Footer
+    ==========================================================================*/
+
+    function setFooter(content){
+
+        if(footer){
+
+            footer.innerHTML =
+
+                content;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        setTitle("");
+
+        setBody("");
+
+        setFooter("");
+
+    }
+
+    /*==========================================================================
+        Show Loader
+    ==========================================================================*/
+
+    function showLoader(message){
+
+        if(!body){
+
+            return;
+
+        }
+
+        body.innerHTML =
+
+            '<div class="erp-modal-loader">' +
+
+            (message || "Loading...") +
+
+            '</div>';
+
+    }
+
+    /*==========================================================================
+        Hide Loader
+    ==========================================================================*/
+
+    function hideLoader(){
+
+        if(!body){
+
+            return;
+
+        }
+
+        body.innerHTML = "";
+
+    }
+
+    /*==========================================================================
+        Close Event
+    ==========================================================================*/
+
+    function onClose(handler){
+
+        closeHandler = handler;
+
+    }
+
+    /*==========================================================================
+        Is Open
+    ==========================================================================*/
+
+    function isOpen(){
+
+        if(!overlay){
+
+            return false;
+
+        }
+
+        return overlay.style.display === "flex";
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(
+
+            isOpen()
+
+        ){
+
+            overlay.offsetHeight;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                isOpen()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        open : open,
+
+        close : close,
+
+        clear : clear,
+
+        setTitle : setTitle,
+
+        setBody : setBody,
+
+        setFooter : setFooter,
+
+        showLoader : showLoader,
+
+        hideLoader : hideLoader,
+
+        onClose : onClose,
+
+        isOpen : isOpen,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.Modal = Modal;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.openModal = function(options){
+
+    Modal.open(
+
+        options
+
+    );
+
+};
+
+window.closeModal = function(){
+
+    Modal.close();
+
+};
+
+window.modalStatus = function(){
+
+    return Modal.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DialogClient
+
+    • FormClient
+
+    • ReportClient
+
+    • FileUploadClient
+
+    • ProfileClient
+
+    • SettingsClient
+
+    • HelpClient
+
+    • AboutClient
+
+    • AuthenticationClient
+
+    • SessionClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Reports
+
+    Planned Extensions
+
+    ✓ ConfirmDialog
+
+    ✓ Image Preview
+
+    ✓ PDF Preview
+
+    ✓ Record Editor
+
+    ✓ Wizard Forms
+
+    ✓ Full-screen Dialog
+
+    ✓ Side Drawer
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Modal Loaded"
+
+);
+
+</script>

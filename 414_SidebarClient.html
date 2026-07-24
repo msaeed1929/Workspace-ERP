@@ -1,0 +1,359 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 414_SidebarClient.html
+Layer       : Client Controller
+Component   : Sidebar Controller
+Version     : 3.1.0
+Description : Controls Sidebar behavior and navigation state.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Sidebar Client
+==============================================================================*/
+
+window.SidebarClient = (function(){
+
+    let initialized = false;
+
+    let collapsed = false;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        initializeSidebar();
+
+        restoreState();
+
+        highlightCurrentModule();
+
+        console.log(
+
+            "Sidebar Client Ready"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Sidebar Initialization
+    ==========================================================================*/
+
+    function initializeSidebar(){
+
+        const sidebar =
+
+            document.getElementById(
+
+                "erpSidebar"
+
+            );
+
+        if(!sidebar){
+
+            return;
+
+        }
+
+        sidebar.classList.remove(
+
+            "collapsed"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Restore Previous State
+    ==========================================================================*/
+
+    function restoreState(){
+
+        const saved =
+
+            localStorage.getItem(
+
+                "WEF_SIDEBAR"
+
+            );
+
+        if(saved === "collapsed"){
+
+            collapse();
+
+        }
+
+        else{
+
+            expand();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Highlight Current Module
+    ==========================================================================*/
+
+    function highlightCurrentModule(){
+
+        if(
+
+            typeof ERP === "undefined"
+
+        ){
+
+            return;
+
+        }
+
+        highlight(
+
+            ERP.currentModule ||
+
+            "Dashboard"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Highlight Menu Item
+    ==========================================================================*/
+
+    function highlight(route){
+
+        document
+
+            .querySelectorAll(
+
+                "#sidebarMenu li"
+
+            )
+
+            .forEach(function(item){
+
+                item.classList.remove(
+
+                    "active"
+
+                );
+
+            });
+
+        const active =
+
+            document.querySelector(
+
+                '#sidebarMenu li[data-route="' +
+
+                route +
+
+                '"]'
+
+            );
+
+        if(active){
+
+            active.classList.add(
+
+                "active"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Collapse Sidebar
+    ==========================================================================*/
+
+    function collapse(){
+
+        const sidebar =
+
+            document.getElementById(
+
+                "erpSidebar"
+
+            );
+
+        if(!sidebar){
+
+            return;
+
+        }
+
+        collapsed = true;
+
+        sidebar.classList.add(
+
+            "collapsed"
+
+        );
+
+        localStorage.setItem(
+
+            "WEF_SIDEBAR",
+
+            "collapsed"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Expand Sidebar
+    ==========================================================================*/
+
+    function expand(){
+
+        const sidebar =
+
+            document.getElementById(
+
+                "erpSidebar"
+
+            );
+
+        if(!sidebar){
+
+            return;
+
+        }
+
+        collapsed = false;
+
+        sidebar.classList.remove(
+
+            "collapsed"
+
+        );
+
+        localStorage.setItem(
+
+            "WEF_SIDEBAR",
+
+            "expanded"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Toggle Sidebar
+    ==========================================================================*/
+
+    function toggle(){
+
+        if(collapsed){
+
+            expand();
+
+        }
+
+        else{
+
+            collapse();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        highlightCurrentModule();
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        initialized = false;
+
+        collapsed = false;
+
+        expand();
+
+        console.log(
+
+            "Sidebar Client Reset"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        refresh : refresh,
+
+        highlight : highlight,
+
+        toggle : toggle,
+
+        collapse : collapse,
+
+        expand : expand,
+
+        reset : reset
+
+    };
+
+})();
+
+/*==============================================================================
+    Backward Compatibility
+==============================================================================*/
+
+window.toggleSidebar = function(){
+
+    if(window.SidebarClient){
+
+        SidebarClient.toggle();
+
+    }
+
+};
+
+window.highlightSidebar = function(route){
+
+    if(window.SidebarClient){
+
+        SidebarClient.highlight(route);
+
+    }
+
+};
+
+</script>

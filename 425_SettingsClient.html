@@ -1,0 +1,398 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 425_SettingsClient.html
+Layer       : Client Controller
+Component   : Settings Client
+Version     : 3.1.0
+Description : Client-side application settings controller.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Settings Client
+==============================================================================*/
+
+const SettingsClient = (function(){
+
+    let initialized = false;
+
+    let settings = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        loadSettings();
+
+        initialized = true;
+
+        console.log(
+
+            "SettingsClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Settings
+    ==========================================================================*/
+
+    function loadSettings(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(result){
+
+                    settings = result || {};
+
+                    applySettings();
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    console.error(
+
+                        "Unable to load settings",
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .getApplicationSettings();
+
+    }
+
+    /*==========================================================================
+        Apply Settings
+    ==========================================================================*/
+
+    function applySettings(){
+
+        if(settings.theme){
+
+            if(
+
+                typeof ThemeClient !== "undefined"
+
+            ){
+
+                ThemeClient.setTheme(
+
+                    settings.theme
+
+                );
+
+            }
+
+        }
+
+        console.log(
+
+            "Settings Applied",
+
+            settings
+
+        );
+
+    }
+
+    /*==========================================================================
+        Save Settings
+    ==========================================================================*/
+
+    function save(newSettings){
+
+        settings = Object.assign(
+
+            {},
+
+            settings,
+
+            newSettings
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(){
+
+                    console.log(
+
+                        "Settings Saved"
+
+                    );
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    console.error(
+
+                        "Unable to save settings",
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .saveApplicationSettings(
+
+                settings
+
+            );
+
+    }
+
+    /*==========================================================================
+        Get Setting
+    ==========================================================================*/
+
+    function get(key){
+
+        return settings[key];
+
+    }
+
+    /*==========================================================================
+        Set Setting
+    ==========================================================================*/
+
+    function set(key,value){
+
+        settings[key] = value;
+
+    }
+
+    /*==========================================================================
+        Reset Settings
+    ==========================================================================*/
+
+    function reset(){
+
+        settings = {};
+
+        loadSettings();
+
+    }
+
+    /*==========================================================================
+        Export Settings
+    ==========================================================================*/
+
+    function exportSettings(){
+
+        return JSON.parse(
+
+            JSON.stringify(
+
+                settings
+
+            )
+
+        );
+
+    }
+
+    /*==========================================================================
+        Import Settings
+    ==========================================================================*/
+
+    function importSettings(data){
+
+        if(
+
+            typeof data !== "object" ||
+
+            data === null
+
+        ){
+
+            return;
+
+        }
+
+        settings = Object.assign(
+
+            {},
+
+            data
+
+        );
+
+        applySettings();
+
+    }
+
+    /*==========================================================================
+        Reload Settings
+    ==========================================================================*/
+
+    function reload(){
+
+        loadSettings();
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        load : loadSettings,
+
+        save : save,
+
+        reload : reload,
+
+        get : get,
+
+        set : set,
+
+        reset : reset,
+
+        export : exportSettings,
+
+        import : importSettings
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.SettingsClient = SettingsClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+/**
+ * Opens the Settings screen.
+ */
+window.openSettings = function(){
+
+    console.log(
+
+        "Opening Settings..."
+
+    );
+
+};
+
+/**
+ * Saves application settings.
+ */
+window.saveSettings = function(settings){
+
+    SettingsClient.save(
+
+        settings || {}
+
+    );
+
+};
+
+/**
+ * Reloads settings from server.
+ */
+window.reloadSettings = function(){
+
+    SettingsClient.reload();
+
+};
+
+/*==============================================================================
+    ERP Event Hooks
+==============================================================================*/
+
+document.addEventListener(
+
+    "erpReady",
+
+    function(){
+
+        SettingsClient.initialize();
+
+    }
+
+);
+
+document.addEventListener(
+
+    "userLoggedIn",
+
+    function(){
+
+        SettingsClient.reload();
+
+    }
+
+);
+
+/*==============================================================================
+    Auto Initialize
+==============================================================================*/
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        SettingsClient.initialize();
+
+    }
+
+);
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Settings Client Loaded"
+
+);
+
+</script>

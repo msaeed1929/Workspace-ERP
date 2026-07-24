@@ -1,0 +1,527 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 450_KPICard.html
+Layer       : UI Component
+Component   : KPI Card
+Version     : 3.1.0
+Description : Displays dashboard KPI cards including totals, trends,
+              icons, colors and percentage changes.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    KPI Card
+==============================================================================*/
+
+const KPICard = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let cards = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "KPICard container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "KPICard Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Card
+    ==========================================================================*/
+
+    function register(
+
+        id,
+
+        elementId
+
+    ){
+
+        const element =
+
+            document.getElementById(
+
+                elementId
+
+            );
+
+        if(!element){
+
+            console.warn(
+
+                "KPI card not found:",
+
+                elementId
+
+            );
+
+            return;
+
+        }
+
+        cards[id] = element;
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(
+
+        id,
+
+        data
+
+    ){
+
+        const card =
+
+            cards[id];
+
+        if(!card){
+
+            return;
+
+        }
+
+        const title =
+
+            card.querySelector(
+
+                ".erp-kpi-title"
+
+            );
+
+        const value =
+
+            card.querySelector(
+
+                ".erp-kpi-value"
+
+            );
+
+        const trend =
+
+            card.querySelector(
+
+                ".erp-kpi-trend"
+
+            );
+
+        const icon =
+
+            card.querySelector(
+
+                ".erp-kpi-icon"
+
+            );
+
+        if(
+
+            title &&
+
+            data.title
+
+        ){
+
+            title.textContent =
+
+                data.title;
+
+        }
+
+        if(
+
+            value
+
+        ){
+
+            value.textContent =
+
+                data.value ||
+
+                "";
+
+        }
+
+        if(
+
+            trend
+
+        ){
+
+            trend.textContent =
+
+                data.trend ||
+
+                "";
+
+        }
+
+        if(
+
+            icon &&
+
+            data.icon
+
+        ){
+
+            icon.className =
+
+                "erp-kpi-icon " +
+
+                data.icon;
+
+        }
+
+        applyColor(
+
+            card,
+
+            data.color
+
+        );
+
+    }
+
+    /*==========================================================================
+        Apply Color
+    ==========================================================================*/
+
+    function applyColor(
+
+        card,
+
+        color
+
+    ){
+
+        if(
+
+            !color
+
+        ){
+
+            return;
+
+        }
+
+        card.setAttribute(
+
+            "data-color",
+
+            color
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(id){
+
+        update(
+
+            id,
+
+            {
+
+                title : "",
+
+                value : "",
+
+                trend : "",
+
+                icon : "",
+
+                color : ""
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Clear All
+    ==========================================================================*/
+
+    function clearAll(){
+
+        Object.keys(
+
+            cards
+
+        ).forEach(
+
+            function(id){
+
+                reset(
+
+                    id
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        Object.values(
+
+            cards
+
+        ).forEach(
+
+            function(card){
+
+                card.offsetHeight;
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            cards :
+
+                Object.keys(
+
+                    cards
+
+                ).length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        register : register,
+
+        update : update,
+
+        reset : reset,
+
+        clearAll : clearAll,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.KPICard = KPICard;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.registerKPICard = function(
+
+    id,
+
+    elementId
+
+){
+
+    KPICard.register(
+
+        id,
+
+        elementId
+
+    );
+
+};
+
+window.updateKPICard = function(
+
+    id,
+
+    data
+
+){
+
+    KPICard.update(
+
+        id,
+
+        data
+
+    );
+
+};
+
+window.resetKPICard = function(id){
+
+    KPICard.reset(
+
+        id
+
+    );
+
+};
+
+window.kpiStatus = function(){
+
+    return KPICard.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DashboardClient
+
+    • WorkspaceClient
+
+    • ReportClient
+
+    • ChartClient
+
+    • CRM Dashboard
+
+    • Sales Dashboard
+
+    • Inventory Dashboard
+
+    • Purchase Dashboard
+
+    • Accounting Dashboard
+
+    • HR Dashboard
+
+    • Manufacturing Dashboard
+
+    • Executive Dashboard
+
+    Supported KPI Types
+
+    ✓ Revenue
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Profit
+
+    ✓ Expenses
+
+    ✓ Customers
+
+    ✓ Suppliers
+
+    ✓ Employees
+
+    ✓ Production
+
+    ✓ Cash Flow
+
+    ✓ Outstanding Balance
+
+    Future Enhancements
+
+    ✓ Animated Counters
+
+    ✓ Sparkline Charts
+
+    ✓ Progress Indicators
+
+    ✓ Threshold Alerts
+
+    ✓ Goal Tracking
+
+    ✓ Click Events
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP KPI Card Loaded"
+
+);
+
+</script>

@@ -1,0 +1,368 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 432_AuthorizationClient.html
+Layer       : Client Controller
+Component   : Authorization Client
+Version     : 3.1.0
+Description : Handles client-side authorization, roles, permissions and
+              access verification.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Authorization Client
+==============================================================================*/
+
+const AuthorizationClient = (function(){
+
+    let initialized = false;
+
+    let roles = [];
+
+    let permissions = [];
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "AuthorizationClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Authorization
+    ==========================================================================*/
+
+    function load(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                loadSuccess
+
+            )
+
+            .withFailureHandler(
+
+                loadFailure
+
+            )
+
+            .getAuthorization();
+
+    }
+
+    /*==========================================================================
+        Load Success
+    ==========================================================================*/
+
+    function loadSuccess(result){
+
+        roles =
+
+            result.roles ||
+
+            [];
+
+        permissions =
+
+            result.permissions ||
+
+            [];
+
+        console.log(
+
+            "Authorization Loaded"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Failure
+    ==========================================================================*/
+
+    function loadFailure(error){
+
+        console.error(
+
+            error
+
+        );
+
+        roles = [];
+
+        permissions = [];
+
+    }
+
+    /*==========================================================================
+        Has Role
+    ==========================================================================*/
+
+    function hasRole(role){
+
+        return roles.includes(
+
+            role
+
+        );
+
+    }
+
+    /*==========================================================================
+        Has Permission
+    ==========================================================================*/
+
+    function hasPermission(permission){
+
+        return permissions.includes(
+
+            permission
+
+        );
+
+    }
+
+    /*==========================================================================
+        Require Permission
+    ==========================================================================*/
+
+    function require(permission){
+
+        if(
+
+            hasPermission(
+
+                permission
+
+            )
+
+        ){
+
+            return true;
+
+        }
+
+        DialogClient.alert(
+
+            "Access denied."
+
+        );
+
+        return false;
+
+    }
+
+    /*==========================================================================
+        Require Role
+    ==========================================================================*/
+
+    function requireRole(role){
+
+        if(
+
+            hasRole(
+
+                role
+
+            )
+
+        ){
+
+            return true;
+
+        }
+
+        DialogClient.alert(
+
+            "You do not have permission."
+
+        );
+
+        return false;
+
+    }
+
+    /*==========================================================================
+        Roles
+    ==========================================================================*/
+
+    function rolesList(){
+
+        return [
+
+            ...roles
+
+        ];
+
+    }
+
+    /*==========================================================================
+        Permissions
+    ==========================================================================*/
+
+    function permissionsList(){
+
+        return [
+
+            ...permissions
+
+        ];
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        roles = [];
+
+        permissions = [];
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            roles :
+
+                rolesList(),
+
+            permissions :
+
+                permissionsList()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        load : load,
+
+        hasRole : hasRole,
+
+        hasPermission : hasPermission,
+
+        require : require,
+
+        requireRole : requireRole,
+
+        roles : rolesList,
+
+        permissions : permissionsList,
+
+        clear : clear,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.AuthorizationClient = AuthorizationClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.hasRole = function(role){
+
+    return AuthorizationClient.hasRole(
+
+        role
+
+    );
+
+};
+
+window.hasPermission = function(permission){
+
+    return AuthorizationClient.hasPermission(
+
+        permission
+
+    );
+
+};
+
+window.requirePermission = function(permission){
+
+    return AuthorizationClient.require(
+
+        permission
+
+    );
+
+};
+
+window.requireRole = function(role){
+
+    return AuthorizationClient.requireRole(
+
+        role
+
+    );
+
+};
+
+window.authorizationStatus = function(){
+
+    return AuthorizationClient.status();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Authorization Client Loaded"
+
+);
+
+</script>

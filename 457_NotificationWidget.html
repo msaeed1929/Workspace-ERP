@@ -1,0 +1,559 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 457_NotificationWidget.html
+Layer       : Dashboard Widget
+Component   : Enterprise Notification Widget
+Version     : 3.1.0
+Description : Displays dashboard notifications including alerts,
+              reminders, approvals, messages and system events.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Notification Widget
+==============================================================================*/
+
+const NotificationWidget = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let notifications = [];
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "NotificationWidget container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "NotificationWidget Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(
+
+        data,
+
+        options
+
+    ){
+
+        if(!container){
+
+            return;
+
+        }
+
+        notifications =
+
+            Array.isArray(data)
+
+            ? data
+
+            : [];
+
+        container.innerHTML = "";
+
+        notifications.forEach(
+
+            function(notification){
+
+                container.appendChild(
+
+                    createNotification(
+
+                        notification,
+
+                        options
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Notification
+    ==========================================================================*/
+
+    function createNotification(
+
+        notification,
+
+        options
+
+    ){
+
+        const row =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        row.className =
+
+            "erp-notification-item";
+
+        row.dataset.id =
+
+            notification.id || "";
+
+        row.innerHTML =
+
+            '<div class="erp-notification-icon">' +
+
+                (notification.icon || "🔔") +
+
+            '</div>' +
+
+            '<div class="erp-notification-content">' +
+
+                '<div class="erp-notification-title">' +
+
+                    (notification.title || "") +
+
+                '</div>' +
+
+                '<div class="erp-notification-message">' +
+
+                    (notification.message || "") +
+
+                '</div>' +
+
+                '<div class="erp-notification-time">' +
+
+                    (notification.time || "") +
+
+                '</div>' +
+
+            '</div>';
+
+        if(
+
+            notification.read
+
+        ){
+
+            row.classList.add(
+
+                "erp-notification-read"
+
+            );
+
+        }
+
+        return row;
+
+    }
+
+    /*==========================================================================
+        Update
+    ==========================================================================*/
+
+    function update(data){
+
+        render(
+
+            data
+
+        );
+
+    }
+
+    /*==========================================================================
+        Add Notification
+    ==========================================================================*/
+
+    function add(notification){
+
+        notifications.unshift(
+
+            notification
+
+        );
+
+        render(
+
+            notifications
+
+        );
+
+    }
+
+    /*==========================================================================
+        Remove Notification
+    ==========================================================================*/
+
+    function remove(id){
+
+        notifications =
+
+            notifications.filter(
+
+                function(notification){
+
+                    return notification.id !== id;
+
+                }
+
+            );
+
+        render(
+
+            notifications
+
+        );
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        notifications = [];
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Mark Read
+    ==========================================================================*/
+
+    function markRead(id){
+
+        notifications.forEach(
+
+            function(notification){
+
+                if(
+
+                    notification.id === id
+
+                ){
+
+                    notification.read = true;
+
+                }
+
+            }
+
+        );
+
+        refresh();
+
+    }
+
+    /*==========================================================================
+        Mark All Read
+    ==========================================================================*/
+
+    function markAllRead(){
+
+        notifications.forEach(
+
+            function(notification){
+
+                notification.read = true;
+
+            }
+
+        );
+
+        refresh();
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render(
+
+            notifications
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy
+    ==========================================================================*/
+
+    function destroy(){
+
+        reset();
+
+        container = null;
+
+        initialized = false;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            records :
+
+                notifications.length,
+
+            unread :
+
+                notifications.filter(
+
+                    function(notification){
+
+                        return !notification.read;
+
+                    }
+
+                ).length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        render : render,
+
+        update : update,
+
+        add : add,
+
+        remove : remove,
+
+        markRead : markRead,
+
+        markAllRead : markAllRead,
+
+        reset : reset,
+
+        refresh : refresh,
+
+        destroy : destroy,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.NotificationWidget = NotificationWidget;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.renderNotificationWidget = function(
+
+    data,
+
+    options
+
+){
+
+    NotificationWidget.render(
+
+        data,
+
+        options
+
+    );
+
+};
+
+window.addNotificationWidget = function(notification){
+
+    NotificationWidget.add(
+
+        notification
+
+    );
+
+};
+
+window.markNotificationRead = function(id){
+
+    NotificationWidget.markRead(
+
+        id
+
+    );
+
+};
+
+window.markAllNotificationsRead = function(){
+
+    NotificationWidget.markAllRead();
+
+};
+
+window.notificationWidgetStatus = function(){
+
+    return NotificationWidget.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • NotificationClient
+
+    • DashboardClient
+
+    • ActivityFeed
+
+    • TaskWidget
+
+    • Workflow
+
+    • ReportClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Security
+
+    ✓ Audit Log
+
+    ✓ Executive Dashboard
+
+    Notification Types
+
+    ✓ Information
+
+    ✓ Warning
+
+    ✓ Success
+
+    ✓ Error
+
+    ✓ Approval Request
+
+    ✓ Reminder
+
+    ✓ Assignment
+
+    ✓ Deadline
+
+    ✓ System Alert
+
+    ✓ Workflow Event
+
+    Future Enhancements
+
+    ✓ Categories
+
+    ✓ Filtering
+
+    ✓ Search
+
+    ✓ Real-time Push
+
+    ✓ Browser Notifications
+
+    ✓ Email Integration
+
+    ✓ Mobile Push
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Notification Widget Loaded"
+
+);
+
+</script>

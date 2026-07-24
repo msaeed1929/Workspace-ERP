@@ -1,0 +1,373 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 449_LoadingSpinner.html
+Layer       : UI Component
+Component   : Enterprise Loading Spinner
+Version     : 3.1.0
+Description : Global loading overlay used while communicating with the
+              server or performing long-running client operations.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Loading Spinner
+==============================================================================*/
+
+const LoadingSpinner = (function(){
+
+    let initialized = false;
+
+    let overlay = null;
+
+    let messageElement = null;
+
+    let visible = false;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        overlay =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!overlay){
+
+            console.warn(
+
+                "LoadingSpinner container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        messageElement =
+
+            overlay.querySelector(
+
+                ".erp-loading-message"
+
+            );
+
+        initialized = true;
+
+        console.log(
+
+            "LoadingSpinner Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Show
+    ==========================================================================*/
+
+    function show(message){
+
+        if(!overlay){
+
+            return;
+
+        }
+
+        if(messageElement){
+
+            messageElement.textContent =
+
+                message ||
+
+                "Loading...";
+
+        }
+
+        overlay.style.display =
+
+            "flex";
+
+        visible = true;
+
+    }
+
+    /*==========================================================================
+        Hide
+    ==========================================================================*/
+
+    function hide(){
+
+        if(!overlay){
+
+            return;
+
+        }
+
+        overlay.style.display =
+
+            "none";
+
+        visible = false;
+
+    }
+
+    /*==========================================================================
+        Toggle
+    ==========================================================================*/
+
+    function toggle(){
+
+        if(
+
+            visible
+
+        ){
+
+            hide();
+
+        }
+
+        else{
+
+            show();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Message
+    ==========================================================================*/
+
+    function setMessage(message){
+
+        if(
+
+            messageElement
+
+        ){
+
+            messageElement.textContent =
+
+                message;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Is Visible
+    ==========================================================================*/
+
+    function isVisible(){
+
+        return visible;
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(
+
+            visible &&
+
+            overlay
+
+        ){
+
+            overlay.offsetHeight;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        hide();
+
+        setMessage(
+
+            "Loading..."
+
+        );
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                visible,
+
+            message :
+
+                messageElement ?
+
+                messageElement.textContent
+
+                : ""
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        show : show,
+
+        hide : hide,
+
+        toggle : toggle,
+
+        setMessage : setMessage,
+
+        isVisible : isVisible,
+
+        refresh : refresh,
+
+        reset : reset,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.LoadingSpinner = LoadingSpinner;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.showLoader = function(message){
+
+    LoadingSpinner.show(
+
+        message
+
+    );
+
+};
+
+window.hideLoader = function(){
+
+    LoadingSpinner.hide();
+
+};
+
+window.loadingStatus = function(){
+
+    return LoadingSpinner.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • ClientApp
+
+    • AuthenticationClient
+
+    • SessionClient
+
+    • ReportClient
+
+    • FileUploadClient
+
+    • SearchClient
+
+    • FormClient
+
+    • TableClient
+
+    • WorkspaceClient
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ Manufacturing
+
+    ✓ HR
+
+    ✓ Projects
+
+    ✓ Reports
+
+    Future Enhancements
+
+    ✓ Progress Bar
+
+    ✓ Percentage Complete
+
+    ✓ Cancel Button
+
+    ✓ Background Queue
+
+    ✓ Multiple Concurrent Tasks
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Loading Spinner Loaded"
+
+);
+
+</script>

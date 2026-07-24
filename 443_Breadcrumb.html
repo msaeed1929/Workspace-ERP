@@ -1,0 +1,525 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 443_Breadcrumb.html
+Layer       : UI Component
+Component   : Enterprise Breadcrumb
+Version     : 3.1.0
+Description : Displays the current navigation hierarchy and allows users
+              to navigate back through application levels.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Breadcrumb
+==============================================================================*/
+
+const Breadcrumb = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let items = [];
+
+    let clickHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "Breadcrumb container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "Breadcrumb Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Set Breadcrumb
+    ==========================================================================*/
+
+    function set(path){
+
+        items =
+
+            Array.isArray(path)
+
+            ? path
+
+            : [];
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Add Item
+    ==========================================================================*/
+
+    function add(item){
+
+        items.push(
+
+            item
+
+        );
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        items.forEach(
+
+            function(item,index){
+
+                container.appendChild(
+
+                    createItem(
+
+                        item,
+
+                        index
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Item
+    ==========================================================================*/
+
+    function createItem(item,index){
+
+        const wrapper =
+
+            document.createElement(
+
+                "span"
+
+            );
+
+        wrapper.className =
+
+            "erp-breadcrumb-item";
+
+        const link =
+
+            document.createElement(
+
+                "a"
+
+            );
+
+        link.href =
+
+            "#";
+
+        link.dataset.index =
+
+            index;
+
+        link.textContent =
+
+            item.title ||
+
+            item.name ||
+
+            "Item";
+
+        link.addEventListener(
+
+            "click",
+
+            onItemClick
+
+        );
+
+        wrapper.appendChild(
+
+            link
+
+        );
+
+        if(
+
+            index <
+
+            items.length - 1
+
+        ){
+
+            const separator =
+
+                document.createElement(
+
+                    "span"
+
+                );
+
+            separator.className =
+
+                "erp-breadcrumb-separator";
+
+            separator.textContent =
+
+                "›";
+
+            wrapper.appendChild(
+
+                separator
+
+            );
+
+        }
+
+        return wrapper;
+
+    }
+
+    /*==========================================================================
+        Item Click
+    ==========================================================================*/
+
+    function onItemClick(event){
+
+        event.preventDefault();
+
+        const index =
+
+            Number(
+
+                event.currentTarget
+
+                .dataset.index
+
+            );
+
+        if(
+
+            typeof clickHandler ===
+
+            "function"
+
+        ){
+
+            clickHandler(
+
+                items[index],
+
+                index
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Click Handler
+    ==========================================================================*/
+
+    function onClick(handler){
+
+        clickHandler =
+
+            handler;
+
+    }
+
+    /*==========================================================================
+        Home
+    ==========================================================================*/
+
+    function home(){
+
+        set([
+
+            {
+
+                title :
+
+                    "Home"
+
+            }
+
+        ]);
+
+    }
+
+    /*==========================================================================
+        Back
+    ==========================================================================*/
+
+    function back(){
+
+        if(
+
+            items.length <= 1
+
+        ){
+
+            return;
+
+        }
+
+        items.pop();
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        items = [];
+
+        if(container){
+
+            container.innerHTML = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Current Item
+    ==========================================================================*/
+
+    function current(){
+
+        if(
+
+            items.length === 0
+
+        ){
+
+            return null;
+
+        }
+
+        return items[
+
+            items.length - 1
+
+        ];
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            count :
+
+                items.length,
+
+            current :
+
+                current()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        set : set,
+
+        add : add,
+
+        home : home,
+
+        back : back,
+
+        clear : clear,
+
+        refresh : refresh,
+
+        current : current,
+
+        onClick : onClick,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.Breadcrumb = Breadcrumb;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.setBreadcrumb = function(path){
+
+    Breadcrumb.set(
+
+        path
+
+    );
+
+};
+
+window.addBreadcrumb = function(item){
+
+    Breadcrumb.add(
+
+        item
+
+    );
+
+};
+
+window.resetBreadcrumb = function(){
+
+    Breadcrumb.home();
+
+};
+
+window.breadcrumbBack = function(){
+
+    Breadcrumb.back();
+
+};
+
+window.breadcrumbStatus = function(){
+
+    return Breadcrumb.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • Navigation
+    • WorkspaceClient
+    • DashboardClient
+    • ReportClient
+    • Module Loader
+
+    Typical Paths
+
+    Home
+
+    Home > CRM
+
+    Home > CRM > Customers
+
+    Home > Sales > Orders > SO-000125
+
+    Home > Inventory > Warehouse > Stock
+
+    Home > Accounting > Journal Entries
+
+    Future Enhancements
+
+    ✓ Icon Support
+
+    ✓ Collapsible Breadcrumb
+
+    ✓ Dynamic Module Routing
+
+    ✓ History Navigation
+
+    ✓ Permission-aware Navigation
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Breadcrumb Loaded"
+
+);
+
+</script>

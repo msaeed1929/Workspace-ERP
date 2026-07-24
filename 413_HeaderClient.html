@@ -1,0 +1,309 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 413_HeaderClient.html
+Layer       : Client Controller
+Component   : Header Controller
+Version     : 3.1.0
+Description : Controls Workspace ERP Header behaviour.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Header Client
+==============================================================================*/
+
+window.HeaderClient = (function(){
+
+    let initialized = false;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        initializeUser();
+
+        initializeClock();
+
+        initializeProfileMenu();
+
+        refresh();
+
+        console.log(
+
+            "Header Client Ready"
+
+        );
+
+    }
+
+    /*==========================================================================
+        User Information
+    ==========================================================================*/
+
+    function initializeUser(){
+
+        if(
+
+            typeof ERP === "undefined" ||
+
+            !ERP.bootstrap
+
+        ){
+
+            return;
+
+        }
+
+        const metadata =
+
+            ERP.bootstrap.metadata || {};
+
+        const name =
+
+            document.getElementById(
+
+                "headerUserName"
+
+            );
+
+        const role =
+
+            document.getElementById(
+
+                "headerUserRole"
+
+            );
+
+        if(name){
+
+            name.textContent =
+
+                metadata.user || "Guest";
+
+        }
+
+        if(role){
+
+            role.textContent =
+
+                metadata.role || "Administrator";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Clock
+    ==========================================================================*/
+
+    let timer = null;
+
+    function initializeClock(){
+
+        updateClock();
+
+        if(timer){
+
+            clearInterval(timer);
+
+        }
+
+        timer = setInterval(
+
+            updateClock,
+
+            1000
+
+        );
+
+    }
+
+    function updateClock(){
+
+        const element =
+
+            document.getElementById(
+
+                "currentDateTime"
+
+            );
+
+        if(!element){
+
+            return;
+
+        }
+
+        element.textContent =
+
+            new Date().toLocaleString();
+
+    }
+
+    /*==========================================================================
+        Profile Menu
+    ==========================================================================*/
+
+    function initializeProfileMenu(){
+
+        const profile =
+
+            document.getElementById(
+
+                "userProfile"
+
+            );
+
+        const menu =
+
+            document.getElementById(
+
+                "profileMenu"
+
+            );
+
+        if(
+
+            !profile ||
+
+            !menu
+
+        ){
+
+            return;
+
+        }
+
+        profile.onclick = function(event){
+
+            event.stopPropagation();
+
+            menu.classList.toggle(
+
+                "hidden"
+
+            );
+
+        };
+
+        document.addEventListener(
+
+            "click",
+
+            function(){
+
+                menu.classList.add(
+
+                    "hidden"
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh Header
+    ==========================================================================*/
+
+    function refresh(){
+
+        initializeUser();
+
+        if(
+
+            window.ThemeClient &&
+
+            typeof ThemeClient.refresh === "function"
+
+        ){
+
+            ThemeClient.refresh();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Reset
+    ==========================================================================*/
+
+    function reset(){
+
+        initialized = false;
+
+        if(timer){
+
+            clearInterval(timer);
+
+            timer = null;
+
+        }
+
+        console.log(
+
+            "Header Client Reset"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        refresh : refresh,
+
+        reset : reset
+
+    };
+
+})();
+
+/*==============================================================================
+    Backward Compatibility
+==============================================================================*/
+
+window.initializeHeader = function(){
+
+    if(window.HeaderClient){
+
+        HeaderClient.initialize();
+
+    }
+
+};
+
+window.refreshHeader = function(){
+
+    if(window.HeaderClient){
+
+        HeaderClient.refresh();
+
+    }
+
+};
+
+</script>

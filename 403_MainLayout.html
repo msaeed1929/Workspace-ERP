@@ -1,0 +1,300 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 403_MainLayout.html
+Layer       : Web Application
+Component   : Main Application Layout
+Version     : 3.1.0
+
+Description
+------------------------------------------------------------------------------
+Master layout for the Workspace ERP Web Application.
+
+Contains
+
+• Loading Overlay
+• Header
+• Sidebar
+• Main Workspace
+• Client Controller
+
+This file never changes when new ERP modules are added.
+
+==============================================================================
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<base target="_top">
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title><?= TITLE ?></title>
+
+<?!= includeHTML("500_Styles"); ?>
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<!--============================================================
+    Loading Overlay
+=============================================================-->
+
+<div id="loadingOverlay">
+
+    <div class="loading-box">
+
+        Loading...
+
+    </div>
+
+</div>
+
+
+<!--============================================================
+    ERP Application
+=============================================================-->
+
+<div id="erpApplication">
+
+    <!--======================================================== 
+        Header 
+    =========================================================-->
+
+         <?!= includeHTML("405_Header"); ?> 
+    
+    <!--========================================================
+        Sidebar
+    =========================================================-->
+    
+        <?!= includeHTML("404_Sidebar"); ?>
+
+    <!--========================================================
+        Main Workspace
+    =========================================================-->
+
+    <main id="workspace">
+
+        <!--====================================================
+            Current Page Title
+        =====================================================-->
+
+        <div id="pageTitle">
+
+            Dashboard
+
+        </div>
+
+
+        <!--====================================================
+            Dynamic Content Area
+
+            Dashboard is preloaded to eliminate the blank page
+            during application startup.
+
+            Every other module (CRM, Sales, Inventory, etc.)
+            will replace this container dynamically.
+        =====================================================-->
+
+        <div id="content">
+
+            <?!= includeHTML("406_Dashboard"); ?>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!--============================================================
+    Client Framework
+
+    Load order
+
+    1. Client Application
+    2. Navigation
+    3. Dashboard
+    4. Theme
+    5. Header
+    6. Sidebar
+    7. Notification
+    8. Dialog
+    9. Search
+   10. Form
+=============================================================-->
+
+<?!= includeHTML("409_ClientApp"); ?>
+<?!= includeHTML("410_Navigation"); ?>
+<?!= includeHTML("411_DashboardClient"); ?>
+<?!= includeHTML("412_ThemeClient"); ?>
+<?!= includeHTML("413_HeaderClient"); ?>
+<?!= includeHTML("414_SidebarClient"); ?>
+<?!= includeHTML("415_NotificationClient"); ?>
+<?!= includeHTML("416_DialogClient"); ?>
+<?!= includeHTML("417_SearchClient"); ?>
+<?!= includeHTML("418_FormClient"); ?>
+<?!= includeHTML("419_TableClient"); ?>
+<?!= includeHTML("420_ChartClient"); ?>
+<?!= includeHTML("421_ReportClient"); ?>
+<?!= includeHTML("422_FileUploadClient"); ?>
+<?!= includeHTML("423_WorkspaceClient"); ?>
+<?!= includeHTML("424_ProfileClient"); ?>
+<?!= includeHTML("425_SettingsClient"); ?>
+<?!= includeHTML("426_ShortcutClient"); ?>
+<?!= includeHTML("427_HelpClient"); ?>
+<?!= includeHTML("428_AboutClient"); ?>
+<?!= includeHTML("429_ClientManager"); ?>
+<?!= includeHTML("430_LoginClient"); ?>
+<?!= includeHTML("431_AuthenticationClient"); ?>
+<?!= includeHTML("432_AuthorizationClient"); ?>
+<?!= includeHTML("433_SessionClient"); ?>
+<?!= includeHTML("434_PermissionClient"); ?>
+<?!= includeHTML("440_DataTable"); ?>
+<?!= includeHTML("441_FilterBar"); ?>
+<?!= includeHTML("442_Toolbar"); ?>
+<?!= includeHTML("443_Breadcrumb"); ?>
+<?!= includeHTML("444_Pagination"); ?>
+<?!= includeHTML("445_Modal"); ?>
+<?!= includeHTML("446_Toast"); ?>
+<?!= includeHTML("447_ConfirmDialog"); ?>
+<?!= includeHTML("448_SidePanel"); ?>
+<?!= includeHTML("449_LoadingSpinner"); ?>
+<?!= includeHTML("450_KPICard"); ?>
+<?!= includeHTML("451_LineChart"); ?>
+<?!= includeHTML("452_BarChart"); ?>
+<?!= includeHTML("453_PieChart"); ?>
+<?!= includeHTML("454_ActivityFeed"); ?>
+<?!= includeHTML("455_TaskWidget"); ?>
+<?!= includeHTML("456_CalendarWidget"); ?>
+<?!= includeHTML("457_NotificationWidget"); ?>
+
+
+<!--============================================================
+    Global Error Handler
+=============================================================-->
+
+<script>
+
+  window.onerror = function(
+      
+      message,
+
+      source,
+
+      line,
+
+      column,
+
+      error
+
+  ){
+
+      console.error(
+
+          "[WEF Error]",
+
+          {
+
+              message : message,
+
+              source : source,
+
+              line : line,
+
+              column : column,
+
+              error : error
+
+          }
+
+      );
+
+      return false;
+
+  };
+
+</script>
+
+
+<!--============================================================
+    Unhandled Promise Rejections
+=============================================================-->
+
+<script>
+
+window.addEventListener(
+
+    "unhandledrejection",
+
+    function(event){
+
+        console.error(
+
+            "[WEF Promise]",
+
+            event.reason
+
+        );
+
+    }
+
+);
+
+</script>
+
+
+<!--============================================================
+    Browser Information (Development Only)
+
+    This section can later be extended to send diagnostics
+    to the Framework Monitor module.
+=============================================================-->
+
+<script>
+
+if(window.location.hostname === "localhost"){
+
+  console.log(
+
+      "Workspace ERP",
+
+      {
+
+          userAgent : navigator.userAgent,
+
+          language  : navigator.language,
+
+          platform  : navigator.platform
+
+      }
+
+  );
+
+}
+
+</script>
+
+</body>
+
+</html>

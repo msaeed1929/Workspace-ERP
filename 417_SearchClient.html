@@ -1,0 +1,352 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 417_SearchClient.html
+Layer       : Client Controller
+Component   : Global Search Client
+Version     : 3.1.0
+
+Description
+------------------------------------------------------------------------------
+Global Search Controller.
+
+Responsibilities
+
+• Search Box Initialization
+• Keyboard Shortcuts
+• Search Request Dispatch
+• Search Result Handling
+
+Contains NO business logic.
+
+All searching is performed by server-side services.
+
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Search Client
+==============================================================================*/
+
+const SearchClient = (function(){
+
+    let initialized = false;
+
+    let searchBox = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        searchBox =
+
+            document.getElementById(
+
+                "globalSearch"
+
+            );
+
+        if(searchBox){
+
+            bindEvents();
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "SearchClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        searchBox.addEventListener(
+
+            "keydown",
+
+            function(event){
+
+                if(event.key === "Enter"){
+
+                    event.preventDefault();
+
+                    search();
+
+                }
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Execute Search
+    ==========================================================================*/
+
+    function search(){
+
+        if(!searchBox){
+
+            return;
+
+        }
+
+        const keyword =
+
+            searchBox.value.trim();
+
+        if(keyword === ""){
+
+            return;
+
+        }
+
+        ERP.showLoader(
+
+            "Searching..."
+
+        );
+
+        console.log(
+
+            "Search:",
+
+            keyword
+
+        );
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                onSuccess
+
+            )
+
+            .withFailureHandler(
+
+                onFailure
+
+            )
+
+            .globalSearch(
+
+                keyword
+
+            );
+
+    }
+
+    /*==========================================================================
+        Search Success
+    ==========================================================================*/
+
+    function onSuccess(result){
+
+        ERP.hideLoader();
+
+        console.log(
+
+            "Search Result",
+
+            result
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                "Search completed."
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Search Failure
+    ==========================================================================*/
+
+    function onFailure(error){
+
+        ERP.hideLoader();
+
+        console.error(
+
+            "Search Failed",
+
+            error
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                "Search failed."
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Clear Search
+    ==========================================================================*/
+
+    function clear(){
+
+        if(searchBox){
+
+            searchBox.value = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Focus Search Box
+    ==========================================================================*/
+
+    function focus(){
+
+        if(searchBox){
+
+            searchBox.focus();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Set Search Value
+    ==========================================================================*/
+
+    function setValue(value){
+
+        if(searchBox){
+
+            searchBox.value = value || "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Get Search Value
+    ==========================================================================*/
+
+    function getValue(){
+
+        if(!searchBox){
+
+            return "";
+
+        }
+
+        return searchBox.value;
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        search : search,
+
+        clear : clear,
+
+        focus : focus,
+
+        setValue : setValue,
+
+        getValue : getValue
+
+    };
+
+})();
+
+/*==============================================================================
+    Export
+==============================================================================*/
+
+window.SearchClient = SearchClient;
+
+/*==============================================================================
+    Compatibility API
+
+    Existing HTML files already call these functions directly.
+==============================================================================*/
+
+window.performSearch = function(){
+
+    SearchClient.search();
+
+};
+
+window.globalSearch = function(event){
+
+    if(
+
+        event &&
+
+        event.key !== "Enter"
+
+    ){
+
+        return;
+
+    }
+
+    SearchClient.search();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Search Client Loaded"
+
+);
+
+</script>

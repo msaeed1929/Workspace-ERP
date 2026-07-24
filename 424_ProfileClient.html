@@ -1,0 +1,432 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 424_ProfileClient.html
+Layer       : Client Controller
+Component   : User Profile Client
+Version     : 3.1.0
+Description : Handles current user profile information, profile menu,
+              avatar, logout button and profile refresh.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Profile Client
+==============================================================================*/
+
+const ProfileClient = (function(){
+
+    let initialized = false;
+
+    let profile = null;
+
+    let profileButton = null;
+
+    let profileMenu = null;
+
+    let avatar = null;
+
+    let userName = null;
+
+    let userEmail = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        profileButton =
+
+            document.getElementById(
+
+                "profileButton"
+
+            );
+
+        profileMenu =
+
+            document.getElementById(
+
+                "profileMenu"
+
+            );
+
+        avatar =
+
+            document.getElementById(
+
+                "profileAvatar"
+
+            );
+
+        userName =
+
+            document.getElementById(
+
+                "profileUserName"
+
+            );
+
+        userEmail =
+
+            document.getElementById(
+
+                "profileUserEmail"
+
+            );
+
+        bindEvents();
+
+        loadProfile();
+
+        initialized = true;
+
+        console.log(
+
+            "ProfileClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Bind Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        if(profileButton){
+
+            profileButton.addEventListener(
+
+                "click",
+
+                toggleMenu
+
+            );
+
+        }
+
+        document.addEventListener(
+
+            "click",
+
+            outsideClick
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Profile
+    ==========================================================================*/
+
+    function loadProfile(){
+
+        if(
+
+            typeof ERP !== "undefined" &&
+
+            ERP.bootstrap &&
+
+            ERP.bootstrap.metadata
+
+        ){
+
+            profile = {
+
+                name :
+
+                    ERP.bootstrap.metadata.user ||
+
+                    "User",
+
+                email :
+
+                    ERP.bootstrap.metadata.email ||
+
+                    "",
+
+                role :
+
+                    ERP.bootstrap.metadata.role ||
+
+                    ""
+
+            };
+
+        }
+
+        else{
+
+            profile = {
+
+                name : "User",
+
+                email : "",
+
+                role : ""
+
+            };
+
+        }
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render Profile
+    ==========================================================================*/
+
+    function render(){
+
+        if(userName){
+
+            userName.textContent =
+
+                profile.name;
+
+        }
+
+        if(userEmail){
+
+            userEmail.textContent =
+
+                profile.email;
+
+        }
+
+        if(avatar){
+
+            avatar.textContent =
+
+                profile.name
+
+                    .substring(
+
+                        0,
+
+                        1
+
+                    )
+
+                    .toUpperCase();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Toggle Menu
+    ==========================================================================*/
+
+    function toggleMenu(event){
+
+        if(event){
+
+            event.stopPropagation();
+
+        }
+
+        if(!profileMenu){
+
+            return;
+
+        }
+
+        profileMenu.classList.toggle(
+
+            "open"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Outside Click
+    ==========================================================================*/
+
+    function outsideClick(event){
+
+        if(
+
+            !profileMenu ||
+
+            !profileButton
+
+        ){
+
+            return;
+
+        }
+
+        if(
+
+            !profileMenu.contains(
+
+                event.target
+
+            ) &&
+
+            !profileButton.contains(
+
+                event.target
+
+            )
+
+        ){
+
+            profileMenu.classList.remove(
+
+                "open"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh Profile
+    ==========================================================================*/
+
+    function refresh(){
+
+        loadProfile();
+
+    }
+
+    /*==========================================================================
+        Logout
+    ==========================================================================*/
+
+    function logout(){
+
+        console.log(
+
+            "Logging out..."
+
+        );
+
+        if(
+
+            typeof ERP !== "undefined"
+
+        ){
+
+            ERP.showLoader(
+
+                "Signing out..."
+
+            );
+
+        }
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(){
+
+                    location.reload();
+
+                }
+
+            )
+
+            .logout();
+
+    }
+
+    /*==========================================================================
+        Profile Information
+    ==========================================================================*/
+
+    function info(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            profile :
+
+                profile
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize :
+
+            initialize,
+
+        refresh :
+
+            refresh,
+
+        logout :
+
+            logout,
+
+        info :
+
+            info
+
+    };
+
+})();
+
+/*==============================================================================
+    Compatibility API
+==============================================================================*/
+
+window.refreshProfile = function(){
+
+    ProfileClient.refresh();
+
+};
+
+window.logoutUser = function(){
+
+    ProfileClient.logout();
+
+};
+
+window.profileInfo = function(){
+
+    return ProfileClient.info();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Profile Client Loaded"
+
+);
+
+</script>

@@ -1,0 +1,559 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 442_Toolbar.html
+Layer       : UI Component
+Component   : Enterprise Toolbar
+Version     : 3.1.0
+Description : Standard toolbar component for CRUD operations, exports,
+              printing and module actions.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Toolbar
+==============================================================================*/
+
+const Toolbar = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let buttons = {};
+
+    let clickHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "Toolbar container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "Toolbar Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Configure
+    ==========================================================================*/
+
+    function configure(configuration){
+
+        buttons =
+
+            configuration ||
+
+            {};
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        Object.keys(
+
+            buttons
+
+        ).forEach(
+
+            function(name){
+
+                container.appendChild(
+
+                    createButton(
+
+                        name,
+
+                        buttons[name]
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Button
+    ==========================================================================*/
+
+    function createButton(name,config){
+
+        const button =
+
+            document.createElement(
+
+                "button"
+
+            );
+
+        button.type =
+
+            "button";
+
+        button.className =
+
+            config.className ||
+
+            "erp-toolbar-button";
+
+        button.dataset.action =
+
+            name;
+
+        button.innerHTML =
+
+            (config.icon || "") +
+
+            " " +
+
+            (config.text || name);
+
+        if(config.title){
+
+            button.title =
+
+                config.title;
+
+        }
+
+        if(config.disabled){
+
+            button.disabled = true;
+
+        }
+
+        button.addEventListener(
+
+            "click",
+
+            onButtonClick
+
+        );
+
+        return button;
+
+    }
+
+    /*==========================================================================
+        Button Click
+    ==========================================================================*/
+
+    function onButtonClick(event){
+
+        const action =
+
+            event.currentTarget
+
+                .dataset.action;
+
+        if(
+
+            typeof clickHandler ===
+
+            "function"
+
+        ){
+
+            clickHandler(
+
+                action,
+
+                event
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Click Handler
+    ==========================================================================*/
+
+    function onClick(handler){
+
+        clickHandler =
+
+            handler;
+
+    }
+
+    /*==========================================================================
+        Enable Button
+    ==========================================================================*/
+
+    function enable(action){
+
+        const button =
+
+            find(action);
+
+        if(button){
+
+            button.disabled = false;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Disable Button
+    ==========================================================================*/
+
+    function disable(action){
+
+        const button =
+
+            find(action);
+
+        if(button){
+
+            button.disabled = true;
+
+        }
+
+    }
+
+    /*==========================================================================
+        Show Button
+    ==========================================================================*/
+
+    function show(action){
+
+        const button =
+
+            find(action);
+
+        if(button){
+
+            button.style.display = "";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Hide Button
+    ==========================================================================*/
+
+    function hide(action){
+
+        const button =
+
+            find(action);
+
+        if(button){
+
+            button.style.display =
+
+                "none";
+
+        }
+
+    }
+
+    /*==========================================================================
+        Find Button
+    ==========================================================================*/
+
+    function find(action){
+
+        if(!container){
+
+            return null;
+
+        }
+
+        return container.querySelector(
+
+            '[data-action="' +
+
+            action +
+
+            '"]'
+
+        );
+
+    }
+
+    /*==========================================================================
+        Remove Button
+    ==========================================================================*/
+
+    function remove(action){
+
+        const button =
+
+            find(action);
+
+        if(
+
+            button &&
+
+            button.parentNode
+
+        ){
+
+            button.parentNode.removeChild(
+
+                button
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Clear Toolbar
+    ==========================================================================*/
+
+    function clear(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        buttons = {};
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            buttons :
+
+                Object.keys(
+
+                    buttons
+
+                ).length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        configure : configure,
+
+        onClick : onClick,
+
+        enable : enable,
+
+        disable : disable,
+
+        show : show,
+
+        hide : hide,
+
+        find : find,
+
+        remove : remove,
+
+        clear : clear,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.Toolbar = Toolbar;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.configureToolbar = function(configuration){
+
+    Toolbar.configure(
+
+        configuration
+
+    );
+
+};
+
+window.enableToolbarButton = function(action){
+
+    Toolbar.enable(
+
+        action
+
+    );
+
+};
+
+window.disableToolbarButton = function(action){
+
+    Toolbar.disable(
+
+        action
+
+    );
+
+};
+
+window.hideToolbarButton = function(action){
+
+    Toolbar.hide(
+
+        action
+
+    );
+
+};
+
+window.showToolbarButton = function(action){
+
+    Toolbar.show(
+
+        action
+
+    );
+
+};
+
+window.toolbarStatus = function(){
+
+    return Toolbar.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • CRM
+    • Sales
+    • Purchase
+    • Inventory
+    • Accounting
+    • HR
+    • Manufacturing
+    • Reports
+
+    Works Together With
+
+    • DataTable
+    • FilterBar
+    • SearchClient
+    • PermissionClient
+    • TableClient
+
+    Typical Buttons
+
+    ✓ New
+    ✓ Edit
+    ✓ Delete
+    ✓ Save
+    ✓ Cancel
+    ✓ Refresh
+    ✓ Search
+    ✓ Filter
+    ✓ Import
+    ✓ Export
+    ✓ Print
+    ✓ Approve
+    ✓ Reject
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Toolbar Loaded"
+
+);
+
+</script>

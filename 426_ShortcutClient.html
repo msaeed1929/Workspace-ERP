@@ -1,0 +1,563 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 426_ShortcutClient.html
+Layer       : Client Controller
+Component   : Shortcut Client
+Version     : 3.1.0
+Description : Global keyboard shortcut manager for Workspace ERP.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Shortcut Client
+==============================================================================*/
+
+const ShortcutClient = (function(){
+
+    let initialized = false;
+
+    let enabled = true;
+
+    const shortcuts = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        registerDefaults();
+
+        bindEvents();
+
+        initialized = true;
+
+        console.log(
+
+            "ShortcutClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Default Shortcuts
+    ==========================================================================*/
+
+    function registerDefaults(){
+
+        register(
+
+            "ctrl+s",
+
+            saveRecord
+
+        );
+
+        register(
+
+            "ctrl+f",
+
+            globalSearch
+
+        );
+
+        register(
+
+            "ctrl+n",
+
+            createRecord
+
+        );
+
+        register(
+
+            "ctrl+p",
+
+            printPage
+
+        );
+
+        register(
+
+            "esc",
+
+            closeDialog
+
+        );
+
+        register(
+
+            "f5",
+
+            refreshWorkspace
+
+        );
+
+        register(
+
+            "alt+h",
+
+            goHome
+
+        );
+
+        register(
+
+            "ctrl+/",
+
+            showHelp
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Shortcut
+    ==========================================================================*/
+
+    function register(
+
+        key,
+
+        callback
+
+    ){
+
+        shortcuts[
+
+            key.toLowerCase()
+
+        ] = callback;
+
+    }
+
+    /*==========================================================================
+        Remove Shortcut
+    ==========================================================================*/
+
+    function unregister(key){
+
+        delete shortcuts[
+
+            key.toLowerCase()
+
+        ];
+
+    }
+
+    /*==========================================================================
+        Bind Keyboard Events
+    ==========================================================================*/
+
+    function bindEvents(){
+
+        document.addEventListener(
+
+            "keydown",
+
+            handleKeyDown
+
+        );
+
+    }
+
+    /*==========================================================================
+        Handle Keyboard
+    ==========================================================================*/
+
+    function handleKeyDown(event){
+
+        if(!enabled){
+
+            return;
+
+        }
+
+        const key = normalize(event);
+
+        const action = shortcuts[key];
+
+        if(!action){
+
+            return;
+
+        }
+
+        event.preventDefault();
+
+        action();
+
+    }
+
+    /*==========================================================================
+        Normalize Keyboard Combination
+    ==========================================================================*/
+
+    function normalize(event){
+
+        const keys = [];
+
+        if(event.ctrlKey){
+
+            keys.push(
+
+                "ctrl"
+
+            );
+
+        }
+
+        if(event.altKey){
+
+            keys.push(
+
+                "alt"
+
+            );
+
+        }
+
+        if(event.shiftKey){
+
+            keys.push(
+
+                "shift"
+
+            );
+
+        }
+
+        let key =
+
+            event.key.toLowerCase();
+
+        if(key === "escape"){
+
+            key = "esc";
+
+        }
+
+        keys.push(
+
+            key
+
+        );
+
+        return keys.join(
+
+            "+"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Enable / Disable
+    ==========================================================================*/
+
+    function enable(){
+
+        enabled = true;
+
+    }
+
+    function disable(){
+
+        enabled = false;
+
+    }
+
+    /*==========================================================================
+        Save Record
+    ==========================================================================*/
+
+    function saveRecord(){
+
+        console.log(
+
+            "Shortcut : Save"
+
+        );
+
+        if(
+
+            typeof FormClient !== "undefined"
+
+        ){
+
+            FormClient.save();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Global Search
+    ==========================================================================*/
+
+    function globalSearch(){
+
+        console.log(
+
+            "Shortcut : Search"
+
+        );
+
+        if(
+
+            typeof SearchClient !== "undefined"
+
+        ){
+
+            SearchClient.search();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Create Record
+    ==========================================================================*/
+
+    function createRecord(){
+
+        console.log(
+
+            "Shortcut : New Record"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Print Page
+    ==========================================================================*/
+
+    function printPage(){
+
+        console.log(
+
+            "Shortcut : Print"
+
+        );
+
+        window.print();
+
+    }
+
+    /*==========================================================================
+        Close Dialog
+    ==========================================================================*/
+
+    function closeDialog(){
+
+        console.log(
+
+            "Shortcut : Close Dialog"
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.close();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Refresh Workspace
+    ==========================================================================*/
+
+    function refreshWorkspace(){
+
+        console.log(
+
+            "Shortcut : Refresh"
+
+        );
+
+        if(
+
+            typeof WorkspaceClient !== "undefined"
+
+        ){
+
+            WorkspaceClient.refresh();
+
+        }
+
+        else if(
+
+            typeof ERP !== "undefined"
+
+        ){
+
+            ERP.refresh();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Home Dashboard
+    ==========================================================================*/
+
+    function goHome(){
+
+        console.log(
+
+            "Shortcut : Home"
+
+        );
+
+        if(
+
+            typeof Navigation !== "undefined"
+
+        ){
+
+            Navigation.navigate(
+
+                "Dashboard"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Shortcut Help
+    ==========================================================================*/
+
+    function showHelp(){
+
+        console.log(
+
+            "Shortcut : Help"
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                "Keyboard Shortcuts\n\n" +
+
+                "Ctrl + S  → Save\n" +
+
+                "Ctrl + F  → Search\n" +
+
+                "Ctrl + N  → New Record\n" +
+
+                "Ctrl + P  → Print\n" +
+
+                "Esc       → Close Dialog\n" +
+
+                "F5        → Refresh\n" +
+
+                "Alt + H   → Dashboard"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Shortcut List
+    ==========================================================================*/
+
+    function list(){
+
+        return Object.keys(
+
+            shortcuts
+
+        );
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        enable : enable,
+
+        disable : disable,
+
+        register : register,
+
+        unregister : unregister,
+
+        list : list
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ShortcutClient = ShortcutClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.enableShortcuts = function(){
+
+    ShortcutClient.enable();
+
+};
+
+window.disableShortcuts = function(){
+
+    ShortcutClient.disable();
+
+};
+
+window.listShortcuts = function(){
+
+    return ShortcutClient.list();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Shortcut Client Loaded"
+
+);
+
+</script>

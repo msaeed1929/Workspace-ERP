@@ -1,0 +1,454 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 421_ReportClient.html
+Layer       : Client Controller
+Component   : Report Client
+Version     : 3.1.0
+Description : Client-side report controller for Workspace ERP.
+              Handles report generation, preview, export and printing.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Report Client
+==============================================================================*/
+
+const ReportClient = (function(){
+
+    let initialized = false;
+
+    let currentReport = null;
+
+    const reports = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "ReportClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Report
+    ==========================================================================*/
+
+    function register(name, configuration){
+
+        if(!name){
+
+            return;
+
+        }
+
+        reports[name] = configuration || {};
+
+    }
+
+    /*==========================================================================
+        Report Exists
+    ==========================================================================*/
+
+    function exists(name){
+
+        return Object.prototype.hasOwnProperty.call(
+
+            reports,
+
+            name
+
+        );
+
+    }
+
+    /*==========================================================================
+        Get Report
+    ==========================================================================*/
+
+    function get(name){
+
+        return reports[name] || null;
+
+    }
+
+    /*==========================================================================
+        Generate Report
+    ==========================================================================*/
+
+    function generate(name, parameters){
+
+        if(!exists(name)){
+
+            console.warn(
+
+                "Report not registered:",
+
+                name
+
+            );
+
+            return;
+
+        }
+
+        currentReport = name;
+
+        ERP.showLoader(
+
+            "Generating Report..."
+
+        );
+
+        console.log(
+
+            "Generating Report:",
+
+            name
+
+        );
+
+        /*
+            Future Version
+
+            google.script.run
+
+                .withSuccessHandler(onGenerateSuccess)
+
+                .withFailureHandler(onGenerateFailure)
+
+                .generateReport(
+
+                    name,
+
+                    parameters
+
+                );
+        */
+
+        setTimeout(
+
+            function(){
+
+                onGenerateSuccess({
+
+                    report : name,
+
+                    generated : true,
+
+                    parameters : parameters || {}
+
+                });
+
+            },
+
+            300
+
+        );
+
+    }
+
+    /*==========================================================================
+        Generate Success
+    ==========================================================================*/
+
+    function onGenerateSuccess(result){
+
+        ERP.hideLoader();
+
+        console.log(
+
+            "Report Generated",
+
+            result
+
+        );
+
+    }
+
+    /*==========================================================================
+        Generate Failure
+    ==========================================================================*/
+
+    function onGenerateFailure(error){
+
+        ERP.hideLoader();
+
+        console.error(
+
+            error
+
+        );
+
+    }
+
+    /*==========================================================================
+        Preview Report
+    ==========================================================================*/
+
+    function preview(name){
+
+        console.log(
+
+            "Preview Report:",
+
+            name
+
+        );
+
+    }
+
+    /*==========================================================================
+        Export Report
+    ==========================================================================*/
+
+    function exportPDF(name){
+
+        console.log(
+
+            "Export PDF:",
+
+            name
+
+        );
+
+    }
+
+    function exportExcel(name){
+
+        console.log(
+
+            "Export Excel:",
+
+            name
+
+        );
+
+    }
+
+    function exportCSV(name){
+
+        console.log(
+
+            "Export CSV:",
+
+            name
+
+        );
+
+    }
+
+    /*==========================================================================
+        Print Report
+    ==========================================================================*/
+
+    function print(name){
+
+        console.log(
+
+            "Print Report:",
+
+            name
+
+        );
+
+        window.print();
+
+    }
+
+    /*==========================================================================
+        Current Report
+    ==========================================================================*/
+
+    function current(){
+
+        return currentReport;
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        if(!currentReport){
+
+            return;
+
+        }
+
+        generate(
+
+            currentReport
+
+        );
+
+    }
+
+    /*==========================================================================
+        Remove Report
+    ==========================================================================*/
+
+    function unregister(name){
+
+        if(exists(name)){
+
+            delete reports[name];
+
+        }
+
+    }
+
+    /*==========================================================================
+        Remove All Reports
+    ==========================================================================*/
+
+    function clear(){
+
+        Object.keys(
+
+            reports
+
+        ).forEach(
+
+            function(name){
+
+                unregister(
+
+                    name
+
+                );
+
+            }
+
+        );
+
+        currentReport = null;
+
+    }
+
+    /*==========================================================================
+        List Reports
+    ==========================================================================*/
+
+    function list(){
+
+        return Object.keys(
+
+            reports
+
+        );
+
+    }
+
+    /*==========================================================================
+        Count
+    ==========================================================================*/
+
+    function count(){
+
+        return list().length;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized : initialized,
+
+            currentReport : currentReport,
+
+            reports : count(),
+
+            registered : list()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        register : register,
+
+        unregister : unregister,
+
+        exists : exists,
+
+        get : get,
+
+        generate : generate,
+
+        preview : preview,
+
+        exportPDF : exportPDF,
+
+        exportExcel : exportExcel,
+
+        exportCSV : exportCSV,
+
+        print : print,
+
+        refresh : refresh,
+
+        current : current,
+
+        clear : clear,
+
+        list : list,
+
+        count : count,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ReportClient = ReportClient;
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Report Client Loaded"
+
+);
+
+</script>

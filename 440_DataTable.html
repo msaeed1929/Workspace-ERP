@@ -1,0 +1,637 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 440_DataTable.html
+Layer       : UI Component
+Component   : Enterprise Data Table
+Version     : 3.1.0
+Description : Reusable data table component supporting sorting, searching,
+              selection and server-side binding.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Data Table
+==============================================================================*/
+
+const DataTable = (function(){
+
+    let initialized = false;
+
+    let table = null;
+
+    let tbody = null;
+
+    let columns = [];
+
+    let records = [];
+
+    let selectedRows = new Set();
+
+    let sortColumn = null;
+
+    let sortDirection = "asc";
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(tableId){
+
+        table =
+
+            document.getElementById(
+
+                tableId
+
+            );
+
+        if(!table){
+
+            console.warn(
+
+                "DataTable not found:",
+
+                tableId
+
+            );
+
+            return;
+
+        }
+
+        tbody =
+
+            table.querySelector(
+
+                "tbody"
+
+            );
+
+        initialized = true;
+
+        console.log(
+
+            "DataTable Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Configure
+    ==========================================================================*/
+
+    function configure(options){
+
+        columns =
+
+            options.columns ||
+
+            [];
+
+    }
+
+    /*==========================================================================
+        Load Data
+    ==========================================================================*/
+
+    function load(data){
+
+        records =
+
+            Array.isArray(data)
+
+            ? data
+
+            : [];
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(){
+
+        if(
+
+            !tbody
+
+        ){
+
+            return;
+
+        }
+
+        tbody.innerHTML = "";
+
+        records.forEach(
+
+            function(record,index){
+
+                const row =
+
+                    createRow(
+
+                        record,
+
+                        index
+
+                    );
+
+                tbody.appendChild(
+
+                    row
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Row
+    ==========================================================================*/
+
+    function createRow(record,index){
+
+        const tr =
+
+            document.createElement(
+
+                "tr"
+
+            );
+
+        tr.dataset.index = index;
+
+        columns.forEach(
+
+            function(column){
+
+                const td =
+
+                    document.createElement(
+
+                        "td"
+
+                    );
+
+                td.textContent =
+
+                    record[column.field] ??
+
+                    "";
+
+                tr.appendChild(
+
+                    td
+
+                );
+
+            }
+
+        );
+
+        tr.addEventListener(
+
+            "click",
+
+            function(){
+
+                toggleSelection(
+
+                    index,
+
+                    tr
+
+                );
+
+            }
+
+        );
+
+        return tr;
+
+    }
+
+    /*==========================================================================
+        Toggle Selection
+    ==========================================================================*/
+
+    function toggleSelection(index,row){
+
+        if(
+
+            selectedRows.has(index)
+
+        ){
+
+            selectedRows.delete(
+
+                index
+
+            );
+
+            row.classList.remove(
+
+                "selected"
+
+            );
+
+        }
+
+        else{
+
+            selectedRows.add(
+
+                index
+
+            );
+
+            row.classList.add(
+
+                "selected"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Sort
+    ==========================================================================*/
+
+    function sort(field){
+
+        if(
+
+            sortColumn === field
+
+        ){
+
+            sortDirection =
+
+                sortDirection === "asc"
+
+                ? "desc"
+
+                : "asc";
+
+        }
+
+        else{
+
+            sortColumn = field;
+
+            sortDirection = "asc";
+
+        }
+
+        records.sort(
+
+            function(a,b){
+
+                const x =
+
+                    a[field];
+
+                const y =
+
+                    b[field];
+
+                if(x === y){
+
+                    return 0;
+
+                }
+
+                if(sortDirection === "asc"){
+
+                    return x > y ? 1 : -1;
+
+                }
+
+                return x < y ? 1 : -1;
+
+            }
+
+        );
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Search
+    ==========================================================================*/
+
+    function search(keyword){
+
+        keyword =
+
+            String(
+
+                keyword || ""
+
+            )
+
+            .toLowerCase()
+
+            .trim();
+
+        if(keyword === ""){
+
+            render();
+
+            return;
+
+        }
+
+        const filtered =
+
+            records.filter(
+
+                function(record){
+
+                    return Object.values(record)
+
+                        .join(" ")
+
+                        .toLowerCase()
+
+                        .includes(
+
+                            keyword
+
+                        );
+
+                }
+
+            );
+
+        renderRows(
+
+            filtered
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render Filtered Rows
+    ==========================================================================*/
+
+    function renderRows(data){
+
+        if(!tbody){
+
+            return;
+
+        }
+
+        tbody.innerHTML = "";
+
+        data.forEach(
+
+            function(record,index){
+
+                tbody.appendChild(
+
+                    createRow(
+
+                        record,
+
+                        index
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Clear
+    ==========================================================================*/
+
+    function clear(){
+
+        records = [];
+
+        selectedRows.clear();
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Selected Records
+    ==========================================================================*/
+
+    function selected(){
+
+        return Array.from(
+
+            selectedRows
+
+        ).map(
+
+            function(index){
+
+                return records[index];
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Record Count
+    ==========================================================================*/
+
+    function recordCount(){
+
+        return records.length;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            records :
+
+                recordCount(),
+
+            selected :
+
+                selectedRows.size,
+
+            sortedBy :
+
+                sortColumn,
+
+            direction :
+
+                sortDirection
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        configure : configure,
+
+        load : load,
+
+        render : render,
+
+        sort : sort,
+
+        search : search,
+
+        refresh : refresh,
+
+        clear : clear,
+
+        selected : selected,
+
+        recordCount : recordCount,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.DataTable = DataTable;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.loadDataTable = function(data){
+
+    DataTable.load(
+
+        data
+
+    );
+
+};
+
+window.searchDataTable = function(keyword){
+
+    DataTable.search(
+
+        keyword
+
+    );
+
+};
+
+window.refreshDataTable = function(){
+
+    DataTable.refresh();
+
+};
+
+window.clearDataTable = function(){
+
+    DataTable.clear();
+
+};
+
+window.dataTableStatus = function(){
+
+    return DataTable.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    - TableClient
+    - CRM Customer List
+    - CRM Lead List
+    - Sales Orders
+    - Purchase Orders
+    - Inventory
+    - Accounting Journals
+    - HR Employees
+    - Manufacturing
+    - Projects
+    - Reports
+
+    Future Features
+
+    ✓ Pagination
+    ✓ Server-side Loading
+    ✓ Virtual Scrolling
+    ✓ Frozen Columns
+    ✓ Export
+    ✓ Column Filters
+    ✓ Drag Columns
+    ✓ Inline Editing
+    ✓ Row Actions
+    ✓ Grouping
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP DataTable Loaded"
+
+);
+
+</script>

@@ -1,0 +1,487 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 427_HelpClient.html
+Layer       : Client Controller
+Component   : Help Client
+Version     : 3.1.0
+Description : Centralized Help & Documentation controller.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Help Client
+==============================================================================*/
+
+const HelpClient = (function(){
+
+    let initialized = false;
+
+    let helpVisible = false;
+
+    let helpData = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        helpData = {};
+
+        console.log(
+
+            "HelpClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Load Help
+    ==========================================================================*/
+
+    function loadHelp(){
+
+        google.script.run
+
+            .withSuccessHandler(
+
+                function(data){
+
+                    helpData = data || {};
+
+                }
+
+            )
+
+            .withFailureHandler(
+
+                function(error){
+
+                    console.error(
+
+                        error
+
+                    );
+
+                }
+
+            )
+
+            .getHelpInformation();
+
+    }
+
+    /*==========================================================================
+        Open Help
+    ==========================================================================*/
+
+    function open(){
+
+        helpVisible = true;
+
+        console.log(
+
+            "Opening Help Center"
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                "Workspace ERP Help Center"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        Close Help
+    ==========================================================================*/
+
+    function close(){
+
+        helpVisible = false;
+
+        console.log(
+
+            "Help Closed"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Toggle Help
+    ==========================================================================*/
+
+    function toggle(){
+
+        if(helpVisible){
+
+            close();
+
+        }
+
+        else{
+
+            open();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Search Help
+    ==========================================================================*/
+
+    function search(keyword){
+
+        if(
+
+            !keyword ||
+
+            keyword.trim() === ""
+
+        ){
+
+            return [];
+
+        }
+
+        keyword = keyword.toLowerCase();
+
+        const results = [];
+
+        Object.keys(
+
+            helpData
+
+        ).forEach(
+
+            function(key){
+
+                const item = helpData[key];
+
+                if(
+
+                    JSON.stringify(item)
+
+                    .toLowerCase()
+
+                    .includes(
+
+                        keyword
+
+                    )
+
+                ){
+
+                    results.push(
+
+                        item
+
+                    );
+
+                }
+
+            }
+
+        );
+
+        return results;
+
+    }
+
+    /*==========================================================================
+        Show Documentation
+    ==========================================================================*/
+
+    function documentation(){
+
+        console.log(
+
+            "Opening Documentation"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Show Keyboard Shortcuts
+    ==========================================================================*/
+
+    function shortcuts(){
+
+        if(
+
+            typeof ShortcutClient !== "undefined"
+
+        ){
+
+            console.table(
+
+                ShortcutClient.list()
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        About
+    ==========================================================================*/
+
+    function about(){
+
+        console.log(
+
+            "Workspace ERP Framework"
+
+        );
+
+        if(
+
+            typeof DialogClient !== "undefined"
+
+        ){
+
+            DialogClient.alert(
+
+                "Workspace ERP Framework\n" +
+
+                "Version : 3.1.0"
+
+            );
+
+        }
+
+    }
+
+    /*==========================================================================
+        FAQ
+    ==========================================================================*/
+
+    function faq(){
+
+        console.log(
+
+            "Opening FAQ"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Contact Support
+    ==========================================================================*/
+
+    function contactSupport(){
+
+        console.log(
+
+            "Contact Support"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Send Feedback
+    ==========================================================================*/
+
+    function feedback(){
+
+        console.log(
+
+            "Feedback"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Version
+    ==========================================================================*/
+
+    function version(){
+
+        if(
+
+            typeof ERP !== "undefined"
+
+        ){
+
+            return ERP.info().version;
+
+        }
+
+        return "Unknown";
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            visible :
+
+                helpVisible,
+
+            loaded :
+
+                Object.keys(
+
+                    helpData
+
+                ).length
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        open : open,
+
+        close : close,
+
+        toggle : toggle,
+
+        search : search,
+
+        documentation : documentation,
+
+        shortcuts : shortcuts,
+
+        about : about,
+
+        faq : faq,
+
+        contactSupport : contactSupport,
+
+        feedback : feedback,
+
+        version : version,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.HelpClient = HelpClient;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.openHelp = function(){
+
+    HelpClient.open();
+
+};
+
+window.closeHelp = function(){
+
+    HelpClient.close();
+
+};
+
+window.toggleHelp = function(){
+
+    HelpClient.toggle();
+
+};
+
+window.searchHelp = function(keyword){
+
+    return HelpClient.search(
+
+        keyword
+
+    );
+
+};
+
+window.showDocumentation = function(){
+
+    HelpClient.documentation();
+
+};
+
+window.showFAQ = function(){
+
+    HelpClient.faq();
+
+};
+
+window.contactSupport = function(){
+
+    HelpClient.contactSupport();
+
+};
+
+window.sendFeedback = function(){
+
+    HelpClient.feedback();
+
+};
+
+window.helpStatus = function(){
+
+    return HelpClient.status();
+
+};
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Help Client Loaded"
+
+);
+
+</script>

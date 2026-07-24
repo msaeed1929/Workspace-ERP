@@ -1,0 +1,364 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 420_ChartClient.html
+Layer       : Client Controller
+Component   : Chart Client
+Version     : 3.1.0
+Description : Client-side chart controller for Workspace ERP.
+              Manages chart registration, rendering and refreshing.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Chart Client
+==============================================================================*/
+
+const ChartClient = (function(){
+
+    let initialized = false;
+
+    const charts = {};
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(){
+
+        if(initialized){
+
+            return;
+
+        }
+
+        initialized = true;
+
+        console.log(
+
+            "ChartClient Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Register Chart
+    ==========================================================================*/
+
+    function register(id, instance){
+
+        if(!id){
+
+            return;
+
+        }
+
+        charts[id] = instance || null;
+
+    }
+
+    /*==========================================================================
+        Unregister Chart
+    ==========================================================================*/
+
+    function unregister(id){
+
+        if(charts[id]){
+
+            delete charts[id];
+
+        }
+
+    }
+
+    /*==========================================================================
+        Get Chart
+    ==========================================================================*/
+
+    function get(id){
+
+        return charts[id] || null;
+
+    }
+
+    /*==========================================================================
+        Exists
+    ==========================================================================*/
+
+    function exists(id){
+
+        return Object.prototype.hasOwnProperty.call(
+
+            charts,
+
+            id
+
+        );
+
+    }
+
+    /*==========================================================================
+        Render Chart
+    ==========================================================================*/
+
+    function render(id, config){
+
+        if(!id){
+
+            return;
+
+        }
+
+        console.log(
+
+            "Rendering Chart:",
+
+            id
+
+        );
+
+        /*
+            Future Version
+
+            Chart.js
+
+            ApexCharts
+
+            Google Charts
+
+            ECharts
+
+            Highcharts
+
+            etc.
+        */
+
+        charts[id] = {
+
+            id : id,
+
+            config : config || {},
+
+            rendered : true,
+
+            renderedAt : new Date()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Update Chart
+    ==========================================================================*/
+
+    function update(id, data){
+
+        const chart = get(id);
+
+        if(!chart){
+
+            return;
+
+        }
+
+        chart.data = data;
+
+        chart.updatedAt = new Date();
+
+        console.log(
+
+            "Chart Updated:",
+
+            id
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh Chart
+    ==========================================================================*/
+
+    function refresh(id){
+
+        const chart = get(id);
+
+        if(!chart){
+
+            return;
+
+        }
+
+        console.log(
+
+            "Refreshing Chart:",
+
+            id
+
+        );
+
+    }
+
+    /*==========================================================================
+        Refresh All
+    ==========================================================================*/
+
+    function refreshAll(){
+
+        Object.keys(charts).forEach(
+
+            function(id){
+
+                refresh(id);
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy Chart
+    ==========================================================================*/
+
+    function destroy(id){
+
+        if(!exists(id)){
+
+            return;
+
+        }
+
+        delete charts[id];
+
+        console.log(
+
+            "Chart Destroyed:",
+
+            id
+
+        );
+
+    }
+
+    /*==========================================================================
+        Destroy All
+    ==========================================================================*/
+
+    function destroyAll(){
+
+        Object.keys(charts).forEach(
+
+            function(id){
+
+                destroy(id);
+
+            }
+
+        );
+
+    }
+
+    /*==========================================================================
+        Registered Charts
+    ==========================================================================*/
+
+    function list(){
+
+        return Object.keys(
+
+            charts
+
+        );
+
+    }
+
+    /*==========================================================================
+        Count
+    ==========================================================================*/
+
+    function count(){
+
+        return list().length;
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized : initialized,
+
+            charts : count(),
+
+            registered : list()
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        register : register,
+
+        unregister : unregister,
+
+        exists : exists,
+
+        get : get,
+
+        render : render,
+
+        update : update,
+
+        refresh : refresh,
+
+        refreshAll : refreshAll,
+
+        destroy : destroy,
+
+        destroyAll : destroyAll,
+
+        list : list,
+
+        count : count,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.ChartClient = ChartClient;
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Chart Client Loaded"
+
+);
+
+</script>

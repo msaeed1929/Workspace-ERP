@@ -1,0 +1,675 @@
+<!--
+==============================================================================
+Workspace ERP Framework (WEF)
+==============================================================================
+File        : 444_Pagination.html
+Layer       : UI Component
+Component   : Enterprise Pagination
+Version     : 3.1.0
+Description : Universal pagination component used by DataTable, Reports,
+              Dashboards and List Views.
+==============================================================================
+-->
+
+<script>
+
+"use strict";
+
+/*==============================================================================
+    Pagination
+==============================================================================*/
+
+const Pagination = (function(){
+
+    let initialized = false;
+
+    let container = null;
+
+    let currentPage = 1;
+
+    let pageSize = 25;
+
+    let totalRecords = 0;
+
+    let totalPages = 1;
+
+    let changeHandler = null;
+
+    /*==========================================================================
+        Initialize
+    ==========================================================================*/
+
+    function initialize(containerId){
+
+        container =
+
+            document.getElementById(
+
+                containerId
+
+            );
+
+        if(!container){
+
+            console.warn(
+
+                "Pagination container not found:",
+
+                containerId
+
+            );
+
+            return;
+
+        }
+
+        initialized = true;
+
+        render();
+
+        console.log(
+
+            "Pagination Initialized"
+
+        );
+
+    }
+
+    /*==========================================================================
+        Configure
+    ==========================================================================*/
+
+    function configure(config){
+
+        currentPage =
+
+            config.page ||
+
+            currentPage;
+
+        pageSize =
+
+            config.pageSize ||
+
+            pageSize;
+
+        totalRecords =
+
+            config.total ||
+
+            totalRecords;
+
+        totalPages =
+
+            Math.max(
+
+                1,
+
+                Math.ceil(
+
+                    totalRecords /
+
+                    pageSize
+
+                )
+
+            );
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Render
+    ==========================================================================*/
+
+    function render(){
+
+        if(!container){
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        container.appendChild(
+
+            createButton(
+
+                "<<",
+
+                firstPage,
+
+                currentPage === 1
+
+            )
+
+        );
+
+        container.appendChild(
+
+            createButton(
+
+                "<",
+
+                previousPage,
+
+                currentPage === 1
+
+            )
+
+        );
+
+        const label =
+
+            document.createElement(
+
+                "span"
+
+            );
+
+        label.className =
+
+            "erp-pagination-label";
+
+        label.textContent =
+
+            "Page " +
+
+            currentPage +
+
+            " of " +
+
+            totalPages;
+
+        container.appendChild(
+
+            label
+
+        );
+
+        container.appendChild(
+
+            createButton(
+
+                ">",
+
+                nextPage,
+
+                currentPage >= totalPages
+
+            )
+
+        );
+
+        container.appendChild(
+
+            createButton(
+
+                ">>",
+
+                lastPage,
+
+                currentPage >= totalPages
+
+            )
+
+        );
+
+    }
+
+    /*==========================================================================
+        Create Button
+    ==========================================================================*/
+
+    function createButton(
+
+        text,
+
+        handler,
+
+        disabled
+
+    ){
+
+        const button =
+
+            document.createElement(
+
+                "button"
+
+            );
+
+        button.type =
+
+            "button";
+
+        button.className =
+
+            "erp-pagination-button";
+
+        button.textContent =
+
+            text;
+
+        button.disabled =
+
+            disabled;
+
+        button.addEventListener(
+
+            "click",
+
+            handler
+
+        );
+
+        return button;
+
+    }
+
+    /*==========================================================================
+        Notify
+    ==========================================================================*/
+
+    function notify(){
+
+        if(
+
+            typeof changeHandler ===
+
+            "function"
+
+        ){
+
+            changeHandler(
+
+                currentPage,
+
+                pageSize
+
+            );
+
+        }
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Change Handler
+    ==========================================================================*/
+
+    function onChange(handler){
+
+        changeHandler =
+
+            handler;
+
+    }
+
+    /*==========================================================================
+        First Page
+    ==========================================================================*/
+
+    function firstPage(){
+
+        currentPage = 1;
+
+        notify();
+
+    }
+
+    /*==========================================================================
+        Previous Page
+    ==========================================================================*/
+
+    function previousPage(){
+
+        if(
+
+            currentPage > 1
+
+        ){
+
+            currentPage--;
+
+            notify();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Next Page
+    ==========================================================================*/
+
+    function nextPage(){
+
+        if(
+
+            currentPage < totalPages
+
+        ){
+
+            currentPage++;
+
+            notify();
+
+        }
+
+    }
+
+    /*==========================================================================
+        Last Page
+    ==========================================================================*/
+
+    function lastPage(){
+
+        currentPage =
+
+            totalPages;
+
+        notify();
+
+    }
+
+    /*==========================================================================
+        Go To Page
+    ==========================================================================*/
+
+    function gotoPage(page){
+
+        page =
+
+            Number(page);
+
+        if(
+
+            isNaN(page)
+
+        ){
+
+            return;
+
+        }
+
+        if(page < 1){
+
+            page = 1;
+
+        }
+
+        if(page > totalPages){
+
+            page = totalPages;
+
+        }
+
+        currentPage = page;
+
+        notify();
+
+    }
+
+    /*==========================================================================
+        Set Page Size
+    ==========================================================================*/
+
+    function setPageSize(size){
+
+        pageSize =
+
+            Number(size);
+
+        if(pageSize <= 0){
+
+            pageSize = 25;
+
+        }
+
+        totalPages =
+
+            Math.max(
+
+                1,
+
+                Math.ceil(
+
+                    totalRecords /
+
+                    pageSize
+
+                )
+
+            );
+
+        currentPage = 1;
+
+        notify();
+
+    }
+
+    /*==========================================================================
+        Current Page
+    ==========================================================================*/
+
+    function page(){
+
+        return currentPage;
+
+    }
+
+    /*==========================================================================
+        Total Pages
+    ==========================================================================*/
+
+    function pageCount(){
+
+        return totalPages;
+
+    }
+
+    /*==========================================================================
+        Total Records
+    ==========================================================================*/
+
+    function recordCount(){
+
+        return totalRecords;
+
+    }
+
+    /*==========================================================================
+        Refresh
+    ==========================================================================*/
+
+    function refresh(){
+
+        render();
+
+    }
+
+    /*==========================================================================
+        Status
+    ==========================================================================*/
+
+    function status(){
+
+        return {
+
+            initialized :
+
+                initialized,
+
+            currentPage :
+
+                currentPage,
+
+            pageSize :
+
+                pageSize,
+
+            totalPages :
+
+                totalPages,
+
+            totalRecords :
+
+                totalRecords
+
+        };
+
+    }
+
+    /*==========================================================================
+        Public API
+    ==========================================================================*/
+
+    return {
+
+        initialize : initialize,
+
+        configure : configure,
+
+        onChange : onChange,
+
+        firstPage : firstPage,
+
+        previousPage : previousPage,
+
+        nextPage : nextPage,
+
+        lastPage : lastPage,
+
+        gotoPage : gotoPage,
+
+        setPageSize : setPageSize,
+
+        page : page,
+
+        pageCount : pageCount,
+
+        recordCount : recordCount,
+
+        refresh : refresh,
+
+        status : status
+
+    };
+
+})();
+
+/*==============================================================================
+    Global API
+==============================================================================*/
+
+window.Pagination = Pagination;
+
+/*==============================================================================
+    Compatibility Functions
+==============================================================================*/
+
+window.configurePagination = function(config){
+
+    Pagination.configure(
+
+        config
+
+    );
+
+};
+
+window.gotoPage = function(page){
+
+    Pagination.gotoPage(
+
+        page
+
+    );
+
+};
+
+window.setPageSize = function(size){
+
+    Pagination.setPageSize(
+
+        size
+
+    );
+
+};
+
+window.paginationStatus = function(){
+
+    return Pagination.status();
+
+};
+
+/*==============================================================================
+    Integration Notes
+
+    Used By
+
+    • DataTable
+
+    • TableClient
+
+    • ReportClient
+
+    • DashboardClient
+
+    • SearchClient
+
+    • FilterBar
+
+    ERP Modules
+
+    ✓ CRM
+
+    ✓ Sales
+
+    ✓ Purchase
+
+    ✓ Inventory
+
+    ✓ Accounting
+
+    ✓ HR
+
+    ✓ Manufacturing
+
+    ✓ Projects
+
+    ✓ Fixed Assets
+
+    ✓ Reports
+
+    Future Features
+
+    ✓ Page Number Buttons
+
+    ✓ Jump To Page
+
+    ✓ Infinite Scrolling
+
+    ✓ Virtual Rendering
+
+    ✓ Server-side Pagination
+
+    ✓ Page Size Selector
+
+==============================================================================*/
+
+/*==============================================================================
+    Debug
+==============================================================================*/
+
+console.log(
+
+    "Workspace ERP Pagination Loaded"
+
+);
+
+</script>
