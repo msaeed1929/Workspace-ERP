@@ -3,7 +3,7 @@
  * Workspace ERP Framework (WEF)
  * =============================================================================
  * File        : 01_Core_Kernel.gs
- * Version     : 1.0.0
+ * Version     : 3.2.0
  * Description : Application Kernel
  * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
@@ -39,6 +39,8 @@ WEF.Kernel = class {
 
     this.registerCoreServices();
 
+    WEF.Runtime.BootCompleted = new Date();
+
     WEF.Initialized = true;
 
     Logger.log("========== WEF Ready ==========");
@@ -66,7 +68,7 @@ WEF.Kernel = class {
     WEF.Runtime.SpreadsheetId =
       WEF.Runtime.Spreadsheet.getId();
 
-    WEF.Runtime.Name =
+    WEF.Runtime.SpreadsheetName =
       WEF.Runtime.Spreadsheet.getName();
 
   }
@@ -134,11 +136,13 @@ WEF.Kernel = class {
 
     WEF.Runtime.build = WEF.Info.build;
 
-    WEF.Runtime.environment = ERPConfig.ENVIRONMENT;
+    WEF.Runtime.environment =
+      WEF.Config.environment();
 
     WEF.Runtime.spreadsheetId = WEF.Runtime.SpreadsheetId;
 
-    WEF.Runtime.spreadsheetName = WEF.Runtime.Name;
+    WEF.Runtime.spreadsheetName =
+      WEF.Runtime.SpreadsheetName;
 
     WEF.Runtime.user = WEF.Runtime.User;
 
@@ -173,6 +177,7 @@ WEF.Kernel = class {
     Logger.log("========== WEF Shutdown ==========");
 
     WEF.Initialized = false;
+      WEF.Runtime.Initialized = false;
 
   }
 
@@ -191,11 +196,13 @@ WEF.Kernel = class {
 
       build : WEF.Info.build,
 
-      spreadsheet : WEF.Runtime.Name,
+      spreadsheet : WEF.Runtime.SpreadsheetName,
 
       user : WEF.Runtime.User,
 
       startTime : WEF.Runtime.StartTime
+
+      bootCompleted : WEF.Runtime.BootCompleted
 
     };
 
@@ -214,7 +221,7 @@ WEF.Kernel = class {
 
       Config : typeof ERPConfig !== "undefined",
 
-      Runtime : !!WEF.Runtime,
+      Runtime : WEF.Runtime.Initialized === true,
 
       Spreadsheet : !!WEF.Runtime.Spreadsheet,
 
