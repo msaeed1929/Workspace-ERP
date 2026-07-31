@@ -344,8 +344,10 @@ class AccountingFinancialStatementManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "FinancialStatementManager",
-  new AccountingFinancialStatementManager()
-);
+function registerAccountingFinancialStatementManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "FinancialStatementManager",
+    new AccountingFinancialStatementManager()
+  );
+}

@@ -344,8 +344,10 @@ class AccountingAPManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "APManager",
-  new AccountingAPManager()
-);
+function registerAccountingAPManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "APManager",
+    new AccountingAPManager()
+  );
+}

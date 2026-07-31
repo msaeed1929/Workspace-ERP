@@ -344,8 +344,10 @@ class AccountingFixedAssetManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "FixedAssetManager",
-  new AccountingFixedAssetManager()
-);
+function registerAccountingFixedAssetManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "FixedAssetManager",
+    new AccountingFixedAssetManager()
+  );
+}

@@ -344,8 +344,10 @@ class AccountingDepreciationManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "DepreciationManager",
-  new AccountingDepreciationManager()
-);
+function registerAccountingDepreciationManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "DepreciationManager",
+    new AccountingDepreciationManager()
+  );
+}

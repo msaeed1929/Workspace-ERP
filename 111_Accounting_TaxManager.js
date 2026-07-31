@@ -344,8 +344,10 @@ class AccountingTaxManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "TaxManager",
-  new AccountingTaxManager()
-);
+function registerAccountingTaxManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "TaxManager",
+    new AccountingTaxManager()
+  );
+}

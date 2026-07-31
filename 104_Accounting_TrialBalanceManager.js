@@ -358,8 +358,10 @@ class AccountingTrialBalanceManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "TrialBalanceManager",
-  new AccountingTrialBalanceManager()
-);
+function registerAccountingTrialBalanceManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "TrialBalanceManager",
+    new AccountingTrialBalanceManager()
+  );
+}

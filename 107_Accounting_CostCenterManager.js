@@ -344,8 +344,10 @@ class AccountingCostCenterManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "CostCenterManager",
-  new AccountingCostCenterManager()
-);
+function registerAccountingCostCenterManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "CostCenterManager",
+    new AccountingCostCenterManager()
+  );
+}
