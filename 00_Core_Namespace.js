@@ -22,13 +22,13 @@ const WEF = Object.create(null);
  * ============================================================================
  */
 WEF.Info = {
-  name: WEF_NAME,
+  name: WEF_FRAMEWORK.NAME,
   shortName: "WEF",
-  version: WEF_VERSION,
-  build: WEF_BUILD,
-  releaseDate: WEF_RELEASE_DATE,
-  channel: WEF_RELEASE_CHANNEL,
-  copyright: WEF_COPYRIGHT
+  version: WEF_FRAMEWORK.VERSION,
+  build: WEF_FRAMEWORK.BUILD,
+  releaseDate: WEF_FRAMEWORK.RELEASE_DATE,
+  channel: WEF_FRAMEWORK.RELEASE_CHANNEL,
+  copyright: WEF_FRAMEWORK.COPYRIGHT
 };
 
 Object.freeze(WEF.Info);
