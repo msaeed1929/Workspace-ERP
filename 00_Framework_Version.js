@@ -17,3 +17,8 @@ var WEF_FRAMEWORK = Object.freeze({
   COPYRIGHT: "© 2026 Muhammad Saeed Anser"
 
 });
+
+function test_FrameworkVersion() {
+  Logger.log(WEF_FRAMEWORK);
+  Logger.log(WEF_FRAMEWORK.NAME);
+}
