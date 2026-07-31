@@ -200,7 +200,7 @@ WEF.Kernel = class {
 
       user : WEF.Runtime.User,
 
-      startTime : WEF.Runtime.StartTime
+      startTime : WEF.Runtime.StartTime,
 
       bootCompleted : WEF.Runtime.BootCompleted
 
