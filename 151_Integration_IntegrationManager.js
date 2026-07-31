@@ -353,9 +353,12 @@ class IntegrationIntegrationManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Integration",
-  "IntegrationManager",
-  new IntegrationIntegrationManager()
-);
+function bootIntegrationIntegrationManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Integration",
+      "IntegrationManager",
+      new IntegrationIntegrationManager()
+    );
+  }
+}

@@ -351,9 +351,12 @@ class BIBIManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "BIManager",
-  new BIBIManager()
-);
+function bootBIBIManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "BIManager",
+      new BIBIManager()
+    );
+  }
+}

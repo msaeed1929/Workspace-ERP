@@ -359,9 +359,13 @@ class AccountingFiscalPeriodManager extends BaseService {
 //=============================================================================
 
 function registerAccountingFiscalPeriodManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "FiscalPeriodManager",
-    new AccountingFiscalPeriodManager()
-  );
+function bootAccountingFiscalPeriodManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "FiscalPeriodManager",
+      new AccountingFiscalPeriodManager()
+    );
+  }
+}
 }

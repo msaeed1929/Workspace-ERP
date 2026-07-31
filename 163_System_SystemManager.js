@@ -355,9 +355,12 @@ class SystemManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "SystemManager",
-  new SystemManager()
-);
+function bootSystemManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "SystemManager",
+      new SystemManager()
+    );
+  }
+}

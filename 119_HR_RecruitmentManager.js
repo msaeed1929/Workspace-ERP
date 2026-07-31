@@ -371,9 +371,13 @@ class HRRecruitmentManager extends BaseService {
 //=============================================================================
 
 function registerHRRecruitmentManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "HR",
-    "RecruitmentManager",
-    new HRRecruitmentManager()
-  );
+function bootHRRecruitmentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "HR",
+      "RecruitmentManager",
+      new HRRecruitmentManager()
+    );
+  }
+}
 }

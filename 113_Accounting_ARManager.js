@@ -345,9 +345,13 @@ class AccountingARManager extends BaseService {
 //=============================================================================
 
 function registerAccountingARManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "ARManager",
-    new AccountingARManager()
-  );
+function bootAccountingARManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "ARManager",
+      new AccountingARManager()
+    );
+  }
+}
 }

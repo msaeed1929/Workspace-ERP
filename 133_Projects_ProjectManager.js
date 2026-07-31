@@ -353,9 +353,12 @@ class ProjectsProjectManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Projects",
-  "ProjectManager",
-  new ProjectsProjectManager()
-);
+function bootProjectsProjectManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Projects",
+      "ProjectManager",
+      new ProjectsProjectManager()
+    );
+  }
+}

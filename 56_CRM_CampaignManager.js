@@ -225,10 +225,12 @@ class CRMCampaignManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "CampaignManager",
-  new CRMCampaignManager()
-);
+//==============================================================================function bootCRMCampaignManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "CampaignManager",
+      new CRMCampaignManager()
+    );
+  }
+}

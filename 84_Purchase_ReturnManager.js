@@ -344,10 +344,12 @@ class PurchaseReturnManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "ReturnManager",
-  new PurchaseReturnManager()
-);
+//==============================================================================function bootPurchaseReturnManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "ReturnManager",
+      new PurchaseReturnManager()
+    );
+  }
+}

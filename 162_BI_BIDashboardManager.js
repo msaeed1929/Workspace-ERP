@@ -350,9 +350,12 @@ class BIBIDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "BIDashboardManager",
-  new BIBIDashboardManager()
-);
+function bootBIBIDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "BIDashboardManager",
+      new BIBIDashboardManager()
+    );
+  }
+}

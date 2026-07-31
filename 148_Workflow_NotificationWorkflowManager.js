@@ -351,9 +351,12 @@ class WorkflowNotificationWorkflowManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Workflow",
-  "NotificationWorkflowManager",
-  new WorkflowNotificationWorkflowManager()
-);
+function bootWorkflowNotificationWorkflowManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Workflow",
+      "NotificationWorkflowManager",
+      new WorkflowNotificationWorkflowManager()
+    );
+  }
+}

@@ -357,9 +357,12 @@ class ProjectsTaskManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Projects",
-  "TaskManager",
-  new ProjectsTaskManager()
-);
+function bootProjectsTaskManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Projects",
+      "TaskManager",
+      new ProjectsTaskManager()
+    );
+  }
+}

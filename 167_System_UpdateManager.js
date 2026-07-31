@@ -363,9 +363,12 @@ class SystemUpdateManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "UpdateManager",
-  new SystemUpdateManager()
-);
+function bootSystemUpdateManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "UpdateManager",
+      new SystemUpdateManager()
+    );
+  }
+}

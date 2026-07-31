@@ -353,9 +353,12 @@ class IntegrationIntegrationDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Integration",
-  "IntegrationDashboardManager",
-  new IntegrationIntegrationDashboardManager()
-);
+function bootIntegrationIntegrationDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Integration",
+      "IntegrationDashboardManager",
+      new IntegrationIntegrationDashboardManager()
+    );
+  }
+}

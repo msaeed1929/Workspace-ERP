@@ -285,10 +285,12 @@ class CRMQuotationManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "QuotationManager",
-  new CRMQuotationManager()
-);
+//==============================================================================function bootCRMQuotationManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "QuotationManager",
+      new CRMQuotationManager()
+    );
+  }
+}

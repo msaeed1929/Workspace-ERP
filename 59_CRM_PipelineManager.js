@@ -206,10 +206,12 @@ class CRMPipelineManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "PipelineManager",
-  new CRMPipelineManager()
-);
+//==============================================================================function bootCRMPipelineManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "PipelineManager",
+      new CRMPipelineManager()
+    );
+  }
+}

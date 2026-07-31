@@ -253,10 +253,12 @@ class CRMOpportunityManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "OpportunityManager",
-  new CRMOpportunityManager()
-);
+//==============================================================================function bootCRMOpportunityManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "OpportunityManager",
+      new CRMOpportunityManager()
+    );
+  }
+}

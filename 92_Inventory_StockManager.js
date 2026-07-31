@@ -351,10 +351,12 @@ class InventoryStockManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "StockManager",
-  new InventoryStockManager()
-);
+//==============================================================================function bootInventoryStockManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "StockManager",
+      new InventoryStockManager()
+    );
+  }
+}

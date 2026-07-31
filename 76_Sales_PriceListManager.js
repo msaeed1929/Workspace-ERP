@@ -326,10 +326,12 @@ class SalesPriceListManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "PriceListManager",
-  new SalesPriceListManager()
-);
+//==============================================================================function bootSalesPriceListManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "PriceListManager",
+      new SalesPriceListManager()
+    );
+  }
+}

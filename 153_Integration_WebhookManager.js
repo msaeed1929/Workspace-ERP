@@ -353,9 +353,12 @@ class IntegrationWebhookManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Integration",
-  "WebhookManager",
-  new IntegrationWebhookManager()
-);
+function bootIntegrationWebhookManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Integration",
+      "WebhookManager",
+      new IntegrationWebhookManager()
+    );
+  }
+}

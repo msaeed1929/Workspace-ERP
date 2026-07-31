@@ -378,10 +378,12 @@ class InventoryIssueManager extends BaseService {
 
 //=============================================================================
 // Module Registration
-//=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "IssueManager",
-  new InventoryIssueManager()
-);
+//=============================================================================function bootInventoryIssueManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "IssueManager",
+      new InventoryIssueManager()
+    );
+  }
+}

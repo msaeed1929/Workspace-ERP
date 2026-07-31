@@ -371,9 +371,13 @@ class AccountingGeneralLedgerManager extends BaseService {
 //=============================================================================
 
 function registerAccountingGeneralLedgerManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "GeneralLedgerManager",
-    new AccountingGeneralLedgerManager()
-  ); 
+function bootAccountingGeneralLedgerManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "GeneralLedgerManager",
+      new AccountingGeneralLedgerManager()
+    );
+  }
+} 
 }

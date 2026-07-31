@@ -353,9 +353,12 @@ class ManufacturingMFGDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Manufacturing",
-  "MFGDashboardManager",
-  new ManufacturingMFGDashboardManager()
-);
+function bootManufacturingMFGDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Manufacturing",
+      "MFGDashboardManager",
+      new ManufacturingMFGDashboardManager()
+    );
+  }
+}

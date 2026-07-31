@@ -360,10 +360,12 @@ class InventoryAdjustmentManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "AdjustmentManager",
-  new InventoryAdjustmentManager()
-);
+//==============================================================================function bootInventoryAdjustmentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "AdjustmentManager",
+      new InventoryAdjustmentManager()
+    );
+  }
+}

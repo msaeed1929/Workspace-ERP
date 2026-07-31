@@ -336,10 +336,13 @@ class AccountingChartOfAccountsManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-function registerAccountingChartOfAccountsManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "ChartOfAccountsManager",
-    new AccountingChartOfAccountsManager()
-  );
+function registerAccountingChartOfAccountsManager() {function bootAccountingChartOfAccountsManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "ChartOfAccountsManager",
+      new AccountingChartOfAccountsManager()
+    );
+  }
+}
 }

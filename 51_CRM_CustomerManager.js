@@ -231,10 +231,12 @@ var CRM = CRM || {};
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "CustomerManager",
-  new CRMCustomerManager()
-);
+//==============================================================================function bootCRMCustomerManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "CustomerManager",
+      new CRMCustomerManager()
+    );
+  }
+}

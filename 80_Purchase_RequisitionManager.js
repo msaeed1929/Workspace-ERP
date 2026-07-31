@@ -378,10 +378,12 @@ class PurchaseRequisitionManager extends BaseService {
 
 //==============================================================================
 // Purchase Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "RequisitionManager",
-  new PurchaseRequisitionManager()
-);
+//==============================================================================function bootPurchaseRequisitionManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "RequisitionManager",
+      new PurchaseRequisitionManager()
+    );
+  }
+}

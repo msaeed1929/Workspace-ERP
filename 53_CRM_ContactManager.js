@@ -225,10 +225,12 @@ class CRMContactManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "ContactManager",
-  new CRMContactManager()
-);
+//==============================================================================function bootCRMContactManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "ContactManager",
+      new CRMContactManager()
+    );
+  }
+}

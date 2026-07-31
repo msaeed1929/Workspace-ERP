@@ -351,9 +351,12 @@ class SystemLicenseManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "LicenseManager",
-  new SystemLicenseManager()
-);
+function bootSystemLicenseManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "LicenseManager",
+      new SystemLicenseManager()
+    );
+  }
+}

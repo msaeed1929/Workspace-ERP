@@ -252,10 +252,12 @@ class CRMNoteManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "NoteManager",
-  new CRMNoteManager()
-);
+//==============================================================================function bootCRMNoteManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "NoteManager",
+      new CRMNoteManager()
+    );
+  }
+}

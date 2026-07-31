@@ -326,10 +326,12 @@ class SalesTaxManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "TaxManager",
-  new SalesTaxManager()
-);
+//==============================================================================function bootSalesTaxManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "TaxManager",
+      new SalesTaxManager()
+    );
+  }
+}

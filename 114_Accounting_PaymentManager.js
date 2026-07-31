@@ -345,9 +345,13 @@ class AccountingPaymentManager extends BaseService {
 //=============================================================================
 
 function registerAccountingPaymentManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "PaymentManager",
-    new AccountingPaymentManager()
-  );
+function bootAccountingPaymentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "PaymentManager",
+      new AccountingPaymentManager()
+    );
+  }
+}
 }

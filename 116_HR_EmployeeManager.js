@@ -373,9 +373,13 @@ class HREmployeeManager extends BaseService {
 //=============================================================================
 
 function registerHREmployeeManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "HR",
-    "EmployeeManager",
-    new HREmployeeManager()
-  );
+function bootHREmployeeManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "HR",
+      "EmployeeManager",
+      new HREmployeeManager()
+    );
+  }
+}
 }

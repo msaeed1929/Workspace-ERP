@@ -353,9 +353,12 @@ class SystemUserPreferencesManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "UserPreferencesManager",
-  new SystemUserPreferencesManager()
-);
+function bootSystemUserPreferencesManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "UserPreferencesManager",
+      new SystemUserPreferencesManager()
+    );
+  }
+}

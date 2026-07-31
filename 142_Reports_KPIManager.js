@@ -353,9 +353,12 @@ class ReportsKPIManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Reports",
-  "KPIManager",
-  new ReportsKPIManager()
-);
+function bootReportsKPIManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Reports",
+      "KPIManager",
+      new ReportsKPIManager()
+    );
+  }
+}

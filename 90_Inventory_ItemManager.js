@@ -306,10 +306,12 @@ class InventoryItemManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "ItemManager",
-  new InventoryItemManager()
-);
+//==============================================================================function bootInventoryItemManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "ItemManager",
+      new InventoryItemManager()
+    );
+  }
+}

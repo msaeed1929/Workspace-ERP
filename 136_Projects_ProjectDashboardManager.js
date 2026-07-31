@@ -353,9 +353,12 @@ class ProjectsProjectDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Projects",
-  "ProjectDashboardManager",
-  new ProjectsProjectDashboardManager()
-);
+function bootProjectsProjectDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Projects",
+      "ProjectDashboardManager",
+      new ProjectsProjectDashboardManager()
+    );
+  }
+}

@@ -321,10 +321,12 @@ class SalesCreditNoteManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "CreditNoteManager",
-  new SalesCreditNoteManager()
-);
+//==============================================================================function bootSalesCreditNoteManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "CreditNoteManager",
+      new SalesCreditNoteManager()
+    );
+  }
+}

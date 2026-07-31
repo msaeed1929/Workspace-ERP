@@ -349,9 +349,13 @@ class HRTimesheetManager extends BaseService {
 //=============================================================================
 
 function registerHRTimesheetManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "HR",
-    "TimesheetManager",
-    new HRTimesheetManager()
-  );
+function bootHRTimesheetManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "HR",
+      "TimesheetManager",
+      new HRTimesheetManager()
+    );
+  }
+}
 }

@@ -355,10 +355,12 @@ class SalesReturnManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "ReturnManager",
-  new SalesReturnManager()
-);
+//==============================================================================function bootSalesReturnManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "ReturnManager",
+      new SalesReturnManager()
+    );
+  }
+}

@@ -418,10 +418,12 @@ class InventoryCycleCountManager extends BaseService {
 
 //=============================================================================
 // Module Registration
-//=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "CycleCountManager",
-  new InventoryCycleCountManager()
-);
+//=============================================================================function bootInventoryCycleCountManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "CycleCountManager",
+      new InventoryCycleCountManager()
+    );
+  }
+}

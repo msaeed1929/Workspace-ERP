@@ -367,9 +367,12 @@ class BIETLManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "ETLManager",
-  new BIETLManager()
-);
+function bootBIETLManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "ETLManager",
+      new BIETLManager()
+    );
+  }
+}

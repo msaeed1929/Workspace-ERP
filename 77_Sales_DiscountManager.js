@@ -326,10 +326,12 @@ class SalesDiscountManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "DiscountManager",
-  new SalesDiscountManager()
-);
+//==============================================================================function bootSalesDiscountManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "DiscountManager",
+      new SalesDiscountManager()
+    );
+  }
+}

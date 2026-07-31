@@ -351,9 +351,13 @@ class ManufacturingProductionManager extends BaseService {
 //=============================================================================
 
 function registerManufacturingProductionManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Manufacturing",
-    "ProductionManager",
-    new ManufacturingProductionManager()
-  );
+function bootManufacturingProductionManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Manufacturing",
+      "ProductionManager",
+      new ManufacturingProductionManager()
+    );
+  }
+}
 }

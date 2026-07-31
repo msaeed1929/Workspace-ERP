@@ -392,10 +392,12 @@ class SalesInvoiceManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "InvoiceManager",
-  new SalesInvoiceManager()
-);
+//==============================================================================function bootSalesInvoiceManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "InvoiceManager",
+      new SalesInvoiceManager()
+    );
+  }
+}

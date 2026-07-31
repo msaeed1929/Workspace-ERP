@@ -408,10 +408,12 @@ class InventoryReservationManager extends BaseService {
 
 //=============================================================================
 // Module Registration
-//=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "ReservationManager",
-  new InventoryReservationManager()
-);
+//=============================================================================function bootInventoryReservationManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "ReservationManager",
+      new InventoryReservationManager()
+    );
+  }
+}

@@ -225,10 +225,12 @@ class CRMLeadManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "LeadManager",
-  new CRMLeadManager()
-);
+//==============================================================================function bootCRMLeadManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "LeadManager",
+      new CRMLeadManager()
+    );
+  }
+}

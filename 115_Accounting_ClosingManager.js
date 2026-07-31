@@ -345,9 +345,13 @@ class AccountingClosingManager extends BaseService {
 //=============================================================================
 
 function registerAccountingClosingManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "ClosingManager",
-    new AccountingClosingManager()
-  );
+function bootAccountingClosingManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "ClosingManager",
+      new AccountingClosingManager()
+    );
+  }
+}
 }

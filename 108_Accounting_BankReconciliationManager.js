@@ -345,9 +345,13 @@ class AccountingBankReconciliationManager extends BaseService {
 //=============================================================================
 
 function registerAccountingBankReconciliationManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "BankReconciliationManager",
-    new AccountingBankReconciliationManager()
-  );
+function bootAccountingBankReconciliationManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "BankReconciliationManager",
+      new AccountingBankReconciliationManager()
+    );
+  }
+}
 }

@@ -344,10 +344,12 @@ class PurchaseOrderManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "OrderManager",
-  new PurchaseOrderManager()
-);
+//==============================================================================function bootPurchaseOrderManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "OrderManager",
+      new PurchaseOrderManager()
+    );
+  }
+}

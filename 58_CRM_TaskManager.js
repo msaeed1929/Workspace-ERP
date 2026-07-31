@@ -267,10 +267,12 @@ class CRMTaskManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "TaskManager",
-  new CRMTaskManager()
-);
+//==============================================================================function bootCRMTaskManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "TaskManager",
+      new CRMTaskManager()
+    );
+  }
+}

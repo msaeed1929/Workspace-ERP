@@ -322,10 +322,12 @@ class SalesPaymentManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "PaymentManager",
-  new SalesPaymentManager()
-);
+//==============================================================================function bootSalesPaymentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "PaymentManager",
+      new SalesPaymentManager()
+    );
+  }
+}

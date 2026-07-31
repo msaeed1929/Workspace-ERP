@@ -355,9 +355,12 @@ class SystemDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "SystemDashboardManager",
-  new SystemDashboardManager()
-);
+function bootSystemDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "SystemDashboardManager",
+      new SystemDashboardManager()
+    );
+  }
+}

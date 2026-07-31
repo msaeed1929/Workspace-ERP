@@ -353,9 +353,12 @@ class FixedAssetsFADashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "FixedAssets",
-  "FADashboardManager",
-  new FixedAssetsFADashboardManager()
-);
+function bootFixedAssetsFADashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "FixedAssets",
+      "FADashboardManager",
+      new FixedAssetsFADashboardManager()
+    );
+  }
+}

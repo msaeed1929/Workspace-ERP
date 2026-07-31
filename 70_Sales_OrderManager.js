@@ -271,10 +271,12 @@ class SalesOrderManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "OrderManager",
-  new SalesOrderManager()
-);
+//==============================================================================function bootSalesOrderManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "OrderManager",
+      new SalesOrderManager()
+    );
+  }
+}

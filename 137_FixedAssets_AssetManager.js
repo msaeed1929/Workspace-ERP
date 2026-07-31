@@ -355,9 +355,12 @@ class FixedAssetsAssetManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "FixedAssets",
-  "AssetManager",
-  new FixedAssetsAssetManager()
-);
+function bootFixedAssetsAssetManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "FixedAssets",
+      "AssetManager",
+      new FixedAssetsAssetManager()
+    );
+  }
+}

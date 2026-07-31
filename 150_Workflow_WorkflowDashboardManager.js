@@ -353,9 +353,12 @@ class WorkflowWorkflowDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Workflow",
-  "WorkflowDashboardManager",
-  new WorkflowWorkflowDashboardManager()
-);
+function bootWorkflowWorkflowDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Workflow",
+      "WorkflowDashboardManager",
+      new WorkflowWorkflowDashboardManager()
+    );
+  }
+}

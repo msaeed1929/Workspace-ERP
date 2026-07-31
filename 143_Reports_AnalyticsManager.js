@@ -353,9 +353,12 @@ class ReportsAnalyticsManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Reports",
-  "AnalyticsManager",
-  new ReportsAnalyticsManager()
-);
+function bootReportsAnalyticsManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Reports",
+      "AnalyticsManager",
+      new ReportsAnalyticsManager()
+    );
+  }
+}

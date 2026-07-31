@@ -351,9 +351,12 @@ class BIDashboardDesignerManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "DashboardDesignerManager",
-  new BIDashboardDesignerManager()
-);
+function bootBIDashboardDesignerManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "DashboardDesignerManager",
+      new BIDashboardDesignerManager()
+    );
+  }
+}

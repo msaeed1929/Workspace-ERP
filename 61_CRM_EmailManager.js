@@ -266,10 +266,12 @@ class CRMEmailManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "EmailManager",
-  new CRMEmailManager()
-);
+//==============================================================================function bootCRMEmailManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "EmailManager",
+      new CRMEmailManager()
+    );
+  }
+}

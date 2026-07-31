@@ -353,9 +353,12 @@ class BIDataWarehouseManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "DataWarehouseManager",
-  new BIDataWarehouseManager()
-);
+function bootBIDataWarehouseManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "DataWarehouseManager",
+      new BIDataWarehouseManager()
+    );
+  }
+}

@@ -353,9 +353,12 @@ class ReportsDashboardManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Reports",
-  "DashboardManager",
-  new ReportsDashboardManager()
-);
+function bootReportsDashboardManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Reports",
+      "DashboardManager",
+      new ReportsDashboardManager()
+    );
+  }
+}

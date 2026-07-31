@@ -345,9 +345,13 @@ class AccountingBudgetManager extends BaseService {
 //=============================================================================
 
 function registerAccountingBudgetManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Accounting",
-    "BudgetManager",
-    new AccountingBudgetManager()
-  );
+function bootAccountingBudgetManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Accounting",
+      "BudgetManager",
+      new AccountingBudgetManager()
+    );
+  }
+}
 }

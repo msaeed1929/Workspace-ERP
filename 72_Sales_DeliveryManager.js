@@ -353,10 +353,12 @@ class SalesDeliveryManager extends BaseService {
 
 //==============================================================================
 // Sales Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Sales",
-  "DeliveryManager",
-  new SalesDeliveryManager()
-);
+//==============================================================================function bootSalesDeliveryManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Sales",
+      "DeliveryManager",
+      new SalesDeliveryManager()
+    );
+  }
+}

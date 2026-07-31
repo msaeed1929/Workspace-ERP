@@ -353,9 +353,12 @@ class BIOLAPManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "BI",
-  "OLAPManager",
-  new BIOLAPManager()
-);
+function bootBIOLAPManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "BI",
+      "OLAPManager",
+      new BIOLAPManager()
+    );
+  }
+}

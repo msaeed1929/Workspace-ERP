@@ -371,9 +371,12 @@ class IntegrationImportExportManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Integration",
-  "ImportExportManager",
-  new IntegrationImportExportManager()
-);
+function bootIntegrationImportExportManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Integration",
+      "ImportExportManager",
+      new IntegrationImportExportManager()
+    );
+  }
+}

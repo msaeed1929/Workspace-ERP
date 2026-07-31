@@ -351,9 +351,12 @@ class ManufacturingMachineManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Manufacturing",
-  "MachineManager",
-  new ManufacturingMachineManager()
-);
+function bootManufacturingMachineManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Manufacturing",
+      "MachineManager",
+      new ManufacturingMachineManager()
+    );
+  }
+}

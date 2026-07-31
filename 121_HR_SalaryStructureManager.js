@@ -351,9 +351,13 @@ class HRSalaryStructureManager extends BaseService {
 //=============================================================================
 
 function registerHRSalaryStructureManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "HR",
-    "SalaryStructureManager",
-    new HRSalaryStructureManager()
-  );
+function bootHRSalaryStructureManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "HR",
+      "SalaryStructureManager",
+      new HRSalaryStructureManager()
+    );
+  }
+}
 }

@@ -351,9 +351,12 @@ class WorkflowWorkflowManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Workflow",
-  "WorkflowManager",
-  new WorkflowWorkflowManager()
-);
+function bootWorkflowWorkflowManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Workflow",
+      "WorkflowManager",
+      new WorkflowWorkflowManager()
+    );
+  }
+}

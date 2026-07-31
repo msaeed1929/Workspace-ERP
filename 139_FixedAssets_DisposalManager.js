@@ -353,9 +353,12 @@ class FixedAssetsDisposalManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "FixedAssets",
-  "DisposalManager",
-  new FixedAssetsDisposalManager()
-);
+function bootFixedAssetsDisposalManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "FixedAssets",
+      "DisposalManager",
+      new FixedAssetsDisposalManager()
+    );
+  }
+}

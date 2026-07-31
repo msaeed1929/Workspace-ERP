@@ -316,10 +316,12 @@ class PurchaseRFQManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "RFQManager",
-  new PurchaseRFQManager()
-);
+//==============================================================================function bootPurchaseRFQManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "RFQManager",
+      new PurchaseRFQManager()
+    );
+  }
+}

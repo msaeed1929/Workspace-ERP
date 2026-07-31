@@ -285,10 +285,12 @@ class PurchasePaymentManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "PaymentManager",
-  new PurchasePaymentManager()
-);
+//==============================================================================function bootPurchasePaymentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "PaymentManager",
+      new PurchasePaymentManager()
+    );
+  }
+}

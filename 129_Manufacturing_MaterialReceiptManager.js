@@ -353,9 +353,13 @@ class ManufacturingMaterialReceiptManager extends BaseService {
 //=============================================================================
 
 function registerManufacturingMaterialReceiptManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "Manufacturing",
-    "MaterialReceiptManager",
-    new ManufacturingMaterialReceiptManager()
-  );
+function bootManufacturingMaterialReceiptManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Manufacturing",
+      "MaterialReceiptManager",
+      new ManufacturingMaterialReceiptManager()
+    );
+  }
+}
 }

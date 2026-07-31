@@ -353,9 +353,12 @@ class FixedAssetsDepreciationManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "FixedAssets",
-  "DepreciationManager",
-  new FixedAssetsDepreciationManager()
-);
+function bootFixedAssetsDepreciationManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "FixedAssets",
+      "DepreciationManager",
+      new FixedAssetsDepreciationManager()
+    );
+  }
+}

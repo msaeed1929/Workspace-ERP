@@ -349,9 +349,12 @@ class ProjectsTimeEntryManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Projects",
-  "TimeEntryManager",
-  new ProjectsTimeEntryManager()
-);
+function bootProjectsTimeEntryManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Projects",
+      "TimeEntryManager",
+      new ProjectsTimeEntryManager()
+    );
+  }
+}

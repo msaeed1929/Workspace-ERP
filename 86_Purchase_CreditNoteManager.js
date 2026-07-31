@@ -316,10 +316,12 @@ class PurchaseCreditNoteManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "CreditNoteManager",
-  new PurchaseCreditNoteManager()
-);
+//==============================================================================function bootPurchaseCreditNoteManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "CreditNoteManager",
+      new PurchaseCreditNoteManager()
+    );
+  }
+}

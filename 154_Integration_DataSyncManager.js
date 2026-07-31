@@ -363,9 +363,12 @@ class IntegrationDataSyncManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Integration",
-  "DataSyncManager",
-  new IntegrationDataSyncManager()
-);
+function bootIntegrationDataSyncManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Integration",
+      "DataSyncManager",
+      new IntegrationDataSyncManager()
+    );
+  }
+}

@@ -356,9 +356,12 @@ class SystemSettingsManager extends BaseService {
 //=============================================================================
 // Module Registration
 //=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "System",
-  "SettingsManager",
-  new SystemSettingsManager()
-);
+function bootSystemSettingsManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "System",
+      "SettingsManager",
+      new SystemSettingsManager()
+    );
+  }
+}

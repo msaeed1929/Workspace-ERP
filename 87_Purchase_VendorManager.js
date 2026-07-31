@@ -306,10 +306,12 @@ class PurchaseVendorManager extends BaseService {
 
 //==============================================================================
 // Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Purchase",
-  "VendorManager",
-  new PurchaseVendorManager()
-);
+//==============================================================================function bootPurchaseVendorManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Purchase",
+      "VendorManager",
+      new PurchaseVendorManager()
+    );
+  }
+}

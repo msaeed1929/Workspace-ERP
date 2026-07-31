@@ -225,10 +225,12 @@ class CRMActivityManager extends BaseService {
 
 //==============================================================================
 // CRM Registration
-//==============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "CRM",
-  "ActivityManager",
-  new CRMActivityManager()
-);
+//==============================================================================function bootCRMActivityManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "CRM",
+      "ActivityManager",
+      new CRMActivityManager()
+    );
+  }
+}

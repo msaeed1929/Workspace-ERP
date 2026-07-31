@@ -349,9 +349,13 @@ class HRLeaveManager extends BaseService {
 //=============================================================================
 
 function registerHRLeaveManager() {
-  WEF.ServiceContainer.registerModuleService(
-    "HR",
-    "LeaveManager",
-    new HRLeaveManager()
-  );
+function bootHRLeaveManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "HR",
+      "LeaveManager",
+      new HRLeaveManager()
+    );
+  }
+}
 }

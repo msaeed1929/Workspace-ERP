@@ -378,10 +378,12 @@ class InventoryGRNManager extends BaseService {
 
 //=============================================================================
 // Module Registration
-//=============================================================================
-
-WEF.ServiceContainer.registerModuleService(
-  "Inventory",
-  "GRNManager",
-  new InventoryGRNManager()
-);
+//=============================================================================function bootInventoryGRNManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "Inventory",
+      "GRNManager",
+      new InventoryGRNManager()
+    );
+  }
+}

@@ -18,73 +18,95 @@
  */
 function registerERPServices() {
 
-  if (!WEF.ServiceContainer) return;
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "Application",
-    new ERPApplication()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "ModuleManager",
-    new ERPModuleManager()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "MasterData",
-    new ERPMasterData()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "DocumentManager",
-    new ERPDocumentManager()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "NumberSeries",
-    new ERPNumberSeries()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "TransactionManager",
-    new ERPTransactionManager()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "AuditTrail",
-    new ERPAuditTrail()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "SettingsManager",
-    new ERPSettingsManager()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "EventBus",
-    new ERPEventBus()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "TaskScheduler",
-    new ERPTaskScheduler()
-  );
-
-  WEF.ServiceContainer.registerModuleService(
-    "ERP",
-    "Dashboard",
-    new ERPDashboard()
-  );
+  if (!WEF.ServiceContainer) return;function bootERPApplication() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "Application",
+      new ERPApplication()
+    );
+  }
+}function bootERPModuleManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "ModuleManager",
+      new ERPModuleManager()
+    );
+  }
+}function bootERPMasterData() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "MasterData",
+      new ERPMasterData()
+    );
+  }
+}function bootERPDocumentManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "DocumentManager",
+      new ERPDocumentManager()
+    );
+  }
+}function bootERPNumberSeries() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "NumberSeries",
+      new ERPNumberSeries()
+    );
+  }
+}function bootERPTransactionManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "TransactionManager",
+      new ERPTransactionManager()
+    );
+  }
+}function bootERPAuditTrail() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "AuditTrail",
+      new ERPAuditTrail()
+    );
+  }
+}function bootERPSettingsManager() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "SettingsManager",
+      new ERPSettingsManager()
+    );
+  }
+}function bootERPEventBus() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "EventBus",
+      new ERPEventBus()
+    );
+  }
+}function bootERPTaskScheduler() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "TaskScheduler",
+      new ERPTaskScheduler()
+    );
+  }
+}function bootERPDashboard() {
+  if (typeof WEF !== "undefined" && WEF.ServiceContainer) {
+    WEF.ServiceContainer.registerModuleService(
+      "ERP",
+      "Dashboard",
+      new ERPDashboard()
+    );
+  }
+}
 
 }
 
