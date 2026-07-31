@@ -1,9 +1,17 @@
 'use strict';
 
-<<<<<<< HEAD
+/**
+ * =============================================================================
+ * Workspace ERP Framework
+ * Framework Version Information
+ * =============================================================================
+ */
+
 var WEF_FRAMEWORK = Object.freeze({
 
   NAME: "Workspace ERP Framework",
+
+  SHORT_NAME: "WEF",
 
   API_VERSION: "3.2",
 
@@ -19,16 +27,11 @@ var WEF_FRAMEWORK = Object.freeze({
 
 });
 
-function test_FrameworkVersion() {
-  Logger.log(WEF_FRAMEWORK);
-  Logger.log(WEF_FRAMEWORK.NAME);
-}
-=======
-var WEF_NAME = "Workspace ERP Framework";
-var WEF_API_VERSION = "3.2";
-var WEF_VERSION = "3.2.0";
-var WEF_BUILD = "20260725.001";
-var WEF_RELEASE_DATE = "2026-07-25";
-var WEF_RELEASE_CHANNEL = "Stable";
-var WEF_COPYRIGHT = "© 2026 Muhammad Saeed Anser";
->>>>>>> 3d7d2be (Core: Add module registry)
+// Legacy compatibility
+var WEF_NAME = WEF_FRAMEWORK.NAME;
+var WEF_API_VERSION = WEF_FRAMEWORK.API_VERSION;
+var WEF_VERSION = WEF_FRAMEWORK.VERSION;
+var WEF_BUILD = WEF_FRAMEWORK.BUILD;
+var WEF_RELEASE_DATE = WEF_FRAMEWORK.RELEASE_DATE;
+var WEF_RELEASE_CHANNEL = WEF_FRAMEWORK.RELEASE_CHANNEL;
+var WEF_COPYRIGHT = WEF_FRAMEWORK.COPYRIGHT;
