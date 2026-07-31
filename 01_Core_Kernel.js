@@ -38,6 +38,8 @@ WEF.Kernel = class {
     this.loadEnvironment();
 
     this.registerCoreServices();
+    
+    this.registerFrameworkServices();
 
     WEF.Runtime.BootCompleted = new Date();
 
@@ -163,6 +165,60 @@ WEF.Kernel = class {
 
       WEF.ServiceRegistry.register("Kernel", WEF.Kernel);
 
+    }
+
+  }
+
+  /**
+   * ===========================================================================
+   * Register Framework Services
+   * ===========================================================================
+   */
+  registerFrameworkServices() {
+
+    // ERP
+    if (typeof registerERPServices === "function") {
+      registerERPServices();
+    }
+
+    // CRM
+    if (typeof registerCRMServices === "function") {
+      registerCRMServices();
+    }
+
+    // Sales
+    if (typeof registerSalesServices === "function") {
+      registerSalesServices();
+    }
+
+    // Purchase
+    if (typeof registerPurchaseServices === "function") {
+      registerPurchaseServices();
+    }
+
+    // Inventory
+    if (typeof registerInventoryServices === "function") {
+      registerInventoryServices();
+    }
+
+    // Accounting
+    if (typeof registerAccountingServices === "function") {
+      registerAccountingServices();
+    }
+
+    // HR
+    if (typeof registerHRServices === "function") {
+      registerHRServices();
+    }
+
+    // Manufacturing
+    if (typeof registerManufacturingServices === "function") {
+      registerManufacturingServices();
+    }
+
+    // Projects
+    if (typeof registerProjectServices === "function") {
+      registerProjectServices();
     }
 
   }
