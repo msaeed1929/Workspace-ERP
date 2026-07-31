@@ -20,6 +20,72 @@ function registerERPServices() {
 
   if (!WEF.ServiceContainer) return;
 
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "Application",
+    new ERPApplication()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "ModuleManager",
+    new ERPModuleManager()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "MasterData",
+    new ERPMasterData()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "DocumentManager",
+    new ERPDocumentManager()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "NumberSeries",
+    new ERPNumberSeries()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "TransactionManager",
+    new ERPTransactionManager()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "AuditTrail",
+    new ERPAuditTrail()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "SettingsManager",
+    new ERPSettingsManager()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "EventBus",
+    new ERPEventBus()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "TaskScheduler",
+    new ERPTaskScheduler()
+  );
+
+  WEF.ServiceContainer.registerModuleService(
+    "ERP",
+    "Dashboard",
+    new ERPDashboard()
+  );
+
 }
 
 /**

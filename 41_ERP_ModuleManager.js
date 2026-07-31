@@ -236,9 +236,3 @@ class ERPModuleManager extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.ModuleManager = new ERPModuleManager();

@@ -219,9 +219,3 @@ class ERPDocumentManager extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.DocumentManager = new ERPDocumentManager();

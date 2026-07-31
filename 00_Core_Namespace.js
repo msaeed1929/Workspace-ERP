@@ -22,13 +22,10 @@ const WEF = Object.create(null);
  * ============================================================================
  */
 WEF.Info = {
-  name: WEF_FRAMEWORK.NAME,
+  name: "Workspace ERP Framework",
   shortName: "WEF",
-  version: WEF_FRAMEWORK.VERSION,
-  build: WEF_FRAMEWORK.BUILD,
-  releaseDate: WEF_FRAMEWORK.RELEASE_DATE,
-  channel: WEF_FRAMEWORK.RELEASE_CHANNEL,
-  copyright: WEF_FRAMEWORK.COPYRIGHT
+  version: "3.2.0",
+  build: "20260725.001"
 };
 
 Object.freeze(WEF.Info);

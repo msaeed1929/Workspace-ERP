@@ -196,9 +196,3 @@ class ERPNumberSeries extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.NumberSeries = new ERPNumberSeries();

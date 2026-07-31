@@ -202,9 +202,3 @@ class ERPTransactionManager extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.TransactionManager = new ERPTransactionManager();

@@ -238,9 +238,3 @@ class ERPTaskScheduler extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.TaskScheduler = new ERPTaskScheduler();

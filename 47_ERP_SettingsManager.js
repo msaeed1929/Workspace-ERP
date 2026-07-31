@@ -221,9 +221,3 @@ class ERPSettingsManager extends BaseService {
   }
 
 }
-
-//==============================================================================
-// ERP Registration
-//==============================================================================
-
-ERP.SettingsManager = new ERPSettingsManager();
