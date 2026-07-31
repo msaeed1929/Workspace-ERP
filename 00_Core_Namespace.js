@@ -225,6 +225,35 @@ WEF.ServiceRegistry = class {
 };
 
 /**
+ * ============================================================================
+ * Module Registry
+ * ============================================================================
+ */
+
+WEF.Modules = {
+
+  registry: {},
+
+  registerModuleService(name, service) {
+    this.registry[name] = service;
+    return service;
+  },
+
+  get(name) {
+    return this.registry[name];
+  },
+
+  has(name) {
+    return Object.prototype.hasOwnProperty.call(this.registry, name);
+  },
+
+  all() {
+    return Object.assign({}, this.registry);
+  }
+
+};
+
+/**
  * =============================================================================
  * Initialize Framework
  * =============================================================================

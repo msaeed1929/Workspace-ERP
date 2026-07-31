@@ -1,5 +1,6 @@
 'use strict';
 
+<<<<<<< HEAD
 var WEF_FRAMEWORK = Object.freeze({
 
   NAME: "Workspace ERP Framework",
@@ -22,3 +23,12 @@ function test_FrameworkVersion() {
   Logger.log(WEF_FRAMEWORK);
   Logger.log(WEF_FRAMEWORK.NAME);
 }
+=======
+var WEF_NAME = "Workspace ERP Framework";
+var WEF_API_VERSION = "3.2";
+var WEF_VERSION = "3.2.0";
+var WEF_BUILD = "20260725.001";
+var WEF_RELEASE_DATE = "2026-07-25";
+var WEF_RELEASE_CHANNEL = "Stable";
+var WEF_COPYRIGHT = "© 2026 Muhammad Saeed Anser";
+>>>>>>> 3d7d2be (Core: Add module registry)
