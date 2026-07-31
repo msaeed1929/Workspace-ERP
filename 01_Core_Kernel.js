@@ -174,7 +174,7 @@ WEF.Kernel = class {
    * Register Framework Services
    * ===========================================================================
    */
-  registerFrameworkServices() {
+  static registerFrameworkServices() {
 
     // ERP
     if (typeof registerERPServices === "function") {
