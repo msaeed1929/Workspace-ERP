@@ -348,8 +348,10 @@ class ManufacturingBOMManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Manufacturing",
-  "BOMManager",
-  new ManufacturingBOMManager()
-);
+function registerManufacturingBOMManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Manufacturing",
+    "BOMManager",
+    new ManufacturingBOMManager()
+  );
+}

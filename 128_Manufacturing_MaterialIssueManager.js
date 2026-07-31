@@ -352,8 +352,10 @@ class ManufacturingMaterialIssueManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Manufacturing",
-  "MaterialIssueManager",
-  new ManufacturingMaterialIssueManager()
-);
+function registerManufacturingMaterialIssueManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Manufacturing",
+    "MaterialIssueManager",
+    new ManufacturingMaterialIssueManager()
+  );
+}

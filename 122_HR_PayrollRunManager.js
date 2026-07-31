@@ -352,8 +352,10 @@ class HRPayrollRunManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "HR",
-  "PayrollRunManager",
-  new HRPayrollRunManager()
-);
+function registerHRPayrollRunManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "HR",
+    "PayrollRunManager",
+    new HRPayrollRunManager()
+  );
+}

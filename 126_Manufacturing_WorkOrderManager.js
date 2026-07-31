@@ -350,8 +350,10 @@ class ManufacturingWorkOrderManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Manufacturing",
-  "WorkOrderManager",
-  new ManufacturingWorkOrderManager()
-);
+function registerManufacturingWorkOrderManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Manufacturing",
+    "WorkOrderManager",
+    new ManufacturingWorkOrderManager()
+  );
+}

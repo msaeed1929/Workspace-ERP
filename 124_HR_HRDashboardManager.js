@@ -346,8 +346,10 @@ class HRHRDashboardManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "HR",
-  "HRDashboardManager",
-  new HRHRDashboardManager()
-);
+function registerHRHRDashboardManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "HR",
+    "HRDashboardManager",
+    new HRHRDashboardManager()
+  );
+}

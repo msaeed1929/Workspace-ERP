@@ -346,8 +346,10 @@ class HRAttendanceManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "HR",
-  "AttendanceManager",
-  new HRAttendanceManager()
-);
+function registerHRAttendanceManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "HR",
+    "AttendanceManager",
+    new HRAttendanceManager()
+  );
+}
