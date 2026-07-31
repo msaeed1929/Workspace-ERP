@@ -22,41 +22,46 @@ const WEF = Object.create(null);
  * ============================================================================
  */
 WEF.Info = {
-  name: "Workspace ERP Framework",
+  name: WEF_NAME,
   shortName: "WEF",
-  version: "1.0.0",
-  build: "2026.06.29.001"
+  version: WEF_VERSION,
+  build: WEF_BUILD,
+  releaseDate: WEF_RELEASE_DATE,
+  channel: WEF_RELEASE_CHANNEL,
+  copyright: WEF_COPYRIGHT
 };
+
+Object.freeze(WEF.Info);
 
 /**
  * ============================================================================
  * Core Containers
  * ============================================================================
  */
-WEF.Config = {};
-WEF.Constants = {};
-WEF.Environment = {};
-WEF.Utilities = {};
-WEF.Schema = {};
-WEF.Database = {};
-WEF.Logger = {};
-WEF.Validator = {};
-WEF.Cache = {};
-WEF.Security = {};
-WEF.Settings = {};
-WEF.Sequence = {};
-WEF.Audit = {};
-WEF.Permission = {};
-WEF.Workflow = {};
-WEF.Notification = {};
-WEF.Email = {};
-WEF.PDF = {};
-WEF.Drive = {};
-WEF.Backup = {};
-WEF.Reports = {};
-WEF.Dashboard = {};
-WEF.API = {};
-WEF.Modules = {};
+WEF.Config = Object.create(null);
+WEF.Constants = Object.create(null);
+WEF.Environment = Object.create(null);
+WEF.Utilities = Object.create(null);
+WEF.Schema = Object.create(null);
+WEF.Database = Object.create(null);
+WEF.Logger = Object.create(null);
+WEF.Validator = Object.create(null);
+WEF.Cache = Object.create(null);
+WEF.Security = Object.create(null);
+WEF.Settings = Object.create(null);
+WEF.Sequence = Object.create(null);
+WEF.Audit = Object.create(null);
+WEF.Permission = Object.create(null);
+WEF.Workflow = Object.create(null);
+WEF.Notification = Object.create(null);
+WEF.Email = Object.create(null);
+WEF.PDF = Object.create(null);
+WEF.Drive = Object.create(null);
+WEF.Backup = Object.create(null);
+WEF.Reports = Object.create(null);
+WEF.Dashboard = Object.create(null);
+WEF.API = Object.create(null);
+WEF.Modules = Object.create(null);
 
 //=============================================================================
 // Business Modules
@@ -144,6 +149,14 @@ WEF.ServiceRegistry = class {
     if (!name)
       throw new Error("Service name is required.");
 
+    if (WEF.Services[name]) {
+
+      throw new Error(
+        "Service '" + name + "' is already registered."
+      );
+
+    }
+
     WEF.Services[name] = instance;
 
     return instance;
@@ -184,7 +197,9 @@ WEF.ServiceRegistry = class {
    */
   static remove(name) {
 
-    delete WEF.Services[name];
+    if (this.has(name)) {
+      delete WEF.Services[name];
+    }
 
   }
 
@@ -237,10 +252,12 @@ function initializeWEF() {
   WEF.Runtime.SpreadsheetId =
     WEF.Runtime.Spreadsheet.getId();
 
-  WEF.Runtime.Name =
+  WEF.Runtime.SpreadsheetName =
     WEF.Runtime.Spreadsheet.getName();
 
   WEF.Initialized = true;
+
+  WEF.Runtime.Initialized = true;
 
 }
 
@@ -249,7 +266,7 @@ function initializeWEF() {
  * TEST
  * =============================================================================
  */
-function test_Namespace() {
+function test_CoreNamespace() {
 
   initializeWEF();
 
