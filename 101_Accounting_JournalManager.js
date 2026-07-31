@@ -384,8 +384,10 @@ class AccountingJournalManager extends BaseService {
 // Module Registration
 //=============================================================================
 
-WEF.ServiceContainer.registerModuleService(
-  "Accounting",
-  "JournalManager",
-  new AccountingJournalManager()
-);
+function registerAccountingJournalManager() {
+  WEF.ServiceContainer.registerModuleService(
+    "Accounting",
+    "JournalManager",
+    new AccountingJournalManager()
+  );
+}
