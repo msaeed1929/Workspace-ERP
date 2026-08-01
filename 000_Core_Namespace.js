@@ -2,7 +2,7 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * -----------------------------------------------------------------------------
- * File        : 00_Core_Namespace.gs
+ * File        : 000_Core_Namespace.gs
  * Version     : 3.2.0
  * Author      : OpenAI + Muhammad Saeed Anser
  * Description : Root Namespace & Service Container

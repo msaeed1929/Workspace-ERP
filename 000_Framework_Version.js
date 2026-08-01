@@ -9,7 +9,7 @@
 
 var WEF_FRAMEWORK = Object.freeze({
 
-  NAME: "Workspace ERP Framework",
+  NAME: "Workspace ERP",
 
   SHORT_NAME: "WEF",
 

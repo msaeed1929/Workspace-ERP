@@ -2,7 +2,7 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 01_Core_Kernel.gs
+ * File        : 001_Core_Kernel.gs
  * Version     : 3.2.0
  * Description : Application Kernel
  * Author      : OpenAI + Muhammad Saeed Anser

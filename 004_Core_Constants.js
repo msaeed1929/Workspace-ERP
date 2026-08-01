@@ -1,16 +1,35 @@
 /**
  * =============================================================================
  * Workspace ERP Framework (WEF)
- * =============================================================================
- * File        : 04_Core_Constants.gs
- * Version     : 1.0.0
- * Description : System Constants Library
+ * -----------------------------------------------------------------------------
+ * File        : 004_Core_Constants.gs
+ * Version     : 3.2.0
+ * Description : Global Framework Constants
+ * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
  */
 
 'use strict';
 
 WEF.Constants = Object.freeze({
+
+  /* ============================================================================
+  * Framework
+  * ========================================================================== */
+
+  Framework: Object.freeze({
+
+    NAME: WEF_FRAMEWORK.NAME,
+
+    VERSION: WEF_FRAMEWORK.VERSION,
+
+    BUILD: WEF_FRAMEWORK.BUILD,
+
+    CHANNEL: WEF_FRAMEWORK.RELEASE_CHANNEL,
+
+    RELEASE_DATE: WEF_FRAMEWORK.RELEASE_DATE
+
+  }),
 
   /* ==========================================================================
    * Data Types
@@ -118,11 +137,15 @@ WEF.Constants = Object.freeze({
 
   Cache:Object.freeze({
 
-    SHORT:300,
+      NONE:0,
 
-    MEDIUM:1800,
+      SHORT:300,
 
-    LONG:3600
+      MEDIUM:1800,
+
+      LONG:3600,
+
+      DAY:86400
 
   }),
 
@@ -156,15 +179,87 @@ WEF.Constants = Object.freeze({
 
   }),
 
-  LogLevel: Object.freeze({
+  LogLevel:Object.freeze({
 
-    INFO: "INFO",
+      TRACE:"TRACE",
 
-    WARNING: "WARNING",
+      DEBUG:"DEBUG",
 
-    ERROR: "ERROR",
+      INFO:"INFO",
 
-    DEBUG: "DEBUG"
+      WARNING:"WARNING",
+
+      ERROR:"ERROR",
+
+      FATAL:"FATAL",
+
+      OFF:"OFF"
+
+  }),
+
+  Environment:Object.freeze({
+
+      DEVELOPMENT:"DEVELOPMENT",
+
+      TESTING:"TESTING",
+
+      STAGING:"STAGING",
+
+      PRODUCTION:"PRODUCTION"
+
+  }),
+
+  ServiceLifetime:Object.freeze({
+
+      SINGLETON:"SINGLETON",
+
+      SCOPED:"SCOPED",
+
+      TRANSIENT:"TRANSIENT"
+
+  }),
+
+  Validation:Object.freeze({
+
+      REQUIRED:"REQUIRED",
+
+      UNIQUE:"UNIQUE",
+
+      MIN:"MIN",
+
+      MAX:"MAX",
+
+      LENGTH:"LENGTH",
+
+      EMAIL:"EMAIL",
+
+      URL:"URL",
+
+      REGEX:"REGEX"
+
+  }),
+
+  Database:Object.freeze({
+
+      INSERT:"INSERT",
+
+      UPDATE:"UPDATE",
+
+      DELETE:"DELETE",
+
+      SELECT:"SELECT"
+
+  }),
+
+  Status:Object.freeze({
+
+      READY:"READY",
+
+      BUSY:"BUSY",
+
+      ERROR:"ERROR",
+
+      DISABLED:"DISABLED"
 
   }),
 
@@ -343,5 +438,15 @@ Logger.log(WEF.Constants.Operation.CREATE);
 Logger.log(WEF.Constants.Permission.FULL);
 
 Logger.log(WEF.Constants.ExportType.PDF);
+
+Logger.log(WEF.Constants.Framework.VERSION);
+
+Logger.log(WEF.Constants.Environment.DEVELOPMENT);
+
+Logger.log(WEF.Constants.ServiceLifetime.SINGLETON);
+
+Logger.log(WEF.Constants.Cache.DAY);
+
+Logger.log(WEF.Constants.LogLevel.TRACE);
 
 }

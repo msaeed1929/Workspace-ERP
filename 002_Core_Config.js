@@ -2,7 +2,7 @@
  * ============================================================================
  * Workspace ERP Framework (WEF)
  * ----------------------------------------------------------------------------
- * File        : 02_Core_Config.gs
+ * File        : 002_Core_Config.gs
  * Version     : 3.2.0
  * Author      : OpenAI + Muhammad Saeed Anser
  * Description : Global Configuration Manager
