@@ -2,9 +2,10 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 07_Core_Logger.gs
- * Version     : 1.0.0
+ * File        : 007_Core_Logger.gs
+ * Version     : 3.2.0
  * Description : Central Logging Service
+ * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
  */
 
@@ -39,33 +40,46 @@ class LoggerService extends BaseService {
    */
   write(level, message, data) {
 
-    const record = {
+      const record = {
 
-      timestamp: new Date(),
+          timestamp: new Date(),
 
-      level: level,
+          level: level,
 
-      service: this.getName(),
+          service: this.getName(),
 
-      user: WEF.Environment.getUser(),
+          user: WEF.Environment.getUser(),
 
-      message: message,
+          environment: WEF.Config.get("ENVIRONMENT"),
 
-      data: data || null
+          frameworkVersion: WEF.Info.version,
 
-    };
+          frameworkBuild: WEF.Info.build,
 
-    this._history.push(record);
+          message: message,
 
-    if (this._history.length > 1000) {
+          data: data || null
 
-      this._history.shift();
+      };
 
-    }
+      this._history.push(record);
 
-    Logger.log(record);
+      if (this._history.length > 1000) {
 
-    return record;
+          this._history.shift();
+
+      }
+
+      Logger.log(
+
+          "[" +
+          level +
+          "] " +
+          message
+
+      );
+
+      return record;
 
   }
 
@@ -77,6 +91,20 @@ class LoggerService extends BaseService {
   info(message, data) {
 
     return this.write(this._levels.INFO, message, data);
+
+  }
+
+  success(message,data){
+
+      return this.write(
+
+          "SUCCESS",
+
+          message,
+
+          data
+
+      );
 
   }
 
@@ -102,6 +130,20 @@ class LoggerService extends BaseService {
 
   }
 
+  fatal(message,data){
+
+      return this.write(
+
+          "FATAL",
+
+          message,
+
+          data
+
+      );
+
+  }
+
   /**
    * ===========================================================================
    * Debug
@@ -109,11 +151,34 @@ class LoggerService extends BaseService {
    */
   debug(message, data) {
 
-    if (WEF.Config.environment() === "DEVELOPMENT") {
+    if (
+        WEF.Config.get("DEBUG") &&
+        WEF.Config.get("ENVIRONMENT") === "DEVELOPMENT"
+    ) {
 
-      return this.write(this._levels.DEBUG, message, data);
+        return this.write(
+            this._levels.DEBUG,
+            message,
+            data
+        );
 
     }
+
+    return null;
+
+  }
+
+  trace(message,data){
+
+      return this.write(
+
+          "TRACE",
+
+          message,
+
+          data
+
+      );
 
   }
 
@@ -142,6 +207,30 @@ class LoggerService extends BaseService {
 
   }
 
+  search(level){
+
+      return this._history.filter(function(log){
+
+          return log.level===level;
+
+      });
+
+  }
+
+  export(){
+
+      return JSON.stringify(
+
+          this._history,
+
+          null,
+
+          2
+
+      );
+
+  }
+
   clear() {
 
     this._history = [];
@@ -164,7 +253,7 @@ class LoggerService extends BaseService {
 
     this._timers = this._timers || {};
 
-    this._timers[label] = new Date().getTime();
+    this._timers[label] = Date.now();
 
   }
 
@@ -176,7 +265,7 @@ class LoggerService extends BaseService {
 
     }
 
-    const elapsed = new Date().getTime() - this._timers[label];
+    const elapsed=Date.now()-this._timers[label];
 
     delete this._timers[label];
 
@@ -187,6 +276,26 @@ class LoggerService extends BaseService {
     });
 
     return elapsed;
+
+  }
+
+  statistics(){
+
+      return{
+
+          total:this.count(),
+
+          info:this.search("INFO").length,
+
+          warning:this.search("WARNING").length,
+
+          error:this.search("ERROR").length,
+
+          debug:this.search("DEBUG").length,
+
+          trace:this.search("TRACE").length
+
+      };
 
   }
 
@@ -201,6 +310,18 @@ class LoggerService extends BaseService {
 WEF.Logger = new LoggerService();
 
 WEF.Logger.initialize();
+
+if(!WEF.ServiceRegistry.has("Logger")){
+
+    WEF.ServiceRegistry.register(
+
+        "Logger",
+
+        WEF.Logger
+
+    );
+
+}
 
 function test_Logger() {
 
@@ -227,5 +348,19 @@ function test_Logger() {
   Logger.log(last.level);
 
   Logger.log(last.timestamp);
+
+  Logger.log(WEF.Logger.count());
+
+  Logger.log(WEF.Logger.statistics());
+
+  Logger.log(WEF.Logger.search("ERROR"));
+
+  Logger.log(WEF.Logger.export());
+
+  WEF.Logger.success("Import Finished");
+
+  WEF.Logger.trace("Trace Message");
+
+  WEF.Logger.fatal("Fatal Example");
 
 }

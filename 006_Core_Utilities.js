@@ -2,9 +2,10 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 06_Core_Utilities.gs
- * Version     : 1.0.0
+ * File        : 006_Core_Utilities.gs
+ * Version     : 3.2.0
  * Description : Common Utility Library
+ * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
  */
 
