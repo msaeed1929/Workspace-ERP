@@ -293,7 +293,11 @@ class LoggerService extends BaseService {
 
           debug:this.search("DEBUG").length,
 
-          trace:this.search("TRACE").length
+          trace:this.search("TRACE").length,
+
+          success:this.search("SUCCESS").length,
+
+          fatal:this.search("FATAL").length
 
       };
 
@@ -351,8 +355,6 @@ function test_Logger() {
 
   Logger.log(WEF.Logger.count());
 
-  Logger.log(WEF.Logger.statistics());
-
   Logger.log(WEF.Logger.search("ERROR"));
 
   Logger.log(WEF.Logger.export());
@@ -362,5 +364,7 @@ function test_Logger() {
   WEF.Logger.trace("Trace Message");
 
   WEF.Logger.fatal("Fatal Example");
+
+  Logger.log(WEF.Logger.statistics());
 
 }
