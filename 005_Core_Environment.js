@@ -381,25 +381,24 @@ WEF.Environment = new (class {
 
   }
 
+  health(){
+
+      return {
+
+          initialized: this._initialized,
+
+          spreadsheet: !!this._spreadsheet,
+
+          user: !!this._user,
+
+          cache: !!this._cache,
+
+          lock: !!this._lock
+
+      };
+
+    }
 })();
-
-health(){
-
-    return {
-
-        initialized: this._initialized,
-
-        spreadsheet: !!this._spreadsheet,
-
-        user: !!this._user,
-
-        cache: !!this._cache,
-
-        lock: !!this._lock
-
-    };
-
-}
 
 /**
  * =============================================================================
