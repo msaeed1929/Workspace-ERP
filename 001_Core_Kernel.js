@@ -31,6 +31,8 @@ WEF.Kernel = class {
 
     Logger.log("========== WEF Boot Started ==========");
 
+    WEF.Runtime.Initialized = false;
+
     this.loadRuntime();
 
     this.loadConfiguration();
@@ -113,11 +115,11 @@ WEF.Kernel = class {
       return ERPConfig.ENVIRONMENT;
     };
 
-    WEF.Config.version=function(){
-      return ERPConfig.VERSION;
+    WEF.Config.version = function () {
+      return ERPConfig.FRAMEWORK_VERSION || ERPConfig.VERSION;
     };
 
-    WEF.Config.build=function(){
+    WEF.Config.build = function () {
       return ERPConfig.BUILD;
     };
 
@@ -134,9 +136,9 @@ WEF.Kernel = class {
    */
   static loadEnvironment() {
 
-    WEF.Runtime.version = WEF.Info.version;
+    WEF.Runtime.frameworkVersion = WEF.Info.version;
 
-    WEF.Runtime.build = WEF.Info.build;
+    WEF.Runtime.frameworkBuild = WEF.Info.build;
 
     WEF.Runtime.environment =
       WEF.Config.environment();
@@ -152,6 +154,8 @@ WEF.Kernel = class {
 
     WEF.Runtime.locale = WEF.Runtime.Locale;
 
+    WEF.Runtime.Initialized = true;
+
   }
 
   /**
@@ -163,7 +167,10 @@ WEF.Kernel = class {
 
     if (!WEF.ServiceRegistry.has("Kernel")) {
 
-      WEF.ServiceRegistry.register("Kernel", WEF.Kernel);
+      WEF.ServiceRegistry.register(
+          "Kernel",
+          WEF.Kernel
+      );
 
     }
 
@@ -233,7 +240,10 @@ WEF.Kernel = class {
     Logger.log("========== WEF Shutdown ==========");
 
     WEF.Initialized = false;
-      WEF.Runtime.Initialized = false;
+
+    WEF.Runtime.Initialized = false;
+
+    WEF.Runtime.BootCompleted = null;
 
   }
 
@@ -277,7 +287,7 @@ WEF.Kernel = class {
 
       Config : typeof ERPConfig !== "undefined",
 
-      Runtime : WEF.Runtime.Initialized === true,
+      Runtime : !!WEF.Runtime.Initialized,
 
       Spreadsheet : !!WEF.Runtime.Spreadsheet,
 
@@ -295,6 +305,37 @@ WEF.Kernel = class {
   static version() {
 
     return WEF.Info.version;
+
+  }
+
+  /**
+   * Build
+   */
+  static build() {
+
+      return WEF.Info.build;
+
+  }
+
+  /**
+   * Initialized
+   */
+  static initialized() {
+
+      return WEF.Initialized;
+
+  }
+
+  /**
+   * Uptime
+   */
+  static uptime() {
+
+      if (!WEF.Runtime.StartTime) {
+          return 0;
+      }
+
+      return Date.now() - WEF.Runtime.StartTime.getTime();
 
   }
 

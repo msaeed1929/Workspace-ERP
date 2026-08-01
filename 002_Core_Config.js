@@ -3,7 +3,7 @@
  * Workspace ERP Framework (WEF)
  * ----------------------------------------------------------------------------
  * File        : 02_Core_Config.gs
- * Version     : 1.0.0
+ * Version     : 3.2.0
  * Author      : OpenAI + Muhammad Saeed Anser
  * Description : Global Configuration Manager
  * ============================================================================
@@ -15,15 +15,19 @@ const ERPConfig = Object.freeze({
    * Application
    * ---------------------------------------------------------------------- */
 
-  APP_NAME: "Workspace ERP",
+  APP_NAME: WEF_FRAMEWORK.NAME,
 
   APP_CODE: "WEF",
 
-  VERSION: "1.0.0",
+  VERSION: WEF_FRAMEWORK.VERSION,
 
-  FRAMEWORK_VERSION: "1.0.0",
+  FRAMEWORK_VERSION: WEF_FRAMEWORK.VERSION,
 
-  BUILD: "2026.06.29.001",
+  BUILD: WEF_FRAMEWORK.BUILD,
+
+  RELEASE_DATE: WEF_FRAMEWORK.RELEASE_DATE,
+
+  RELEASE_CHANNEL: WEF_FRAMEWORK.RELEASE_CHANNEL,
 
   ENVIRONMENT: "DEVELOPMENT", // DEVELOPMENT | TESTING | PRODUCTION
 
@@ -47,7 +51,13 @@ const ERPConfig = Object.freeze({
 
   CACHE_SECONDS: 300,
 
+  CACHE_PREFIX: "WEF",
+
+  CACHE_COMPRESS: false,
+
   LOCK_TIMEOUT: 30000,
+
+  LOCK_WAIT: 5000,
 
   MAX_BATCH_SIZE: 500,
 
@@ -72,18 +82,24 @@ const ERPConfig = Object.freeze({
 
   LOG_LEVEL: "INFO",
 
+  ENABLE_DEBUG_TOAST: true,
+
+  ENABLE_SQL_LOG: false,
+
+  ENABLE_API_LOG: true,
+
+  ENABLE_PERFORMANCE_LOG: true,
+
 
   /* -------------------------------------------------------------------------
    * System
    * ---------------------------------------------------------------------- */
 
-  SYSTEM_VERSION: "1.0.0",
+  SYSTEM_VERSION: WEF_FRAMEWORK.VERSION,
 
-  DATABASE_VERSION: "1.0.0",
+  DATABASE_VERSION: "3.2.0",
 
-  SCHEMA_VERSION: "1.0.0",
-
-  FRAMEWORK_VERSION:"1.0.0",
+  SCHEMA_VERSION: "3.2.0",
 
   DEFAULT_LANGUAGE: "EN",
 
@@ -96,7 +112,7 @@ const ERPConfig = Object.freeze({
    * Hidden Sheets
    * ---------------------------------------------------------------------- */
 
-  SYSTEM_SHEETS: [
+  SYSTEM_SHEETS: Object.freeze([
 
     "_System",
 
@@ -112,7 +128,7 @@ const ERPConfig = Object.freeze({
 
     "_Lookup"
 
-  ],
+  ]),
 
 
   /* -------------------------------------------------------------------------
@@ -203,6 +219,26 @@ function getEnvironment() {
 
 }
 
+function getFrameworkVersion() {
+  return ERPConfig.FRAMEWORK_VERSION;
+}
+
+function getReleaseChannel() {
+  return ERPConfig.RELEASE_CHANNEL;
+}
+
+function getReleaseDate() {
+  return ERPConfig.RELEASE_DATE;
+}
+
+function isDebug() {
+  return ERPConfig.DEBUG;
+}
+
+function isLoggingEnabled() {
+  return ERPConfig.ENABLE_LOGGING;
+}
+
 /**
  * Is Development Mode
  *
@@ -233,14 +269,28 @@ function isProduction() {
 
 function test_Config() {
 
-  Logger.log(ERPConfig);
-
-  Logger.log(getERPVersion());
-
-  Logger.log(getERPBuild());
+  Logger.log("===== CONFIG =====");
 
   Logger.log(getERPName());
 
+  Logger.log(getERPVersion());
+
+  Logger.log(getFrameworkVersion());
+
+  Logger.log(getERPBuild());
+
   Logger.log(getEnvironment());
+
+  Logger.log(getReleaseChannel());
+
+  Logger.log(getReleaseDate());
+
+  Logger.log(isDevelopment());
+
+  Logger.log(isProduction());
+
+  Logger.log(isDebug());
+
+  Logger.log(ERPConfig);
 
 }
