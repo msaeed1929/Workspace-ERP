@@ -233,25 +233,43 @@ WEF.ServiceRegistry = class {
  * ============================================================================
  */
 
-WEF.Modules = {
+WEF.ModuleRegistry = {
 
-  registry: {},
+  modules: Object.create(null),
 
-  registerModuleService(name, service) {
-    this.registry[name] = service;
+  register(name, service) {
+
+    this.modules[name] = service;
+
     return service;
+
   },
 
   get(name) {
-    return this.registry[name];
+
+    return this.modules[name] || null;
+
   },
 
   has(name) {
-    return Object.prototype.hasOwnProperty.call(this.registry, name);
+
+    return Object.prototype.hasOwnProperty.call(
+      this.modules,
+      name
+    );
+
   },
 
   all() {
-    return Object.assign({}, this.registry);
+
+    return Object.assign({}, this.modules);
+
+  },
+
+  clear() {
+
+    this.modules = Object.create(null);
+
   }
 
 };
