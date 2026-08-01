@@ -65,7 +65,7 @@ WEF.Environment = new (class {
     // Synchronize Runtime
     // ---------------------------------------------------------------------------
 
-    WEF.Runtime.environment = WEF.Config.environment();
+    WEF.Runtime.environment = ERPConfig.ENVIRONMENT;
 
     WEF.Runtime.user = this._user;
 
@@ -149,23 +149,21 @@ WEF.Environment = new (class {
 
   getEnvironment(){
 
-    return WEF.Config.environment();
+      return ERPConfig.ENVIRONMENT;
 
   }
 
   isDevelopment(){
 
-    return WEF.Config.environment() ===
-
-      WEF.Constants.Environment.DEVELOPMENT;
+      return ERPConfig.ENVIRONMENT ===
+          WEF.Constants.Environment.DEVELOPMENT;
 
   }
 
   isProduction(){
 
-    return WEF.Config.environment() ===
-
-      WEF.Constants.Environment.PRODUCTION;
+      return ERPConfig.ENVIRONMENT ===
+          WEF.Constants.Environment.PRODUCTION;
 
   }
 
