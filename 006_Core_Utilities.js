@@ -63,7 +63,9 @@ WEF.Utilities.Number = Object.freeze({
 
   isNumeric(value) {
 
-    return !isNaN(value);
+      return value !== null &&
+            value !== "" &&
+            !isNaN(Number(value));
 
   },
 
@@ -93,12 +95,24 @@ WEF.Utilities.Date = Object.freeze({
 
   },
 
+  timestamp() {
+
+    return new Date().getTime();
+
+  },
+
+  todayString() {
+
+    return this.format(new Date());
+
+  },
+
   now() {
 
     return Utilities.formatDate(
       new Date(),
-      Session.getScriptTimeZone(),
-      ERPConfig.DATETIME_FORMAT
+      WEF.Environment.getTimeZone(),
+      WEF.Config.get("DATETIME_FORMAT")
     );
 
   },
@@ -107,8 +121,8 @@ WEF.Utilities.Date = Object.freeze({
 
     return Utilities.formatDate(
       new Date(date),
-      Session.getScriptTimeZone(),
-      pattern || ERPConfig.DATE_FORMAT
+      WEF.Environment.getTimeZone(),
+      pattern || WEF.Config.get("DATE_FORMAT")
     );
 
   },
@@ -205,7 +219,7 @@ WEF.Utilities.Array = Object.freeze({
 
   isEmpty(array) {
 
-    return array.length === 0;
+      return !Array.isArray(array) || array.length === 0;
 
   },
 
@@ -267,9 +281,10 @@ WEF.Utilities.Object = Object.freeze({
 
   isEmpty(object) {
 
-    return Object.keys(object).length === 0;
+      return !object ||
+            Object.keys(object).length === 0;
 
-  }
+  },
 
 });
 
@@ -315,6 +330,12 @@ WEF.Utilities.System = Object.freeze({
 
     Utilities.sleep(milliseconds);
 
+  },
+
+  uuid() {
+
+    return Utilities.getUuid();
+
   }
 
 });
@@ -341,11 +362,31 @@ WEF.Utilities.Sheet = Object.freeze({
 
   },
 
+  list() {
+
+      return WEF.Environment
+                .getSpreadsheet()
+                .getSheets();
+
+  },
+
+  names() {
+
+      return this.list().map(function(sheet){
+
+          return sheet.getName();
+
+      });
+
+  },
+
   active() {
 
-    return WEF.Environment.getSpreadsheet();
+      return WEF.Environment
+                .getSpreadsheet()
+                .getActiveSheet();
 
-  }
+}
 
 });
 
@@ -417,4 +458,16 @@ function test_Utilities() {
 
   Logger.log(WEF.Utilities.Sheet.exists("Dashboard"));
 
+  Logger.log(WEF.Utilities.Date.todayString());
+
+  Logger.log(WEF.Utilities.Date.timestamp());
+
+  Logger.log(WEF.Utilities.Sheet.list().length);
+
+  Logger.log(WEF.Utilities.Sheet.names());
+
+  Logger.log(WEF.Utilities.Sheet.active().getName());
+
 }
+
+Object.freeze(WEF.Utilities);
