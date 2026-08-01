@@ -35,12 +35,12 @@ WEF.Utilities.String = Object.freeze({
 
   capitalize(value) {
 
-    value = String(value || "").trim();
+      value = String(value || "").trim();
 
-    if (!value) return "";
+      if (!value) return "";
 
-    return value.charAt(0).toUpperCase() +
-           value.slice(1).toLowerCase();
+      return value.charAt(0).toUpperCase() +
+            value.slice(1);
 
   },
 
