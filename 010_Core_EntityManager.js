@@ -554,6 +554,32 @@ class EntityManagerService extends BaseService {
 
   }
 
+  exportJSON(pretty) {
+
+    return JSON.stringify(
+
+      this.export(),
+
+      null,
+
+      pretty === false ? 0 : 2
+
+    );
+
+  }
+
+  importJSON(json) {
+
+    if (!json) {
+      return this;
+    }
+
+    const data = JSON.parse(json);
+
+    return this.import(data);
+
+  }
+
   //=========================================================================
   // Statistics
   //=========================================================================
