@@ -117,6 +117,12 @@ class EntityManagerService extends BaseService {
     return Object.keys(this._entities);
   }
 
+  all() {
+
+    return this._clone(this._entities);
+
+  }
+
   count() {
     return this.list().length;
   }
