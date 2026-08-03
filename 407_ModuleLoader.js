@@ -35,7 +35,7 @@ class WEFModuleLoader {
 
     this._version =
 
-      WEF.Config.version();
+      WEF_FRAMEWORK.VERSION;
 
     this._cache = {};
 
