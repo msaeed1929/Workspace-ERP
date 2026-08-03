@@ -226,10 +226,12 @@ class SchemaEngineService extends BaseService {
     }
 
     this.createHeaders(entityName);
+
     this.format(entityName);
+
     this.touch(entityName);
 
-    return this;
+    return this.get(entityName);
   }
 
   //=========================================================================
