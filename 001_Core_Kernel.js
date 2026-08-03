@@ -174,6 +174,10 @@ WEF.Kernel = class {
 
     }
 
+    if (typeof registerValidatorService === "function") {
+      registerValidatorService();
+    }
+
   }
 
   /**

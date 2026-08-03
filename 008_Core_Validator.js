@@ -854,9 +854,10 @@ class ValidatorService extends BaseService {
 
   validateEntity(entityName,data){
 
-    if(
-      typeof WEF.EntityManager==="undefined"
-    ){
+    if (
+      !WEF.EntityManager ||
+      typeof WEF.EntityManager.getSchema !== "function"
+    ) {
       return this.fail(
         "_system",
         "EntityManager is not initialized."
@@ -882,8 +883,7 @@ class ValidatorService extends BaseService {
 
   registerRule(name,callback){
 
-    if(!this._rules)
-      this._rules={};
+    this._rules = this._rules || Object.create(null);
 
     this._rules[name]=callback;
 
@@ -953,9 +953,13 @@ class ValidatorService extends BaseService {
 
       errors:this.count(),
 
-      rules:this._rules
+      rules: this._rules
         ? Object.keys(this._rules).length
         : 0,
+
+      frameworkVersion: WEF.Info.version,
+      frameworkBuild: WEF.Info.build,
+      environment: WEF.Config.get("ENVIRONMENT"),
 
       valid:!this.hasErrors()
 
@@ -967,21 +971,27 @@ class ValidatorService extends BaseService {
 
     return {
 
-      service:this.getName(),
+    service: this.getName(),
 
-      version:this.getVersion(),
+    version: this.getVersion(),
 
-      initialized:this.isInitialized(),
+    initialized: this.isInitialized(),
 
-      errors:this.count(),
+    frameworkVersion: WEF.Info.version,
 
-      hasErrors:this.hasErrors(),
+    frameworkBuild: WEF.Info.build,
 
-      context:this._context,
+    environment: WEF.Config.get("ENVIRONMENT"),
 
-      statistics:this.statistics()
+    errors: this.count(),
 
-    };
+    hasErrors: this.hasErrors(),
+
+    context: this._context,
+
+    statistics: this.statistics()
+
+  };
 
   }
 
@@ -993,16 +1003,38 @@ class ValidatorService extends BaseService {
  * =============================================================================
  */
 
-WEF.Kernel.boot();
-
 WEF.Validator = new ValidatorService();
 
 WEF.Validator.initialize();
 
-WEF.ServiceRegistry.register(
-  "Validator",
-  WEF.Validator
-);
+/**
+ * Register Validator Service
+ */
+function registerValidatorService() {
+
+  if (!WEF.ServiceRegistry.has("Validator")) {
+
+    WEF.ServiceRegistry.register(
+      "Validator",
+      WEF.Validator
+    );
+
+  }
+
+  if (
+    WEF.ServiceContainer &&
+    typeof WEF.ServiceContainer.registerModuleService === "function"
+  ) {
+
+    WEF.ServiceContainer.registerModuleService(
+      "Core",
+      "Validator",
+      WEF.Validator
+    );
+
+  }
+
+}
 
 /**
  * =============================================================================
@@ -1013,6 +1045,8 @@ WEF.ServiceRegistry.register(
 function test_Validator() {
 
   WEF.Kernel.boot();
+
+  Logger.log("===== VALIDATOR =====");
 
   Logger.log(WEF.Validator.isInitialized());
 
@@ -1039,5 +1073,9 @@ function test_Validator() {
   Logger.log(WEF.Validator.statistics());
 
   Logger.log(WEF.Validator.info());
+
+  Logger.log(WEF.Validator.summary());
+
+  Logger.log(WEF.Validator.toJSON());
 
 }
