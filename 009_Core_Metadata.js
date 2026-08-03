@@ -518,17 +518,19 @@ class MetadataService extends BaseService {
   // Snapshot
   //=========================================================================
 
-  snapshot(){
+  snapshot() {
 
-    return{
+    return {
 
-      version:WEF.VERSION,
+      frameworkVersion: WEF.Config.version(),
 
-      build:WEF.BUILD,
+      frameworkBuild: WEF.Config.build(),
 
-      exported:new Date(),
+      environment: WEF.Config.environment(),
 
-      metadata:this.export()
+      exported: new Date(),
+
+      metadata: this.export()
 
     };
 
@@ -606,19 +608,25 @@ class MetadataService extends BaseService {
   // Information
   //=========================================================================
 
-  info(){
+  info() {
 
-    return{
+    return {
 
-      service:this.getName(),
+      service: this.getName(),
 
-      version:this.getVersion(),
+      version: this.getVersion(),
 
-      initialized:this.isInitialized(),
+      initialized: this.isInitialized(),
 
-      created:this.getCreatedTime(),
+      created: this.getCreatedTime(),
 
-      statistics:this.statistics()
+      frameworkVersion: WEF.Config.version(),
+
+      frameworkBuild: WEF.Config.build(),
+
+      environment: WEF.Config.environment(),
+
+      statistics: this.statistics()
 
     };
 
@@ -634,10 +642,23 @@ class MetadataService extends BaseService {
 
 WEF.Metadata=new MetadataService();
 
-WEF.ServiceRegistry.register(
-  "Metadata",
-  WEF.Metadata
-);
+  if (!WEF.ServiceRegistry.has("Metadata")) {
+
+    WEF.ServiceRegistry.register(
+      "Metadata",
+      WEF.Metadata
+    );
+
+  }
+
+  if (!WEF.Modules.has("Metadata")) {
+
+    WEF.Modules.registerModuleService(
+      "Metadata",
+      WEF.Metadata
+    );
+
+  }
 
 function test_Metadata_Part5(){
 
