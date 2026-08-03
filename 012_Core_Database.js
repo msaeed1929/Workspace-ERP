@@ -21,7 +21,7 @@ class DatabaseService extends BaseService {
   initialize() {
     super.initialize();
 
-    this._spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    this._spreadsheet = WEF.Environment.getSpreadsheet();
     this._cache = {};
     this._batch = [];
     this._connected = true;
@@ -44,7 +44,7 @@ class DatabaseService extends BaseService {
   //=========================================================================
 
   connect() {
-    this._spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    this._spreadsheet = WEF.Environment.getSpreadsheet();
     this._connected = true;
     this._lastOperation = new Date();
     return this;
@@ -761,10 +761,11 @@ class DatabaseService extends BaseService {
 
   health() {
     return {
-      schemaCount:WEF.Schema.count(),
-      entityCount:WEF.EntityManager.count(),
+      schemaCount: WEF.Schema.count(),
+      entityCount: WEF.EntityManager.count(),
       connected: this.isConnected(),
-      spreadsheet: this.spreadsheet().getName(),
+      spreadsheet: WEF.Environment.getSpreadsheetName(),
+      spreadsheetId: WEF.Environment.getSpreadsheetId(),
       cacheEntities: Object.keys(this._cache).length,
       batchOperations: this._batch.length,
       transaction: this._transaction,
@@ -826,7 +827,8 @@ class DatabaseService extends BaseService {
       environment: ERPConfig.ENVIRONMENT,
       statistics: this.statistics(),
       connected: this._connected,
-      spreadsheet: this.spreadsheet().getName(),
+      spreadsheet: WEF.Environment.getSpreadsheetName(),
+      spreadsheetId: WEF.Environment.getSpreadsheetId(),
       entityManager: !!WEF.EntityManager,
       schemaEngine: !!WEF.Schema,
       validator: !!WEF.Validator,
