@@ -224,7 +224,7 @@ class BaseRepository extends BaseService {
   statistics() {
     return {
       entity: this._entityName,
-      records: this.count(),
+      records: this.database().count(this.entity()),
       creates: this._statistics.creates,
       updates: this._statistics.updates,
       deletes: this._statistics.deletes,
@@ -256,7 +256,14 @@ class BaseRepository extends BaseService {
       database: dbConnected,
       schema: this.schema() !== null,
       records: this.count(),
-      hooks: Object.keys(this._hooks).length,
+      hooks:{
+        beforeCreate:this._hooks.beforeCreate.length,
+        afterCreate:this._hooks.afterCreate.length,
+        beforeUpdate:this._hooks.beforeUpdate.length,
+        afterUpdate:this._hooks.afterUpdate.length,
+        beforeDelete:this._hooks.beforeDelete.length,
+        afterDelete:this._hooks.afterDelete.length
+      },
       statistics: this.statistics()
     };
   }
