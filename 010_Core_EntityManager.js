@@ -532,6 +532,28 @@ class EntityManagerService extends BaseService {
 
   }
 
+  export() {
+
+    return this._clone(this._entities);
+
+  }
+
+  import(data) {
+
+    this.clear();
+
+    if (!data) {
+      return this;
+    }
+
+    Object.keys(data).forEach(name => {
+      this._entities[name] = this._clone(data[name]);
+    });
+
+    return this;
+
+  }
+
   //=========================================================================
   // Statistics
   //=========================================================================
