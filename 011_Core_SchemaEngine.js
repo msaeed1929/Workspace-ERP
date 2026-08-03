@@ -742,6 +742,10 @@ function test_SchemaEngine() {
   Logger.log("Migration:");
   Logger.log(WEF.Schema.migrate("Customer"));
 
+  Logger.log("Headers:");
+
+  Logger.log(WEF.Schema.getHeaders("Customer"));
+
   //--------------------------------------------------------------------------
   // Version
   //--------------------------------------------------------------------------
@@ -753,7 +757,13 @@ function test_SchemaEngine() {
   Logger.log("Updated Version:");
   Logger.log(WEF.Schema.getVersion("Customer"));
 
-  WEF.Schema.touch("Customer");
+  Logger.log("Touch:");
+
+    WEF.Schema.touch("Customer");
+
+    Logger.log(
+    WEF.Schema.get("Customer").lastSync
+    );
 
   //--------------------------------------------------------------------------
   // Snapshot
@@ -800,4 +810,10 @@ function test_SchemaEngine() {
 
   Logger.log("After Unregister:");
   Logger.log(WEF.Schema.count());
+
+  Logger.log("Delete Sheet:");
+
+  WEF.Schema.deleteSheet("Customers");
+
+  Logger.log(WEF.Schema.sheetExists("Customers"));
 }
