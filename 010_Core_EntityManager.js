@@ -593,18 +593,21 @@ function test_EntityManager() {
   // Register Entities
   //--------------------------------------------------------------------------
 
-  WEF.EntityManager.register("Customer", {
+  WEF.EntityManager.register({
+    name: "Customer",
     sheet: "Customers",
     key: "CustomerID",
     display: "Customer Name"
   });
 
-  WEF.EntityManager.register("Supplier", {
+  WEF.EntityManager.register({
+    name: "Supplier",
     sheet: "Suppliers",
     key: "SupplierID"
   });
 
-  WEF.EntityManager.register("Item", {
+  WEF.EntityManager.register({
+    name: "Item",
     sheet: "Items",
     key: "ItemID"
   });
@@ -634,7 +637,7 @@ function test_EntityManager() {
   //--------------------------------------------------------------------------
 
   Logger.log("Names:");
-  Logger.log(WEF.EntityManager.names());
+  Logger.log(WEF.EntityManager.list());
 
   //--------------------------------------------------------------------------
   // All
@@ -689,7 +692,7 @@ function test_EntityManager() {
   // Remove
   //--------------------------------------------------------------------------
 
-  WEF.EntityManager.remove("Supplier");
+  WEF.EntityManager.unregister("Supplier");
 
   Logger.log("After Remove:");
   Logger.log(WEF.EntityManager.names());
