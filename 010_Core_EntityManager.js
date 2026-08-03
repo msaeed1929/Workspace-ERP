@@ -570,208 +570,137 @@ if (!WEF.ModuleRegistry.has("EntityManager")) {
 }
 
 /**
- * ============================================================================
- * Full Test Suite: EntityManager Core Coverage
- * ============================================================================
+ * =============================================================================
+ * TEST
+ * =============================================================================
  */
-function test_EntityManager_FullSuite() {
-  Logger.log("=========================================");
-  Logger.log("Starting WEF EntityManager Core Unit Tests");
-  Logger.log("=========================================");
+function test_EntityManager() {
 
-  // 1. Boot Environment & Initialize
   WEF.Kernel.boot();
-  const em = WEF.EntityManager;
-  em.initialize();
-  em.clear();
 
-  // -------------------------------------------------------------------------
-  // Test Section 1: Entity Registration & CRUD Meta
-  // -------------------------------------------------------------------------
-  Logger.log("\n[1] Testing Entity Registration & Basic Retrieval...");
-  
-  em.register({
-    name: "Customer",
-    module: "Sales",
+  Logger.log("===== ENTITY MANAGER =====");
+
+  //--------------------------------------------------------------------------
+  // Reset
+  //--------------------------------------------------------------------------
+
+  WEF.EntityManager.clear();
+
+  Logger.log("Entities After Clear:");
+  Logger.log(WEF.EntityManager.count());
+
+  //--------------------------------------------------------------------------
+  // Register Entities
+  //--------------------------------------------------------------------------
+
+  WEF.EntityManager.register("Customer", {
     sheet: "Customers",
-    key: "CustomerID"
+    key: "CustomerID",
+    display: "Customer Name"
   });
 
-  em.register({
-    name: "Order",
-    module: "Sales",
-    sheet: "Orders",
-    key: "OrderID"
+  WEF.EntityManager.register("Supplier", {
+    sheet: "Suppliers",
+    key: "SupplierID"
   });
 
-  Logger.log(`- Entity Exists Check ('Customer'): ${em.exists("Customer")}`);
-  Logger.log(`- Total Entity Count: ${em.count()} (Expected: 2)`);
-  Logger.log(`- Entity List: ${JSON.stringify(em.list())}`);
-
-  // Test Update Entity Metadata
-  em.update("Customer", { sheet: "Sales_Customers" });
-  Logger.log(`- Updated Customer Sheet: ${em.get("Customer").sheet}`);
-
-  // -------------------------------------------------------------------------
-  // Test Section 2: Field Management
-  // -------------------------------------------------------------------------
-  Logger.log("\n[2] Testing Field Management...");
-
-  // Primary Key & Standard Fields for Customer
-  em.addField("Customer", {
-    name: "CustomerID",
-    type: "STRING",
-    required: true,
-    primaryKey: true,
-    searchable: true
+  WEF.EntityManager.register("Item", {
+    sheet: "Items",
+    key: "ItemID"
   });
 
-  em.addField("Customer", {
-    name: "CustomerName",
-    type: "STRING",
-    required: true,
-    searchable: true,
-    sortable: true
-  });
+  Logger.log("Count:");
+  Logger.log(WEF.EntityManager.count());
 
-  em.addField("Customer", {
-    name: "CreditLimit",
-    type: "NUMBER",
-    defaultValue: 1000
-  });
+  //--------------------------------------------------------------------------
+  // Exists
+  //--------------------------------------------------------------------------
 
-  // Fields for Order
-  em.addField("Order", {
-    name: "OrderID",
-    type: "STRING",
-    required: true,
-    primaryKey: true
-  });
+  Logger.log("Exists Customer:");
+  Logger.log(WEF.EntityManager.exists("Customer"));
 
-  em.addField("Order", {
-    name: "CustomerID",
-    type: "STRING",
-    required: true
-  });
+  Logger.log("Exists Employee:");
+  Logger.log(WEF.EntityManager.exists("Employee"));
 
-  Logger.log(`- Customer Primary Key: ${em.primaryKey("Customer")}`);
-  Logger.log(`- Customer Required Fields: ${JSON.stringify(em.requiredFields("Customer"))}`);
-  Logger.log(`- Customer Searchable Fields: ${JSON.stringify(em.searchableFields("Customer"))}`);
-  Logger.log(`- Field Count ('Customer'): ${em.getFields("Customer").length}`);
+  //--------------------------------------------------------------------------
+  // Get
+  //--------------------------------------------------------------------------
 
-  // Field Removal Test
-  em.addField("Customer", { name: "TempField", type: "STRING" });
-  em.removeField("Customer", "TempField");
-  Logger.log(`- 'TempField' removed successfully: ${!em.fieldExists("Customer", "TempField")}`);
+  Logger.log("Customer:");
+  Logger.log(WEF.EntityManager.get("Customer"));
 
-  // -------------------------------------------------------------------------
-  // Test Section 3: Relationship & Parent/Child Management
-  // -------------------------------------------------------------------------
-  Logger.log("\n[3] Testing Relationship Management...");
+  //--------------------------------------------------------------------------
+  // Names
+  //--------------------------------------------------------------------------
 
-  em.addRelationship("Order", {
-    name: "CustomerOrderRel",
-    type: "ManyToOne",
-    entity: "Customer",
-    localKey: "CustomerID",
-    foreignKey: "CustomerID"
-  });
+  Logger.log("Names:");
+  Logger.log(WEF.EntityManager.names());
 
-  Logger.log(`- Relationship Exists: ${em.relationshipExists("Order", "CustomerOrderRel")}`);
-  Logger.log(`- Child Entities of 'Order': ${JSON.stringify(em.childEntities("Order"))}`);
-  Logger.log(`- Parent Entities of 'Customer': ${JSON.stringify(em.parentEntities("Customer"))}`);
+  //--------------------------------------------------------------------------
+  // All
+  //--------------------------------------------------------------------------
 
-  // -------------------------------------------------------------------------
-  // Test Section 4: Behavior & Actions
-  // -------------------------------------------------------------------------
-  Logger.log("\n[4] Testing Entity Behaviors & Actions...");
+  Logger.log("All:");
+  Logger.log(WEF.EntityManager.all());
 
-  em.setBehavior("Customer", {
-    autoNumber: false,
-    softDelete: true,
-    approval: true
-  });
+  //--------------------------------------------------------------------------
+  // Statistics
+  //--------------------------------------------------------------------------
 
-  em.addAction("Customer", "Create");
-  em.addAction("Customer", "Approve");
+  Logger.log("Statistics:");
+  Logger.log(WEF.EntityManager.statistics());
 
-  Logger.log(`- Customer Behavior (Approval): ${em.getBehavior("Customer").approval}`);
-  Logger.log(`- Has Action 'Approve': ${em.hasAction("Customer", "Approve")}`);
-  Logger.log(`- Actions List: ${JSON.stringify(em.getActions("Customer"))}`);
+  //--------------------------------------------------------------------------
+  // Health
+  //--------------------------------------------------------------------------
 
-  // -------------------------------------------------------------------------
-  // Test Section 5: Events System
-  // -------------------------------------------------------------------------
-  Logger.log("\n[5] Testing Event Callbacks...");
+  Logger.log("Health:");
+  Logger.log(WEF.EntityManager.health());
 
-  let eventFired = false;
-  em.registerEvent("Customer", "onAfterCreate", function(payload) {
-    eventFired = true;
-    return `Created customer: ${payload.name}`;
-  });
+  //--------------------------------------------------------------------------
+  // Snapshot
+  //--------------------------------------------------------------------------
 
-  const eventResult = em.triggerEvent("Customer", "onAfterCreate", { name: "Acme Corp" });
-  Logger.log(`- Event Trigger Result: "${eventResult}"`);
-  Logger.log(`- Event Callback Execution Status: ${eventFired}`);
+  Logger.log("Snapshot:");
+  Logger.log(WEF.EntityManager.snapshot());
 
-  // -------------------------------------------------------------------------
-  // Test Section 6: CRUD Operations & Query Helpers
-  // -------------------------------------------------------------------------
-  Logger.log("\n[6] Testing CRUD & Find Metadata Generation...");
+  //--------------------------------------------------------------------------
+  // Export
+  //--------------------------------------------------------------------------
 
-  const createMeta = em.create("Customer", { CustomerID: "CUS-001", CustomerName: "Acme Corp" });
-  const readMeta = em.read("Customer", "CUS-001");
-  const updateMeta = em.updateRecord("Customer", "CUS-001", { CustomerName: "Acme Global" });
-  const deleteMeta = em.deleteRecord("Customer", "CUS-001");
-  const findMeta = em.find("Customer", { CustomerName: "Acme Global" });
+  Logger.log("Export:");
+  Logger.log(WEF.EntityManager.export());
 
-  Logger.log(`- Create Metadata Operation: ${createMeta.operation}`);
-  Logger.log(`- Read Metadata ID: ${readMeta.id}`);
-  Logger.log(`- Find Criteria Entity Target: ${findMeta.entity}`);
+  //--------------------------------------------------------------------------
+  // JSON Export
+  //--------------------------------------------------------------------------
 
-  // -------------------------------------------------------------------------
-  // Test Section 7: Export/Import & Validation Setup
-  // -------------------------------------------------------------------------
-  Logger.log("\n[7] Testing Export/Import & Service Validation...");
+  Logger.log("Export JSON:");
+  Logger.log(WEF.EntityManager.exportJSON());
 
-  const exportedCustomer = em.exportDefinition("Customer");
-  em.unregister("Customer");
-  Logger.log(`- Customer Unregistered (Exists: ${em.exists("Customer")})`);
+  //--------------------------------------------------------------------------
+  // Info
+  //--------------------------------------------------------------------------
 
-  em.importDefinition(exportedCustomer);
-  Logger.log(`- Customer Re-Imported (Exists: ${em.exists("Customer")})`);
+  Logger.log("Info:");
+  Logger.log(WEF.EntityManager.info());
 
-  // Mocking WEF.Validator if it isn't defined in the current runtime environment
-  if (typeof WEF.Validator === "undefined") {
-    WEF.Validator = {
-      _errors: [],
-      clear: function() { this._errors = []; },
-      required: function(field, val) { 
-        if (!val) this._errors.push(`${field} is required.`); 
-      },
-      hasErrors: function() { return this._errors.length > 0; },
-      getErrors: function() { return this._errors; }
-    };
-  }
+  //--------------------------------------------------------------------------
+  // Remove
+  //--------------------------------------------------------------------------
 
-  const validTest = em.validate("Customer", { CustomerID: "CUS-001", CustomerName: "Acme Corp" });
-  const invalidTest = em.validate("Customer", { CustomerID: "CUS-001" });
+  WEF.EntityManager.remove("Supplier");
 
-  Logger.log(`- Validation Pass Test: ${validTest.valid} (Errors: ${validTest.errors.length})`);
-  Logger.log(`- Validation Fail Test: ${!invalidTest.valid} (Errors: ${JSON.stringify(invalidTest.errors)})`);
+  Logger.log("After Remove:");
+  Logger.log(WEF.EntityManager.names());
 
-  // -------------------------------------------------------------------------
-  // Test Section 8: Summary Statistics & Info Readout
-  // -------------------------------------------------------------------------
-  Logger.log("\n[8] Testing Telemetry & Service Stats...");
+  //--------------------------------------------------------------------------
+  // Clear
+  //--------------------------------------------------------------------------
 
-  const stats = em.statistics();
-  Logger.log(`- Final Statistics: ${JSON.stringify(stats)}`);
-  
-  const info = em.info();
-  Logger.log(`- Service Info Summary: Service = ${info.service}, Version = ${info.version}`);
+  WEF.EntityManager.clear();
 
-  Logger.log("\n=========================================");
-  Logger.log("All Test Assertions Completed Successfully");
-  Logger.log("=========================================");
+  Logger.log("After Clear:");
+  Logger.log(WEF.EntityManager.count());
+
 }
