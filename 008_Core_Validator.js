@@ -654,17 +654,39 @@ bootValidatorService();
  * =============================================================================
  */
 function test_Validator() {
-  bootValidatorService();
 
-  Logger.log("===== VALIDATOR SERVICE TEST =====");
-  Logger.log("Is Initialized: " + WEF.Validator.isInitialized());
+  WEF.Kernel.boot();
+
+  Logger.log("===== VALIDATOR =====");
+
+  Logger.log(WEF.Validator.isInitialized());
 
   WEF.Validator.clear();
-  Logger.log("Required Check (Empty): " + WEF.Validator.required("Customer", ""));
-  Logger.log("Required Check (Valid): " + WEF.Validator.required("Customer", "ABC Traders"));
-  Logger.log("Email Check (Valid): " + WEF.Validator.email("Email", "abc@gmail.com"));
-  Logger.log("Email Check (Invalid): " + WEF.Validator.email("Email", "abc@gmail"));
-  Logger.log("CNIC Check (Valid): " + WEF.Validator.cnic("CNIC", "35202-1234567-1"));
 
-  Logger.log("Summary: " + JSON.stringify(WEF.Validator.summary(), null, 2));
+  Logger.log(WEF.Validator.required("Customer", ""));
+
+  Logger.log(WEF.Validator.required("Customer", "ABC Traders"));
+
+  Logger.log(WEF.Validator.email("Email", "abc@gmail.com"));
+
+  Logger.log(WEF.Validator.email("Email", "abc@gmail"));
+
+  Logger.log(WEF.Validator.number("CreditLimit", 150));
+
+  Logger.log(WEF.Validator.boolean("Active", true));
+
+  Logger.log(WEF.Validator.hasErrors());
+
+  Logger.log(WEF.Validator.count());
+
+  Logger.log(WEF.Validator.getErrors());
+
+  Logger.log(WEF.Validator.statistics());
+
+  Logger.log(WEF.Validator.info());
+
+  Logger.log(WEF.Validator.summary());
+
+  Logger.log(WEF.Validator.toJSON());
+
 }
