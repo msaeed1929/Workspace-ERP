@@ -533,51 +533,19 @@ class EntityManagerService extends BaseService {
   }
 
   export() {
-
-    return this._clone(this._entities);
-
+    return this.all();
   }
 
-  import(data) {
-
-    this.clear();
-
-    if (!data) {
-      return this;
-    }
-
-    Object.keys(data).forEach(name => {
-      this._entities[name] = this._clone(data[name]);
-    });
-
-    return this;
-
-  }
-
-  exportJSON(pretty) {
-
+  exportJSON() {
     return JSON.stringify(
-
-      this.export(),
-
+      this.snapshot(),
       null,
-
-      pretty === false ? 0 : 2
-
+      2
     );
-
   }
 
-  importJSON(json) {
-
-    if (!json) {
-      return this;
-    }
-
-    const data = JSON.parse(json);
-
-    return this.import(data);
-
+  names() {
+    return this.list();
   }
 
   //=========================================================================
@@ -774,14 +742,20 @@ function test_EntityManager() {
   //--------------------------------------------------------------------------
 
   Logger.log("Export:");
-  Logger.log(WEF.EntityManager.export());
+  Logger.log(WEF.EntityManager.all());
 
   //--------------------------------------------------------------------------
   // JSON Export
   //--------------------------------------------------------------------------
 
   Logger.log("Export JSON:");
-  Logger.log(WEF.EntityManager.exportJSON());
+  Logger.log(
+    JSON.stringify(
+      WEF.EntityManager.snapshot(),
+      null,
+      2
+    )
+  );
 
   //--------------------------------------------------------------------------
   // Info
