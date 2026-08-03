@@ -229,9 +229,17 @@ class MigrationService extends BaseService {
     return record;
   }
 
-  executed(name) {
-    this.loadHistory();
-    return this._history.some(r => r.migration === name);
+  executed(name){
+
+    const last=this._history
+      .filter(r=>r.migration===name)
+      .pop();
+
+    if(!last)
+    return false;
+
+    return last.status==="SUCCESS";
+
   }
 
   //=========================================================================
@@ -295,14 +303,24 @@ class MigrationService extends BaseService {
   // Version Management
   //=========================================================================
 
-  currentVersion() {
-    const history = this.loadHistory();
-    if (history.length === 0) return "0.0.0";
+  currentVersion(){
+
+    const history=this.loadHistory();
+
+    if(history.length===0)
+      return "0.0.0";
 
     return history
-      .map(r => r.version)
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(r=>r.version)
+      .sort((a,b)=>
+        a.localeCompare(
+          b,
+          undefined,
+          {numeric:true}
+        )
+      )
       .pop();
+
   }
 
   latestVersion() {
@@ -546,6 +564,8 @@ class MigrationService extends BaseService {
 
   report() {
     return {
+      frameworkVersion: WEF.Config.version(),
+      databaseVersion: WEF.Config.get("DATABASE_VERSION"),
       current: this.currentVersion(),
       latest: this.latestVersion(),
       upToDate: this.isUpToDate(),
@@ -568,8 +588,10 @@ class MigrationService extends BaseService {
 
     return {
       version: this.version(),
+      registeredVersions: this.all().map(m=>m.version),
       registered: this.count(),
       history: history.length,
+      historySize: this._history.length,
       executed: this.executedCount(),
       pending: this.pending().length,
       current: this.currentVersion(),
