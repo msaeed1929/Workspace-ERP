@@ -607,13 +607,27 @@ class EntityManagerService extends BaseService {
   //=========================================================================
 
   info() {
+
     return {
+
       service: this.getName(),
+
       version: this.getVersion(),
-      created: this.getCreatedTime(),
+
       initialized: this.isInitialized(),
+
+      created: this.getCreatedTime(),
+
+      frameworkVersion: WEF_FRAMEWORK.VERSION,
+
+      frameworkBuild: WEF_FRAMEWORK.BUILD,
+
+      environment: ERPConfig.ENVIRONMENT,
+
       statistics: this.statistics()
+
     };
+
   }
 }
 
