@@ -2,8 +2,8 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 13_Core_Migration.gs
- * Version     : 1.0.0
+ * File        : 013_Core_Migration.gs
+ * Version     : 3.2.0
  * Description : Database Migration Engine
  * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
@@ -29,11 +29,15 @@ class MigrationService extends BaseService{
 
     this._history=[];
 
+      this._executed=0;
+      this._failed=0;
+      this._rolledBack=0;
+
     this.initializeSheet();
 
     this.loadHistory();
 
-    this._version = WEF_FRAMEWORK.VERSION;
+    this._version = WEF.Config.version();
 
     return this;
 
@@ -44,6 +48,9 @@ class MigrationService extends BaseService{
   //=========================================================================
 
   register(name,migration){
+
+    if(this.exists(name))
+      throw new Error("Migration '"+name+"' already exists.");
 
     if(!name)
       throw new Error("Migration name is required.");
@@ -91,6 +98,7 @@ class MigrationService extends BaseService{
 
   remove(name){
 
+    if(this.exists(name))
     delete this._migrations[name];
 
     return true;
@@ -171,7 +179,7 @@ class MigrationService extends BaseService{
 
   sheet() {
 
-    const spreadsheet = WEF.Environment.getSpreadsheet();
+    const spreadsheet = this.getSpreadsheet();
 
     let sheet = spreadsheet.getSheetByName("_Migration");
 
@@ -278,7 +286,7 @@ class MigrationService extends BaseService{
 
     ]);
 
-    this._history.push(record);
+    this.loadHistory();
 
     return record;
 
@@ -286,7 +294,9 @@ class MigrationService extends BaseService{
 
     executed(name){
 
-    return this._history.some(r=>r.migration===name);
+      this.loadHistory();
+
+      return this._history.some(r=>r.migration===name);
 
     }
 
@@ -296,33 +306,55 @@ class MigrationService extends BaseService{
 
     run(name){
 
-      const migration=this.get(name);
+    const migration=this.get(name);
 
-      if(!migration)
-        throw new Error("Migration '"+name+"' not found.");
+    if(!migration)
+    throw new Error("Migration '"+name+"' not found.");
 
-      this.loadHistory();
+    this.loadHistory();
 
-      if(this.executed(name))
-        return false;
+    if(this.executed(name))
+    return false;
 
-      if(!this.canRun(name))
-        throw new Error(
-          "Migration '"+name+"' has unresolved dependencies."
-        );
+    if(!this.canRun(name))
+    throw new Error(
+    "Migration '"+name+"' has unresolved dependencies."
+    );
 
-      if(typeof migration.up==="function")
-        migration.up();
+    try{
 
-      this.saveHistory({
+    if(typeof migration.up==="function")
+    migration.up();
 
-        migration:name,
-        version:migration.version||this.version(),
-        status:"SUCCESS"
+    this._executed=(this._executed||0)+1;
 
-      });
+    this.saveHistory({
 
-      return true;
+    migration:name,
+    version:migration.version||this.version(),
+    status:"SUCCESS"
+
+    });
+
+    return true;
+
+    }
+    catch(error){
+
+    this._failed=(this._failed||0)+1;
+
+    this.saveHistory({
+
+    migration:name,
+    version:migration.version||this.version(),
+    status:"FAILED",
+    notes:error.message
+
+    });
+
+    throw error;
+
+    }
 
     }
 
@@ -349,13 +381,13 @@ class MigrationService extends BaseService{
 
   const history=this.loadHistory();
 
-    if(history.length===0)
-      return "0.0.0";
+  if(history.length===0)
+  return "0.0.0";
 
-      return history
-      .map(r=>r.version)
-      .sort()
-      .pop();
+  return history
+  .map(r=>r.version)
+  .sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))
+  .pop();
 
   }
 
@@ -412,31 +444,51 @@ class MigrationService extends BaseService{
 
   }
 
-  rollback(name){
+rollback(name){
 
-    const migration=this.get(name);
+const migration=this.get(name);
 
-    if(!migration)
-      throw new Error("Migration '"+name+"' not found.");
+if(!migration)
+throw new Error("Migration '"+name+"' not found.");
 
-    if(typeof migration.rollback!=="function")
-     return false;
+if(typeof migration.rollback!=="function")
+return false;
 
-    migration.rollback();
+try{
 
-    this.saveHistory({
+migration.rollback();
 
-      migration:name,
+this._rolledBack=(this._rolledBack||0)+1;
 
-      version:migration.version,
+this.saveHistory({
 
-      status:"ROLLBACK"
+migration:name,
+version:migration.version||this.version(),
+status:"ROLLBACK"
 
-    });
+});
 
-    return true;
+return true;
 
-  }
+}
+catch(error){
+
+this._failed=(this._failed||0)+1;
+
+this.saveHistory({
+
+migration:name,
+version:migration.version||this.version(),
+status:"ROLLBACK_FAILED",
+notes:error.message
+
+});
+
+throw error;
+
+}
+
+}
 
   //=============================================================================
   // Dependencies
@@ -572,7 +624,93 @@ class MigrationService extends BaseService{
 
   this._history=[];
 
-  this._migrations={};
+  return this;
+
+  }
+
+  export(){
+
+  return JSON.stringify({
+
+  version:this.version(),
+
+  migrations:this.all(),
+
+  history:this.history()
+
+  },null,2);
+
+  }
+
+  import(json){
+
+  const data=JSON.parse(json);
+
+  this.clear();
+
+  data.migrations.forEach(m=>{
+
+  this.register(m.name,m);
+
+  });
+
+  return true;
+
+  }
+
+  has(name){
+
+  return this.exists(name);
+
+  }
+
+  names(){
+
+  return Object.keys(this._migrations);
+
+  }
+
+  latest(){
+
+  return this.all()
+
+  .sort((a,b)=>
+
+  (a.version||"0")
+
+  .localeCompare(
+
+  b.version||"0",
+
+  undefined,
+
+  {numeric:true}
+
+  )
+
+  )
+
+  .pop()||null;
+
+  }
+
+  validate(){
+
+  return{
+
+  valid:!this.hasPending(),
+
+  pending:this.pending(),
+
+  registered:this.count()
+
+  };
+
+  }
+
+  touch(){
+
+  this._lastUpdated=new Date();
 
   return this;
 
@@ -587,9 +725,8 @@ class MigrationService extends BaseService{
     return{
 
       sheetExists:
-        WEF.Environment
-          .getSpreadsheet()
-          .getSheetByName("_Migration") !== null,
+        this.getSpreadsheet()
+        .getSheetByName("_Migration") !== null,
       registered:this.all().length,
       executed:this.executedCount(),
       pending:this.pending().length,
@@ -612,7 +749,12 @@ class MigrationService extends BaseService{
       current:this.currentVersion(),
       latest:this.latestVersion(),
       upToDate:this.isUpToDate(),
-      pending:this.pending().map(m=>m.name),
+      pending:this.pending().map(m=>({
+
+        name:m.name,
+        version:m.version
+
+      })),
       registered:this.all().length,
       executed:this.executedCount(),
       dependencyReport:this.dependencyReport()
@@ -627,23 +769,36 @@ class MigrationService extends BaseService{
 
   statistics(){
 
-    return{
+  const history=this.loadHistory();
 
-      version:this.version(),
+  return{
 
-      registered:this.all().length,
+  version:this.version(),
 
-      history:this.loadHistory().length,
+  registered:this.count(),
 
-      executed:this.executedCount(),
+  history:history.length,
 
-      pending:this.pending().length,
+  executed:this.executedCount(),
 
-      current:this.currentVersion(),
+  pending:this.pending().length,
 
-      latest:this.latestVersion()
+  current:this.currentVersion(),
 
-    };
+  latest:this.latestVersion(),
+
+  successful:this._executed||0,
+
+  failed:this._failed||0,
+
+  rolledBack:this._rolledBack||0,
+
+  lastExecution:
+  history.length
+  ?history[history.length-1].timestamp
+  :null
+
+  };
 
   }
 
