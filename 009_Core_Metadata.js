@@ -530,7 +530,7 @@ class MetadataService extends BaseService {
 
       releaseChannel: WEF.Info.channel,
 
-      environment: WEF.Config.get("ENVIRONMENT"),
+      environment: ERPConfig.ENVIRONMENT,
 
       exported: new Date(),
 
@@ -632,7 +632,7 @@ class MetadataService extends BaseService {
 
       releaseChannel: WEF.Info.channel,
 
-      environment: WEF.Config.get("ENVIRONMENT"),
+      environment: ERPConfig.ENVIRONMENT,
 
       statistics: this.statistics()
 
