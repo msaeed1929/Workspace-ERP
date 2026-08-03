@@ -522,11 +522,15 @@ class MetadataService extends BaseService {
 
     return {
 
-      frameworkVersion: WEF.Config.version(),
+      frameworkVersion: WEF.Info.version,
 
-      frameworkBuild: WEF.Config.build(),
+      frameworkBuild: WEF.Info.build,
 
-      environment: WEF.Config.environment(),
+      releaseDate: WEF.Info.releaseDate,
+
+      releaseChannel: WEF.Info.channel,
+
+      environment: WEF.Config.get("ENVIRONMENT"),
 
       exported: new Date(),
 
@@ -620,11 +624,15 @@ class MetadataService extends BaseService {
 
       created: this.getCreatedTime(),
 
-      frameworkVersion: WEF.Config.version(),
+      frameworkVersion: WEF.Info.version,
 
-      frameworkBuild: WEF.Config.build(),
+      frameworkBuild: WEF.Info.build,
 
-      environment: WEF.Config.environment(),
+      releaseDate: WEF.Info.releaseDate,
+
+      releaseChannel: WEF.Info.channel,
+
+      environment: WEF.Config.get("ENVIRONMENT"),
 
       statistics: this.statistics()
 
