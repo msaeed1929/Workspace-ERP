@@ -573,8 +573,24 @@ class DatabaseService extends BaseService {
   //=========================================================================
 
   convertValue(field, value) {
-    if (value === null || value === undefined || value === "") {
-      return value;
+    if(value===null||value===undefined||value===""){
+
+      switch(String(field.type||"STRING").toUpperCase()){
+
+        case "NUMBER":
+        case "INTEGER":
+        case "DECIMAL":
+        case "CURRENCY":
+        return null;
+
+        case "BOOLEAN":
+        return false;
+
+        default:
+        return "";
+
+      }
+
     }
 
     const type = String(field.type || "STRING").toUpperCase();
@@ -711,15 +727,22 @@ class DatabaseService extends BaseService {
     }
   }
 
-  rollback() {
-    const discarded = this._batch.length;
-    this._batch = [];
+  rollback(){
 
-    return {
-      success: true,
-      discarded: discarded,
-      message: "Batch queue cleared."
+      const discarded=this._batch.length;
+
+      this._batch=[];
+
+    return{
+
+      success:true,
+
+      discarded:discarded,
+
+      message:"Batch queue cleared."
+
     };
+
   }
 
   runTransaction(callback) {
@@ -738,6 +761,8 @@ class DatabaseService extends BaseService {
 
   health() {
     return {
+      schemaCount:WEF.Schema.count(),
+      entityCount:WEF.EntityManager.count(),
       connected: this.isConnected(),
       spreadsheet: this.spreadsheet().getName(),
       cacheEntities: Object.keys(this._cache).length,
@@ -757,19 +782,37 @@ class DatabaseService extends BaseService {
   // Statistics
   //=========================================================================
 
-  statistics() {
-    return {
+  statistics(){
+
+    return{
+
       connected: this.isConnected(),
+
       cacheEntities: Object.keys(this._cache).length,
+
+      cachedRecords: Object.values(this._cache).reduce(
+        (total, records) => total + (Array.isArray(records) ? records.length : 0),
+        0
+      ),
+
       batchOperations: this._batch.length,
-      reads: this._statistics.reads,
-      inserts: this._statistics.inserts,
-      updates: this._statistics.updates,
-      deletes: this._statistics.deletes,
-      batches: this._statistics.batches,
+
+      reads: this._reads,
+
+      inserts: this._inserts,
+
+      updates: this._updates,
+
+      deletes: this._deletes,
+
+      batches: this._batches,
+
       lastOperation: this._lastOperation,
+
       timestamp: new Date()
+
     };
+
   }
 
   info() {
