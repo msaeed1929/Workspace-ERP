@@ -2,10 +2,10 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 09_Core_Metadata.gs
- * Version     : 1.0.0
- * Part        : 1 of 5
+ * File        : 009_Core_Metadata.gs
+ * Version     : 3.2.0
  * Description : Metadata Registry Engine
+ * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
  */
 

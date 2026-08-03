@@ -2,9 +2,8 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 08_Core_Validator.gs
- * Version     : 1.0.0
- * Part        : 1 of 5
+ * File        : 008_Core_Validator.gs
+ * Version     : 3.2.0
  * Description : Enterprise Validation Engine
  * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
