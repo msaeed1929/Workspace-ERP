@@ -2,10 +2,10 @@
  * =============================================================================
  * Workspace ERP Framework (WEF)
  * =============================================================================
- * File        : 10_Core_EntityManager.gs
- * Version     : 1.0.0
- * Part        : 1 of 5
+ * File        : 010_Core_EntityManager.gs
+ * Version     : 3.2.0
  * Description : Dynamic Entity Registry
+ * Author      : OpenAI + Muhammad Saeed Anser
  * =============================================================================
  */
 
