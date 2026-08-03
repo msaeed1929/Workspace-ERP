@@ -512,6 +512,26 @@ class EntityManagerService extends BaseService {
     return this;
   }
 
+  snapshot() {
+
+    return {
+
+      frameworkVersion: WEF_FRAMEWORK.VERSION,
+
+      frameworkBuild: WEF_FRAMEWORK.BUILD,
+
+      environment: ERPConfig.ENVIRONMENT,
+
+      exported: new Date(),
+
+      entities: this.all(),
+
+      statistics: this.statistics()
+
+    };
+
+  }
+
   //=========================================================================
   // Statistics
   //=========================================================================
@@ -536,6 +556,34 @@ class EntityManagerService extends BaseService {
       relationships: relationshipCount,
       actions: actionCount
     };
+  }
+
+  health() {
+
+    return {
+
+      service: this.getName(),
+
+      module: "Core",
+
+      status: this.isInitialized()
+        ? "READY"
+        : "NOT_READY",
+
+      initialized: this.isInitialized(),
+
+      version: this.getVersion(),
+
+      created: this.getCreatedTime(),
+
+      frameworkVersion: WEF_FRAMEWORK.VERSION,
+
+      frameworkBuild: WEF_FRAMEWORK.BUILD,
+
+      environment: ERPConfig.ENVIRONMENT
+
+    };
+
   }
 
   //=========================================================================
