@@ -33,7 +33,7 @@ class MigrationService extends BaseService{
 
     this.loadHistory();
 
-    this._version=WEF.Config.get("DATABASE_VERSION");
+    this._version = WEF_FRAMEWORK.VERSION;
 
     return this;
 
