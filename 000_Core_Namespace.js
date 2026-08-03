@@ -118,7 +118,46 @@ WEF.Plugins = Object.create(null);
  * Module Registry
  * ============================================================================
  */
-WEF.ModuleRegistry = Object.create(null);
+WEF.ModuleRegistry = {
+
+  _registry: Object.create(null),
+
+  register(name, module) {
+
+    this._registry[name] = module;
+
+    return module;
+
+  },
+
+  get(name) {
+
+    return this._registry[name];
+
+  },
+
+  has(name) {
+
+    return Object.prototype.hasOwnProperty.call(
+      this._registry,
+      name
+    );
+
+  },
+
+  all() {
+
+    return Object.assign({}, this._registry);
+
+  },
+
+  remove(name) {
+
+    delete this._registry[name];
+
+  }
+
+};
 
 /**
  * ============================================================================

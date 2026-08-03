@@ -640,25 +640,25 @@ class MetadataService extends BaseService {
  * ============================================================================
  */
 
-WEF.Metadata=new MetadataService();
+WEF.Metadata = new MetadataService();
 
-  if (!WEF.ServiceRegistry.has("Metadata")) {
+if (!WEF.ServiceRegistry.has("Metadata")) {
 
-    WEF.ServiceRegistry.register(
-      "Metadata",
-      WEF.Metadata
-    );
+  WEF.ServiceRegistry.register(
+    "Metadata",
+    WEF.Metadata
+  );
 
-  }
+}
 
-  if (!WEF.Modules.has("Metadata")) {
+if (!WEF.ModuleRegistry.has("Metadata")) {
 
-    WEF.Modules.registerModuleService(
-      "Metadata",
-      WEF.Metadata
-    );
+  WEF.ModuleRegistry.register(
+    "Metadata",
+    WEF.Metadata
+  );
 
-  }
+}
 
 function test_Metadata_Part5(){
 
