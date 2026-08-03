@@ -1,78 +1,118 @@
-function test_Migration(){
+/**
+ * =============================================================================
+ * Workspace ERP Framework (WEF)
+ * Test Suite  : Database Migration Engine
+ * Description : Full suite test for 013_Core_Migration.js
+ * =============================================================================
+ */
 
-  WEF.Kernel.boot();
+function test_Migration() {
+  Logger.log("=================================================================");
+  Logger.log("                      START MIGRATION TEST                       ");
+  Logger.log("=================================================================");
 
-  const m=WEF.Migration;
+  // 1. Boot Framework Kernel
+  if (typeof WEF !== "undefined" && WEF.Kernel && typeof WEF.Kernel.boot === "function") {
+    WEF.Kernel.boot();
+  }
 
+  const m = WEF.Migration;
+  if (!m) {
+    throw new Error("WEF.Migration service is not initialized!");
+  }
+
+  // Reset state and sheet data for a clean test run
   m.reset();
 
-  m.register("CreateCustomers",{
-    version:"1.0.0",
-    description:"Create Customers table"
+  /*=========================================================================
+    1. Register Migrations
+  =========================================================================*/
+  m.register("CreateCustomers", {
+    version: "1.0.0",
+    description: "Create Customers table",
+    up: function () {
+      Logger.log("  [UP] Creating Customers table...");
+    }
   });
 
-  m.register("CreateProducts",{
-    version:"1.1.0",
-    description:"Create Products table"
+  m.register("CreateProducts", {
+    version: "1.1.0",
+    description: "Create Products table",
+    up: function () {
+      Logger.log("  [UP] Creating Products table...");
+    }
   });
 
-  m.register("CreateSales",{
-    version:"1.2.0",
-    description:"Create Sales table"
+  m.register("CreateSales", {
+    version: "1.2.0",
+    description: "Create Sales table",
+    up: function () {
+      Logger.log("  [UP] Creating Sales table...");
+    }
   });
 
-  m.registerRollback("CreateSales",function(){
-
-    Logger.log("Rollback CreateSales");
-
+  /*=========================================================================
+    2. Register Rollbacks & Dependencies
+  =========================================================================*/
+  m.registerRollback("CreateSales", function () {
+    Logger.log("  [ROLLBACK] Rolling back CreateSales table...");
   });
 
-  m.addDependency(
-  "CreateProducts",
-  "CreateCustomers"
-  );
+  m.addDependency("CreateProducts", "CreateCustomers");
+  m.addDependency("CreateSales", "CreateProducts");
 
-  m.addDependency(
-  "CreateSales",
-  "CreateProducts"
-  );
+  /*=========================================================================
+    3. Registration Status Checks
+  =========================================================================*/
+  Logger.log("\n--- REGISTRATION CHECKS ---");
+  Logger.log("Registered Count : " + m.count());
+  Logger.log("Registered Names : " + JSON.stringify(m.names()));
+  Logger.log("CreateSales Exists: " + m.exists("CreateSales"));
+  Logger.log("CreateSales Status: " + JSON.stringify(m.status("CreateSales")));
 
-  Logger.log("========== Registered ==========");
-  Logger.log(m.all());
+  /*=========================================================================
+    4. Dependency & Pre-Run Diagnostics
+  =========================================================================*/
+  Logger.log("\n--- DEPENDENCY DIAGNOSTICS ---");
+  Logger.log("Dependency Report: " + JSON.stringify(m.dependencyReport(), null, 2));
+  Logger.log("Dry Run Output   : " + JSON.stringify(m.dryRun(), null, 2));
+  Logger.log("Has Pending      : " + m.hasPending());
 
-  Logger.log("========== Dependency Report ==========");
-  Logger.log(m.dependencyReport());
+  /*=========================================================================
+    5. Migration Execution Sequence
+  =========================================================================*/
+  Logger.log("\n--- EXECUTING MIGRATIONS ---");
+  Logger.log("Run 'CreateCustomers' : " + m.run("CreateCustomers"));
+  Logger.log("Run 'CreateProducts'  : " + m.run("CreateProducts"));
+  Logger.log("Run 'CreateSales'     : " + m.run("CreateSales"));
+  Logger.log("Executed Count        : " + m.executedCount());
 
-  Logger.log("========== Dry Run ==========");
-  Logger.log(m.dryRun());
+  /*=========================================================================
+    6. Version & Compliance Checks
+  =========================================================================*/
+  Logger.log("\n--- VERSION METRICS ---");
+  Logger.log("Framework Version : " + m.version());
+  Logger.log("Current Version   : " + m.currentVersion());
+  Logger.log("Latest Version    : " + m.latestVersion());
+  Logger.log("Is Up To Date     : " + m.isUpToDate());
 
-  Logger.log("========== Run Customers ==========");
-  Logger.log(m.run("CreateCustomers"));
+  /*=========================================================================
+    7. Rollback Test
+  =========================================================================*/
+  Logger.log("\n--- TESTING ROLLBACK ---");
+  Logger.log("Rollback 'CreateSales': " + m.rollback("CreateSales"));
 
-  Logger.log("========== Run Products ==========");
-  Logger.log(m.run("CreateProducts"));
+  /*=========================================================================
+    8. Health, Statistics & System Info
+  =========================================================================*/
+  Logger.log("\n--- SYSTEM HEALTH & REPORTS ---");
+  Logger.log("Health Status : " + JSON.stringify(m.health(), null, 2));
+  Logger.log("Statistics    : " + JSON.stringify(m.statistics(), null, 2));
+  Logger.log("Validation    : " + JSON.stringify(m.validate(), null, 2));
 
-  Logger.log("========== Run Sales ==========");
-  Logger.log(m.run("CreateSales"));
-
-  Logger.log("========== History ==========");
-  Logger.log(m.history());
-
-  Logger.log("========== Report ==========");
-  Logger.log(m.report());
-
-  Logger.log("========== Rollback ==========");
-  Logger.log(m.rollback("CreateSales"));
-
-  Logger.log("========== Health ==========");
-  Logger.log(m.health());
-
-  Logger.log("========== Statistics ==========");
-  Logger.log(m.statistics());
-
-  Logger.log("========== Info ==========");
-  Logger.log(m.info());
-
+  Logger.log("\n=================================================================");
+  Logger.log("                      TEST COMPLETED SUCCESSFULLY                ");
+  Logger.log("=================================================================");
 }
 
 function test_Repository(){
