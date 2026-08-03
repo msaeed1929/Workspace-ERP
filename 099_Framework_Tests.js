@@ -115,211 +115,234 @@ function test_Migration() {
   Logger.log("=================================================================");
 }
 
-function test_Repository(){
+/**
+ * =============================================================================
+ * Workspace ERP Framework (WEF)
+ * Test Suite  : Repository Layer & Entity Engine
+ * Description : Full suite test for 014_Core_Repository.js
+ * =============================================================================
+ */
 
-  Logger.log("========== WEF Repository ==========");
+function test_Repository() {
+  Logger.log("=================================================================");
+  Logger.log("                     START REPOSITORY TEST                       ");
+  Logger.log("=================================================================");
 
-  WEF.Kernel.boot();
+  // 1. Boot & Initialize Core Framework Components safely
+  if (typeof WEF !== "undefined") {
+    if (WEF.Kernel && typeof WEF.Kernel.boot === "function") WEF.Kernel.boot();
+    if (WEF.Schema && typeof WEF.Schema.initialize === "function") WEF.Schema.initialize();
+    if (WEF.EntityManager && typeof WEF.EntityManager.initialize === "function") WEF.EntityManager.initialize();
+    if (WEF.Database && typeof WEF.Database.initialize === "function") WEF.Database.initialize();
+    if (WEF.Repository && typeof WEF.Repository.initialize === "function") WEF.Repository.initialize();
 
-  WEF.Schema.initialize();
-  WEF.EntityManager.initialize();
-  WEF.Database.initialize();
-  WEF.Repository.initialize();
+    // Reset Managers before testing
+    if (WEF.EntityManager && typeof WEF.EntityManager.clear === "function") WEF.EntityManager.clear();
+    if (WEF.Schema && typeof WEF.Schema.clear === "function") WEF.Schema.clear();
+  } else {
+    throw new Error("WEF Framework core context is missing.");
+  }
 
+  /*=========================================================================
+    1. Entity Registration & Schema Setup
+  =========================================================================*/
   WEF.EntityManager.register({
-    name:"Customer",
-    sheet:"Customers",
-    key:"CustomerID"
+    name: "Customer",
+    sheet: "Customers",
+    key: "CustomerID"
   });
 
-  WEF.EntityManager.addField("Customer",{name:"CustomerID"});
-  WEF.EntityManager.addField("Customer",{name:"CustomerName"});
-  WEF.EntityManager.addField("Customer",{name:"CreditLimit"});
+  WEF.EntityManager.addField("Customer", { name: "CustomerID", primaryKey: true });
+  WEF.EntityManager.addField("Customer", { name: "CustomerName" });
+  WEF.EntityManager.addField("Customer", { name: "CreditLimit" });
 
   WEF.Schema.register("Customer");
   WEF.Schema.sync("Customer");
 
   WEF.Database.truncate("Customer");
 
-  class CustomerRepository extends BaseRepository{
-
-    constructor(){
-
+  /*=========================================================================
+    2. Repository Class Instantiation & Registration
+  =========================================================================*/
+  class CustomerRepository extends BaseRepository {
+    constructor() {
       super("Customer");
-
     }
-
   }
 
-  const customerRepo=new CustomerRepository();
+  const customerRepo = new CustomerRepository();
+  WEF.Repository.register("Customer", customerRepo);
 
-  WEF.Repository.register(
-    "Customer",
-    customerRepo
-  );
+  Logger.log("\n--- FRAMEWORK REGISTRATION ---");
+  Logger.log("Registered Repositories : " + WEF.Repository.count());
+  Logger.log("Repository List         : " + JSON.stringify(WEF.Repository.list()));
+  Logger.log("Repository Exists       : " + WEF.Repository.has("Customer"));
 
-  Logger.log("========== CREATE ==========");
-
-  customerRepo.create({
-    CustomerID:"CUS001",
-    CustomerName:"ABC Traders",
-    CreditLimit:150000
-  });
+  /*=========================================================================
+    3. CREATE Operations
+  =========================================================================*/
+  Logger.log("\n--- CREATE RECORDS ---");
 
   customerRepo.create({
-    CustomerID:"CUS002",
-    CustomerName:"XYZ Textile",
-    CreditLimit:250000
+    CustomerID: "CUS001",
+    CustomerName: "ABC Traders",
+    CreditLimit: 150000
   });
 
-  Logger.log(customerRepo.all());
-
-  Logger.log("========== READ ==========");
-
-  Logger.log(customerRepo.find("CUS001"));
-  Logger.log(customerRepo.exists("CUS002"));
-  Logger.log(customerRepo.count());
-  Logger.log(customerRepo.first());
-  Logger.log(customerRepo.last());
-
-  Logger.log("========== UPDATE ==========");
-
-  customerRepo.update("CUS002",{
-    CustomerName:"XYZ Textile Pvt Ltd"
+  customerRepo.create({
+    CustomerID: "CUS002",
+    CustomerName: "XYZ Textile",
+    CreditLimit: 250000
   });
 
-  Logger.log(customerRepo.find("CUS002"));
+  Logger.log("Records : " + JSON.stringify(customerRepo.all()));
 
-  Logger.log("========== QUERY ==========");
+  /*=========================================================================
+    4. READ Operations
+  =========================================================================*/
+  Logger.log("\n--- READ OPERATIONS ---");
+  Logger.log("Find (CUS001) : " + JSON.stringify(customerRepo.find("CUS001")));
+  Logger.log("Exists        : " + customerRepo.exists("CUS002"));
+  Logger.log("Count         : " + customerRepo.count());
+  Logger.log("First         : " + JSON.stringify(customerRepo.first()));
+  Logger.log("Last          : " + JSON.stringify(customerRepo.last()));
 
-  Logger.log(customerRepo.where({
-    CustomerID:"CUS002"
-  }));
+  /*=========================================================================
+    5. UPDATE Operations
+  =========================================================================*/
+  Logger.log("\n--- UPDATE ---");
 
-  Logger.log(customerRepo.findOne({
-    CustomerID:"CUS002"
-  }));
+  customerRepo.update("CUS002", {
+    CustomerName: "XYZ Textile Pvt Ltd"
+  });
 
-  Logger.log(customerRepo.select([
-    "CustomerID"
-  ]));
+  Logger.log("Updated Record : " + JSON.stringify(customerRepo.find("CUS002")));
 
-  Logger.log(customerRepo.pluck(
-    "CustomerName"
-  ));
+  /*=========================================================================
+    6. QUERY Engine
+  =========================================================================*/
+  Logger.log("\n--- QUERY ENGINE ---");
 
-  Logger.log(customerRepo.distinct(
-    "CustomerName"
-  ));
+  Logger.log("Where     : " + JSON.stringify(customerRepo.where({ CustomerID: "CUS002" })));
+  Logger.log("Find One  : " + JSON.stringify(customerRepo.findOne({ CustomerID: "CUS002" })));
+  Logger.log("Select    : " + JSON.stringify(customerRepo.select(["CustomerID", "CustomerName"])));
+  Logger.log("Pluck     : " + JSON.stringify(customerRepo.pluck("CustomerName")));
+  Logger.log("Distinct  : " + JSON.stringify(customerRepo.distinct("CustomerName")));
+  Logger.log("Order By  : " + JSON.stringify(customerRepo.orderBy("CustomerName")));
+  Logger.log("Limit (1) : " + JSON.stringify(customerRepo.limit(1)));
+  Logger.log("Skip (1)  : " + JSON.stringify(customerRepo.skip(1)));
+  Logger.log("Paginate  : " + JSON.stringify(customerRepo.paginate(1, 2)));
+  Logger.log("Sum       : " + customerRepo.sum("CreditLimit"));
+  Logger.log("Average   : " + customerRepo.average("CreditLimit"));
 
-  Logger.log(customerRepo.orderBy(
-    "CustomerName"
-  ));
-
-  Logger.log(customerRepo.limit(1));
-
-  Logger.log(customerRepo.skip(1));
-
-  Logger.log(customerRepo.paginate(1,1));
-
-  Logger.log(customerRepo.sum(
-    "CreditLimit"
-  ));
-
-  Logger.log(customerRepo.average(
-    "CreditLimit"
-  ));
-
-  Logger.log("========== BULK ==========");
+  /*=========================================================================
+    7. BULK Operations
+  =========================================================================*/
+  Logger.log("\n--- BULK OPERATIONS ---");
 
   customerRepo.createMany([
-
     {
-      CustomerID:"CUS003",
-      CustomerName:"Royal Fabrics",
-      CreditLimit:300000
+      CustomerID: "CUS003",
+      CustomerName: "Royal Fabrics",
+      CreditLimit: 300000
     },
-
     {
-      CustomerID:"CUS004",
-      CustomerName:"Prime Traders",
-      CreditLimit:400000
+      CustomerID: "CUS004",
+      CustomerName: "Prime Traders",
+      CreditLimit: 400000
     }
-
   ]);
-
-  Logger.log(customerRepo.all());
 
   customerRepo.updateMany([
-
     {
-      CustomerID:"CUS003",
-      CustomerName:"Royal Fabrics Ltd",
-      CreditLimit:350000
+      CustomerID: "CUS003",
+      CustomerName: "Royal Fabrics Ltd",
+      CreditLimit: 350000
     },
-
     {
-      CustomerID:"CUS004",
-      CustomerName:"Prime Traders Pvt Ltd",
-      CreditLimit:450000
+      CustomerID: "CUS004",
+      CustomerName: "Prime Traders Pvt Ltd",
+      CreditLimit: 450000
     }
-
   ]);
 
-  Logger.log(customerRepo.all());
-
   customerRepo.upsert({
-
-    CustomerID:"CUS005",
-    CustomerName:"Modern Textile",
-    CreditLimit:500000
-
+    CustomerID: "CUS005",
+    CustomerName: "Modern Textile",
+    CreditLimit: 500000
   });
 
   customerRepo.upsert({
-
-    CustomerID:"CUS005",
-    CustomerName:"Modern Textile Ltd",
-    CreditLimit:600000
-
+    CustomerID: "CUS005",
+    CustomerName: "Modern Textile Ltd",
+    CreditLimit: 600000
   });
 
-  Logger.log(customerRepo.find("CUS005"));
+  Logger.log("After Bulk Operations : " + JSON.stringify(customerRepo.all()));
 
-  customerRepo.deleteMany([
-    "CUS001",
-    "CUS004"
-  ]);
+  /*=========================================================================
+    8. DELETE Operations
+  =========================================================================*/
+  Logger.log("\n--- DELETE ---");
 
-  Logger.log(customerRepo.all());
+  customerRepo.deleteMany(["CUS001", "CUS004"]);
+  Logger.log("After Deleting CUS001 & CUS004: " + JSON.stringify(customerRepo.all()));
 
-  Logger.log("========== EVENTS ==========");
+  /*=========================================================================
+    9. HOOK & EVENT Engine
+  =========================================================================*/
+  Logger.log("\n--- EVENTS ---");
 
-  customerRepo.on(
-    "afterCreate",
-    ()=>Logger.log("afterCreate fired")
-  );
+  customerRepo.on("afterCreate", function (result) {
+    Logger.log("  [EVENT TRIGGER] ✓ afterCreate event fired successfully.");
+  });
 
   customerRepo.create({
-
-    CustomerID:"CUS100",
-    CustomerName:"Event Customer",
-    CreditLimit:100000
-
+    CustomerID: "CUS100",
+    CustomerName: "Event Customer",
+    CreditLimit: 100000
   });
 
-  Logger.log("========== FRAMEWORK ==========");
+  /*=========================================================================
+    10. TRANSACTION Engine
+  =========================================================================*/
+  Logger.log("\n--- TRANSACTION ---");
 
-  Logger.log(WEF.Repository.statistics());
-  Logger.log(WEF.Repository.health());
-  Logger.log(WEF.Repository.info());
+  customerRepo.begin();
 
-  Logger.log("========== REPOSITORY ==========");
+  WEF.Database.batchInsert("Customer", {
+    CustomerID: "CUS200",
+    CustomerName: "Batch Customer",
+    CreditLimit: 750000
+  });
 
-  Logger.log(customerRepo.statistics());
-  Logger.log(customerRepo.health());
-  Logger.log(customerRepo.info());
+  Logger.log("Commit Result : " + JSON.stringify(customerRepo.commit()));
 
+  /*=========================================================================
+    11. REFRESH Data Context
+  =========================================================================*/
+  Logger.log("\n--- REFRESH ---");
+  Logger.log("Refresh Sheet Context : " + JSON.stringify(customerRepo.refresh()));
+
+  /*=========================================================================
+    12. FRAMEWORK DIAGNOSTICS
+  =========================================================================*/
+  Logger.log("\n--- REPOSITORY SERVICE STATS ---");
+  Logger.log("Statistics :\n" + JSON.stringify(WEF.Repository.statistics(), null, 2));
+  Logger.log("Health     :\n" + JSON.stringify(WEF.Repository.health(), null, 2));
+  Logger.log("Info       :\n" + JSON.stringify(WEF.Repository.info(), null, 2));
+
+  /*=========================================================================
+    13. ENTITY REPOSITORY DIAGNOSTICS
+  =========================================================================*/
+  Logger.log("\n--- CUSTOMER REPOSITORY STATS ---");
+  Logger.log("Statistics :\n" + JSON.stringify(customerRepo.statistics(), null, 2));
+  Logger.log("Health     :\n" + JSON.stringify(customerRepo.health(), null, 2));
+  Logger.log("Info       :\n" + JSON.stringify(customerRepo.info(), null, 2));
+
+  Logger.log("\n=================================================================");
+  Logger.log("                   REPOSITORY TEST COMPLETED                     ");
+  Logger.log("=================================================================");
 }
 
 function test_QueryBuilder(){
